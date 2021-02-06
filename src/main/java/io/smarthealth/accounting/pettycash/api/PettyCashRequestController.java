@@ -5,12 +5,15 @@
  */
 package io.smarthealth.accounting.pettycash.api;
 
+import io.smarthealth.accounting.pettycash.data.PettyCashProcessedItemsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestItemsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.domain.PettyCashApprovedItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
+import io.smarthealth.accounting.pettycash.domain.repository.PettyCashItemsRepository;
+import io.smarthealth.accounting.pettycash.domain.repository.PettyCashRequestsRepository;
 import io.smarthealth.accounting.pettycash.service.PettyCashApprovalsService;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.approval.data.enums.ApprovalModule;
@@ -67,6 +70,9 @@ public class PettyCashRequestController {
 
     @Autowired
     PettyCashApprovalsService approvalsService;
+
+    @Autowired
+    PettyCashItemsRepository pettyCashItemsRepository;
 
     @PostMapping("/petty-cash-request")
     @PreAuthorize("hasAuthority('create_pettyCashRequest')")
@@ -168,7 +174,10 @@ public class PettyCashRequestController {
 
     @GetMapping("/petty-cash")
     @PreAuthorize("hasAuthority('view_pettyCashRequest')")
-    public ResponseEntity<?> fetchPettyCashRequests(@RequestParam(value = "requestNo", required = false) final String requestNo, @RequestParam(value = "status", required = false) final PettyCashStatus status, Pageable pageable) {
+    public ResponseEntity<?> fetchPettyCashRequests(
+            @RequestParam(value = "requestNo", required = false) final String requestNo,
+            @RequestParam(value = "status", required = false) final PettyCashStatus status,
+            Pageable pageable) {
         Page<PettyCashRequestsData> list = pettyCashRequestsService.findPettyCashRequests(requestNo, null, status, pageable).map(r -> PettyCashRequestsData.map(r));
         Pager<List<PettyCashRequestsData>> pagers = new Pager();
         pagers.setCode("0");
@@ -186,7 +195,9 @@ public class PettyCashRequestController {
 
     @GetMapping("/petty-cash-request")
     @PreAuthorize("hasAuthority('view_pettyCashRequest')")
-    public ResponseEntity<?> fetchPettyCashRequestsPendingApproval(Authentication authentication, final Pageable pageable) {
+    public ResponseEntity<?> fetchPettyCashRequestsPendingApproval(
+            Authentication authentication,
+            final Pageable pageable) {
         String username = authentication.getName();
         User user = service.findUserByUsernameOrEmail(username)
                 .orElseThrow(() -> APIException.badRequest("User not found"));
@@ -255,17 +266,105 @@ public class PettyCashRequestController {
             PettyCashApprovedItems approve = new PettyCashApprovedItems();
             approve.setApprovalComments("Accepted");
             approve.setApprovalStatus(PettyCashStatus.Approved);
-            //approve.setApprovedBy(employee);
+            approve.setApprovedBy(user);
+            approve.setRequestNo(pettyCashRequest);
             approve.setItemNo(item);
+
 
             approve.setAmount(item.getAmount());
             approve.setPricePerUnit(item.getPricePerUnit());
             approve.setQuantity(item.getQuantity());
             approve.setApproval(approval);
+            //specific approved figures
+            approve.setApprovedPricePerUnit(item.getPricePerUnit());
+            approve.setApprovedQuantity(item.getQuantity());
+            approve.setApprovedAmount((item.getPricePerUnit()* item.getQuantity()));
+
 
             approvedItems.add(approve);
         }
 
+        List<PettyCashApprovedItems> savedApprovedItems = approvalsService.createItemApproval(approvedItems);
+
+        Pager<PettyCashRequestsData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Approval response submitted succesfully");
+        pagers.setContent(PettyCashRequestsData.map(pettyCashRequest));
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
+
+    @PutMapping("/petty-cash-request/{requestNo}/process-particular-items")
+    @PreAuthorize("hasAuthority('edit_pettyCashRequest')")
+    public ResponseEntity<?> processParticularItems(
+            @RequestBody @Valid  final List<PettyCashProcessedItemsData> pettyCashProcessedItemsData,
+            @PathVariable("requestNo") final String requestNo,
+            Authentication authentication) {
+        String username = authentication.getName();
+
+        User user = service.findUserByUsernameOrEmail(username)
+                .orElseThrow(() -> APIException.badRequest("User not found"));
+//        Employee employee = employeeService.fetchEmployeeByUser(user);
+        PettyCashRequests pettyCashRequest = pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo);
+
+        PettyCashApprovals approval = new PettyCashApprovals();
+        approval.setApprovalStatus(PettyCashStatus.Approved);
+        approval.setApprovedBy(user);
+        approval.setRequestNo(pettyCashRequest);
+        approval = approvalsService.saveCashApproval(approval);
+
+        //check if there is next level approver
+        List<ModuleApprovers> approvers = approvalConfigService.fetchModuleApproversByModuleAndLevel(ApprovalModule.PettyCash, pettyCashRequest.getApprovalPendingLevel() + 1);
+        if (approvers.size() > 0) {
+            //next approvers
+            pettyCashRequest.setApprovalPendingLevel(pettyCashRequest.getApprovalPendingLevel() + 1);
+        } else {
+            //ready to process
+            pettyCashRequest.setApprovalPendingLevel(0);
+            pettyCashRequest.setStatus(PettyCashStatus.Approved);
+            //update particular item status and approved amount
+//            List<PettyCashRequestItems> items = pettyCashRequest.getPettyCashRequestItems();
+//            for (PettyCashRequestItems i: items
+//                 ) {
+//
+//            }
+        }
+
+
+        List<PettyCashApprovedItems> approvedItems = new ArrayList<>();
+        Double totalAmountApproved = 0.00;
+        for (PettyCashProcessedItemsData item : pettyCashProcessedItemsData) {
+//validate item
+            PettyCashRequestItems requestItem = pettyCashRequestsService.findRequestedItemByIdWithNotFoundDetection(item.getItemId());
+            //insert into approvals table
+            PettyCashApprovedItems approve = new PettyCashApprovedItems();
+            approve.setApprovalComments(item.getApprovalComments()!=null? item.getApprovalComments() : "Accepted");
+            approve.setApprovalStatus(PettyCashStatus.Approved);
+            approve.setApprovedBy(user);
+            approve.setRequestNo(pettyCashRequest);
+            approve.setItemNo(requestItem);
+
+            approve.setAmount(item.getAmount());
+            approve.setPricePerUnit(item.getPricePerUnit());
+            approve.setQuantity(item.getQuantity());
+            approve.setApproval(approval);
+            //specific approved figures
+            approve.setApprovedPricePerUnit(item.getUnitPriceApproved()!=null? item.getUnitPriceApproved(): item.getPricePerUnit() );
+            approve.setApprovedQuantity(item.getQuantityApproved()!=null ? item.getQuantityApproved() : item.getQuantity());
+            approve.setApprovedAmount((approve.getApprovedPricePerUnit()* approve.getApprovedQuantity()));
+            totalAmountApproved = totalAmountApproved + approve.getApprovedAmount();
+
+            if (approvers.size() < 1) {
+                requestItem.setFinalApprovalStatus(PettyCashStatus.Approved);
+                requestItem.setApprovedQuantity(approve.getApprovedQuantity());
+                requestItem.setApprovedPricePerUnit(approve.getApprovedPricePerUnit());
+                pettyCashItemsRepository.save(requestItem);
+            }
+            approvedItems.add(approve);
+
+        }
+        pettyCashRequest.setApprovedAmount(totalAmountApproved);
+        pettyCashRequestsService.createCashRequests(pettyCashRequest);
         List<PettyCashApprovedItems> savedApprovedItems = approvalsService.createItemApproval(approvedItems);
 
         Pager<PettyCashRequestsData> pagers = new Pager();

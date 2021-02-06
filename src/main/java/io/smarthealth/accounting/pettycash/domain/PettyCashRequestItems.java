@@ -5,6 +5,7 @@
  */
 package io.smarthealth.accounting.pettycash.domain;
 
+import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -30,5 +31,10 @@ public class PettyCashRequestItems extends Identifiable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_request_items_request_no"))
     private PettyCashRequests requestNo;
     private Boolean paid;
+
+    //final approval status
+    private PettyCashStatus finalApprovalStatus;
+    private Double approvedPricePerUnit;
+    private Integer approvedQuantity;
 
 }

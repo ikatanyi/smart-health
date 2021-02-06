@@ -12,10 +12,17 @@ import static java.lang.Math.toIntExact;
 
 public class ListToPage {
 
-    public static Page<WaitingRequestsData> map(List<WaitingRequestsData> content, int offset, int limit){
-
-        PageRequest pageRequest = PageRequest.of(offset, limit);
-
+    public static Page<WaitingRequestsData> map(List<WaitingRequestsData> content, Integer offset, Integer limit) {
+        System.out.println("Offset "+offset);
+        System.out.println("Limit "+limit);
+        PageRequest pageRequest = null;
+        if (offset == null || limit == null) {
+            System.out.println("Offset is null or limit is null");
+            pageRequest = PageRequest.of(0, 1000000);
+        } else {
+            System.out.println("On else");
+            pageRequest= PageRequest.of(offset, limit);
+        }
 
         int total = content.size();
         int start = toIntExact(pageRequest.getOffset());

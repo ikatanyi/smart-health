@@ -5,6 +5,7 @@
  */
 package io.smarthealth.accounting.pettycash.data;
 
+import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
@@ -29,6 +30,11 @@ public class PettyCashRequestItemsData {
     
     @ApiModelProperty(hidden = true)
     private String requestNo;
+
+    //final approval status
+    private PettyCashStatus finalApprovalStatus;
+    private Double approvedPricePerUnit;
+    private Integer approvedQuantity;
     
     public static PettyCashRequestItemsData map(PettyCashRequestItems e) {
         PettyCashRequestItemsData data = new PettyCashRequestItemsData();
@@ -39,6 +45,12 @@ public class PettyCashRequestItemsData {
         data.setPricePerUnit(e.getPricePerUnit());
         data.setQuantity(e.getQuantity());
         data.setRequestNo(e.getRequestNo().getRequestNo());
+        //approval details
+       data.setFinalApprovalStatus(e.getFinalApprovalStatus());
+       data.setApprovedQuantity(e.getApprovedQuantity());
+       data.setApprovedPricePerUnit(e.getApprovedPricePerUnit());
+
+
         return data;
     }
     
