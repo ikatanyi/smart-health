@@ -18,7 +18,7 @@ import lombok.Data;
 public class Authorization {
 
     @JsonProperty("Pre_Authorization_Number")
-    private String preAuthorizationNumber = "SP";
+    private String preAuthorizationNumber = "12";
     @JsonProperty("Pre_Authorization_Amount")
     private String preAuthorizationAmount = "0";
 }

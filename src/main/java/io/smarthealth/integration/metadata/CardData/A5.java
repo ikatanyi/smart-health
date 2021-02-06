@@ -5,14 +5,12 @@
  */
 package io.smarthealth.integration.metadata.CardData;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 /**
  *
- * @author kent
+ * @author Ikatanyi
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class AdmitNotes {
-    
-    
+public class A5{
+    public int patient_gender;
+    public int patient_minutia_identifier;
+    public int patient_height;
 }

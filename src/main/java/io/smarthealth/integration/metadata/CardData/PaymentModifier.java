@@ -17,27 +17,31 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JacksonXmlRootElement(localName = "PaymentModifier")
-public class PaymentModifier {
-    @JsonProperty("Type")
-    private String type;
-    @JsonProperty("NHIF_Member_Nr")
-    private String nhifMemberNr;
-    @JsonProperty("NHIF_contributor_Nr")
-    private String nhifContributorNr;
-    @JsonProperty("NHIF_Employer_Code")
-    private String nhifEmployerCode;
-    @JsonProperty("NHIF_Site_Nr")
-    private String nhifSiteNr;
-    @JsonProperty("NHIF_Patient_Relation")
-    private String nhifPatientRelation;
-    @JsonProperty("Diagnosis_Code")
-    private String diagnosisCode;
-    @JsonProperty("Admit_Date")
-    private String admitDate;
-    @JsonProperty("Discharge_Date")
-    private String dischargeDate;
-    @JsonProperty("Days_Used")
-    private String daysUsed;
-    @JsonProperty("Amount")
-    private String amount;
+public class PaymentModifier{
+    @JsonProperty("Type") 
+    public int type;
+    @JsonProperty("Amount_Required") 
+    public int amount_Required;
+    @JsonProperty("Receipt") 
+    public String receipt;
+    @JsonProperty("NHIF_Member_Nr") 
+    public String nHIF_Member_Nr;
+    @JsonProperty("NHIF_Contributor_Nr") 
+    public String nHIF_Contributor_Nr;
+    @JsonProperty("NHIF_Employer_Code") 
+    public String nHIF_Employer_Code;
+    @JsonProperty("NHIF_Site_Nr") 
+    public String nHIF_Site_Nr;
+    @JsonProperty("NHIF_Patient_Relation") 
+    public String nHIF_Patient_Relation;
+    @JsonProperty("Diagnosis_Code") 
+    public String diagnosis_Code;
+    @JsonProperty("Admit_Date") 
+    public String admit_Date;
+    @JsonProperty("Discharge_Date") 
+    public String discharge_Date;
+    @JsonProperty("Days_Used") 
+    public String days_Used;
+    @JsonProperty("Amount") 
+    public String amount;
 }
