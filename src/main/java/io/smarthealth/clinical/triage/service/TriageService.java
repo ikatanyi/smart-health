@@ -1,9 +1,14 @@
 package io.smarthealth.clinical.triage.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.smarthealth.clinical.record.data.VitalRecordData;
 import io.smarthealth.clinical.record.domain.TriageRepository;
 import io.smarthealth.clinical.record.domain.VitalsRecord;
 import io.smarthealth.clinical.record.service.BMI;
+import io.smarthealth.clinical.triage.domain.ExtraVitalField;
+import io.smarthealth.clinical.triage.domain.ExtraVitalFieldRepository;
+import io.smarthealth.clinical.triage.domain.ExtraVitalValue;
+import io.smarthealth.clinical.triage.domain.ExtraVitalValueRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -12,9 +17,14 @@ import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.service.PatientService;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,8 +34,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 /**
- *
  * @author Kelsas
  */
 @Service
@@ -48,6 +58,12 @@ public class TriageService {
 
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    private ExtraVitalValueRepository extraVitalValueRepository;
+
+    @Autowired
+    private ExtraVitalFieldRepository extraVitalFieldRepository;
 
     //VITALS
     public VitalsRecord addVitalRecordsByVisit(Visit visit, VitalRecordData triage) {
@@ -74,7 +90,7 @@ public class TriageService {
     }
 
     @Transactional
-    public VitalsRecord addVitalRecordsByPatient(Patient patient, VitalRecordData triage) {
+    public VitalsRecord addVitalRecordsByPatient(Patient patient, VitalRecordData triage) throws JSONException {
         //validate visit
         Optional<Visit> visit = visitRepository.findByVisitNumber(triage.getVisitNumber());
         VitalsRecord vr = VitalRecordData.map(triage);
@@ -92,7 +108,30 @@ public class TriageService {
         vr.setBmi(bmi);
         vr.setCategory(category);
 
-        return triageRepository.save(vr);
+        VitalsRecord savedVr = triageRepository.save(vr);
+        List<ExtraVitalValue> extraVitalValues = new ArrayList<>();
+        if (triage.getExtraVitals() != null) {
+            JsonNode jsonNode = triage.getExtraVitals();
+
+            System.out.println("Json object"+jsonNode.toString());
+            //fetch all extra vital fields
+            List<ExtraVitalField> fields = extraVitalFieldRepository.findAll();
+            for (ExtraVitalField f : fields
+            ) {
+                JsonNode fieldNode = jsonNode.get(f.getName());
+
+                if(fieldNode != null && !fieldNode.isNull()) {
+                    ExtraVitalValue evv = new ExtraVitalValue();
+                    evv.setVitalRecord(savedVr);
+                    evv.setField(f);
+                    evv.setValue(jsonNode.get(f.getName()).asText());
+                    extraVitalValues.add(evv);
+                }
+
+            }
+        }
+        extraVitalValueRepository.saveAll(extraVitalValues);
+        return savedVr;
     }
 
     public Page<VitalsRecord> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {
