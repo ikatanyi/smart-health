@@ -21,7 +21,7 @@ public class Patient {
     @JsonProperty("First_Name")
     private String firstName;
     @JsonProperty("Middle_Name")
-    private String middleName;
+    private String middleName="-";
     @JsonProperty("Surname")
     private String surname="-";
     @JsonProperty("Date_Of_Birth")

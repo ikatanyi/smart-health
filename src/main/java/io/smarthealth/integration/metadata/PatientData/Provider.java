@@ -22,7 +22,7 @@ public class Provider {
     @JsonProperty("Country_Code")
     private String countryCode = "Ke";
     @JsonProperty("Group_Practice_Number")
-    private String groupPracticeNumber;
+    private String groupPracticeNumber = "SKSP_TEST";
     @JsonProperty("Group_Practice_Name")
-    private String groupPracticeName;
+    private String groupPracticeName = "SMART_TEST";
 }

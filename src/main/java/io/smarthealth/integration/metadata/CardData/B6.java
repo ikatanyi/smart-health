@@ -5,18 +5,14 @@
  */
 package io.smarthealth.integration.metadata.CardData;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import lombok.Data;
 
 /**
  *
- * @author kent
+ * @author Ikatanyi
  */
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class PaymentModifiers{
-    @JsonProperty("PaymentModifier") 
-    public List<PaymentModifier> paymentModifier;
+public class B6{
+    @JsonProperty("Message") 
+    public List<Message> message;
 }

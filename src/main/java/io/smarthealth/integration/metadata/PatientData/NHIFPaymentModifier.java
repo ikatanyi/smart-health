@@ -20,7 +20,7 @@ import lombok.Data;
 @JacksonXmlRootElement(localName="PaymentModifier")
 public class NHIFPaymentModifier {
     @JsonProperty("Type")
-    private String type = "0";
+    private String type = "5";
     @JsonProperty("NHIF_Member_Nr")
     private String nhifMemberNr ="0" ;
     @JsonProperty("NHIF_Contributor_Nr")

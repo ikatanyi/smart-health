@@ -6,10 +6,15 @@
 package io.smarthealth.integration.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.smarthealth.infrastructure.utility.PageDetails;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.integration.data.ClaimFileData;
+import io.smarthealth.integration.metadata.CardData.AdmissionInformation;
+import io.smarthealth.integration.metadata.CardData.CardData;
+import io.smarthealth.integration.metadata.CardData.Root;
 import io.smarthealth.integration.service.IntegrationService;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
+import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,24 +45,22 @@ public class IntegrationController {
         return ResponseEntity.status(HttpStatus.CREATED).body("");
     }
 
-    @GetMapping("/smart/smart-file")
+    @GetMapping("/smart/member-profile")
     public @ResponseBody
     ResponseEntity<?> fetchClaim(
-        @RequestParam(value = "memberNumber", required = true) final String memberNumber,
-        @RequestParam(value = "progressFlag", required = false) final Long progressFlag
+        @RequestParam(value = "memberNumber", required = true) final String memberNumber
     ) throws JsonProcessingException {
-        
-//        SmartFileData result = integrationService.fetchSmartFile(memberNumber, progressFlag);
-//        
-//        Pager pager = new Pager();
-//        pager.setCode("200");
-//        pager.setContent(result);
-//        pager.setMessage("Smart Dump file fetched successfully");
-//        PageDetails details = new PageDetails();
-//        details.setPage(1);
-//        details.setPerPage(25);
-//        details.setReportName("Smart Dump File");
-//        pager.setPageDetails(details);
-        return ResponseEntity.ok("");
+
+        CardData result = integrationService.findByPatientId(memberNumber);
+        Pager pager = new Pager();
+        pager.setCode("200");
+        pager.setContent(result);
+        pager.setMessage("Member Profile fetched successfully");
+        PageDetails details = new PageDetails();
+        details.setPage(1);
+        details.setPerPage(25);
+        details.setReportName("Member Profile");
+        pager.setPageDetails(details);
+        return ResponseEntity.ok(pager);
     }
 }

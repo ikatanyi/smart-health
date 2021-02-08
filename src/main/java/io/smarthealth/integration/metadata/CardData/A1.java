@@ -5,17 +5,18 @@
  */
 package io.smarthealth.integration.metadata.CardData;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
  *
- * @author kent
+ * @author Ikatanyi
  */
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Benefits{
-    @JsonProperty("Benefit") 
-    public Benefit benefit;
+public class A1{
+    public int card_validitystatus;
+    public int card_retmasscounter;
+    public String card_issuername;
+    public String card_issuedate;
+    public int card_retcounter;
+    public String card_serialnumber;
 }

@@ -1,25 +1,25 @@
 package io.smarthealth.integration.data;
 
+import lombok.Data;
 import lombok.ToString;
 
 /**
- *
- * @author Kelsas
- */ 
+ * * * @author Kelsas
+ */
 @ToString
 public class MpesaRequest {
 
-   private String BusinessShortCode;
-   private  String Password;
-   private  String Timestamp;
-   private  String TransactionType;
-   private  String Amount;
-   private  String PartyA;
-   private  String PartyB;
-   private  String PhoneNumber;
-   private  String CallBackURL;
-   private  String AccountReference;
-   private  String TransactionDesc;
+    private String BusinessShortCode;
+    private String Password;
+    private String Timestamp;
+    private String TransactionType;
+    private String Amount;
+    private String PartyA;
+    private String PartyB;
+    private String PhoneNumber;
+    private String CallBackURL;
+    private String AccountReference;
+    private String TransactionDesc;
 
     public MpesaRequest() {
     }
@@ -111,5 +111,4 @@ public class MpesaRequest {
     public void setTransactionDesc(String TransactionDesc) {
         this.TransactionDesc = TransactionDesc;
     }
-    
 }

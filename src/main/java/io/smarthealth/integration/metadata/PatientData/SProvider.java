@@ -6,10 +6,7 @@
 package io.smarthealth.integration.metadata.PatientData;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 
 /**
@@ -17,10 +14,12 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-@JacksonXmlRootElement(localName="Provider")
-public class ClaimData {
-    @JsonProperty("Discharge_Notes")
-    private String DischargeNotes="Diagn";
-    @JacksonXmlElementWrapper(useWrapping = false)
-    private List<Service> service=new ArrayList();
+@JacksonXmlRootElement(localName = "Provider")
+public class SProvider {
+
+    @JsonProperty("Role")
+    private String role = "SP";
+    @JsonProperty("Practice_Number")
+    private String groupPracticeNumber = "SKSP_TEST";
+
 }

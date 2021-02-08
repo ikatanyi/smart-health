@@ -5,6 +5,7 @@
  */
 package io.smarthealth.integration.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 
@@ -35,4 +36,7 @@ public class SmartFileData {
     private String coverNumber;
     private String description;
     private String amount;
+    
+     
+
 }

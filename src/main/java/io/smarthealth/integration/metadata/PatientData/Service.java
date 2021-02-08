@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import lombok.Data;
@@ -26,12 +25,10 @@ public class Service {
     @ApiModelProperty(hidden=true)
     @JsonProperty("Number")
     private String number;
-    
-    @ApiModelProperty(hidden=true)
+
     @JsonProperty("Invoice_Number")
     private String invoiceNumber;
-    
-    @ApiModelProperty(hidden=true)
+
     @JsonProperty("Global_Invoice_Nr")
     private String globalInvoiceNr;
     
@@ -43,22 +40,24 @@ public class Service {
     @JsonProperty("Start_Time")
     private String startTime=LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));   
     
-    @ApiModelProperty(example="CONSULTATION/PROCEDURE/LABORATORY")
+    @ApiModelProperty(example="CONSULTATION/PROCEDURE/LABORATORY ETC")
     @JsonProperty("Encounter_Type")
     private String encounterType;
-    
-    @ApiModelProperty(hidden=true)
+
+    @ApiModelProperty(example="CONS/PROC/LAB ETC")
     @JsonProperty("Code_Type")
     private String codeType ="Nappi";
-    
+
+    @ApiModelProperty(example="ServicePoint code")
     @JsonProperty("Code")
-    private String code;
+    private String code="INTERNAL";
     
     @JsonProperty("Code_Description")
+    @ApiModelProperty(example="Service description")
     private String codeDescription;
     
     @JsonProperty("Quantity")
-    private Integer quantity;
+    private Integer quantity=1;
     
     @JsonProperty("Total_Amount")
     private Double totalAmount;
@@ -72,6 +71,6 @@ public class Service {
     
     @ApiModelProperty(hidden=true)
     @JsonProperty("Provider")
-    private Provider serviceProvider;
+    private SProvider serviceProvider;
 }
 

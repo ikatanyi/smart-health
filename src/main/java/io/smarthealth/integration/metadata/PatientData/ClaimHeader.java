@@ -26,22 +26,9 @@ public class ClaimHeader {
     @JsonProperty("Claim_Time")
     private String claimTime;
     @JsonProperty("Pool_Number")
-    private String poolNumber;
+    private int poolNumber;
     @JsonProperty("Total_Services")
     private Integer totalServices;
     @JsonProperty("Gross_Amount")
     private Double grossAmount;
-    
-    @JsonProperty("Provider")
-    private Provider provider;
-    @JsonProperty("Authorization")
-    private Authorization authorization;
-//    @JsonProperty("Payment_Modifiers")
-    
-    @JacksonXmlElementWrapper(localName="Payment_Modifiers")
-        @JsonProperty("Payment_Modifier")
-        private PaymentModifier paymentModifier;
-        @JsonProperty("PaymentModifier")
-        private NHIFPaymentModifier nhifPaymentModifier;
-    
 }

@@ -5,9 +5,6 @@
  */
 package io.smarthealth.integration.metadata.CardData;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 
 /**
@@ -15,11 +12,23 @@ import lombok.Data;
  * @author kent
  */
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JacksonXmlRootElement(localName = "NonMemMap")
-public class NonMemMap {
-    @JsonProperty("patient_hospitalnumber")
-    private String patientHospitalnumber;
-    @JsonProperty("medicalaid_scheme")
-    private String medicalaidScheme;
+public class NonMemMap{
+    public String card_claimingreason;
+    public boolean card_retcompleted;
+    public int otp_enabled;
+    public boolean switch_integrated;
+    public String otp_code;
+    public boolean formatfixed;
+    public boolean card_claimingpossible;
+    public int registered_memcount;
+    public boolean card_reterrors;
+    public String patient_hospitalnumber;
+    public boolean virtualcard;
+    public boolean fp_extended;
+    public String supervisor_password;
+    public String medicalaid_scheme;
+    public int code_file_version;
+    public boolean card_claimfilesloading;
+    public int fp_activemember;
+    public boolean btupdate_completed;
 }
