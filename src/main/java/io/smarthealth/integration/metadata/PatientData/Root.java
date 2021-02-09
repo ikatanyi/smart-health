@@ -3,16 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.integration.metadata.CardData;
+package io.smarthealth.integration.metadata.PatientData;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
+import lombok.Data;
 
 /**
  *
  * @author Ikatanyi
  */
-public class B6{
-    @JsonProperty("Message") 
-    public List<Message> message;
+@Data
+public class Root{
+    @JsonProperty("Claim") 
+    public Claim claim;
 }

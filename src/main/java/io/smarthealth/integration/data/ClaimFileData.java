@@ -47,20 +47,18 @@ public class ClaimFileData {
         Authorization authorization = new Authorization();
         PaymentModifiers paymentModifies = new PaymentModifiers();
         PaymentModifier paymentModifier = new PaymentModifier();
-        NHIFPaymentModifier nhifPaymentModifier = new NHIFPaymentModifier();
         
         int i=0;
 
         claimfile.setProvider(provider);
         header.setGrossAmount(this.getGrossAmount());
         header.setInvoiceNumber(this.getInvoiceNumber());
-        header.setPoolNumber(smData.getBenefits().getBenefit().getNr());
+        header.setPoolNumber(String.valueOf(smData.getBenefits().getBenefit().getNr()));
         header.setTotalServices(this.getServices().size());
         header.setClaimDate(this.getClaimDate());
         header.setClaimTime(this.getClaimTime());
         claimfile.setAuthorization(authorization);
         paymentModifies.setPaymentModifier(paymentModifier);
-        paymentModifies.setNhifPaymentModifier(nhifPaymentModifier);
         claimfile.setPaymentModifiers(paymentModifies);
 
         for(ServiceData service:this.getServices()){
@@ -72,7 +70,7 @@ public class ClaimFileData {
             serv.setInvoiceNumber(this.getInvoiceNumber());
             serv.setGlobalInvoiceNr(this.getInvoiceNumber());
             serv.setNumber(String.valueOf(i++));
-            serv.setServiceProvider(sprovider);
+            serv.setProvider(sprovider);
             serv.setDiagnosis(diagnosis);
             serv.setEncounterType(service.getEncounterType());
             serv.setCode(service.getCode());
@@ -82,8 +80,7 @@ public class ClaimFileData {
             serv.setTotalAmount(service.getTotalAmount());
             claimData.getService().add(serv);
         };
-        
-        member.setCardSerialnumber(smData.getCard().getCardSerialnumber());
+
         member.setMembershipNumber(smData.getMedicalAid().getMedicalaidNumber());
         member.setSchemeCode(smData.getMedicalAid().getMedicalaidCode());
         member.setSchemePlan(smData.getMedicalAid().getMedicalaidPlan());

@@ -29,3 +29,4 @@ public class Patient {
     @JsonProperty("Gender")
     private String gender;
 }
+

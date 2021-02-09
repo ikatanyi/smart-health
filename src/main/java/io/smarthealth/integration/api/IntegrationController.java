@@ -9,17 +9,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.integration.data.ClaimFileData;
-import io.smarthealth.integration.metadata.CardData.AdmissionInformation;
 import io.smarthealth.integration.metadata.CardData.CardData;
-import io.smarthealth.integration.metadata.CardData.Root;
+import io.smarthealth.integration.metadata.PatientData.Root;
 import io.smarthealth.integration.service.IntegrationService;
 import io.swagger.annotations.Api;
 import java.util.Map;
+
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import reactor.core.publisher.Mono;
 
 /**
  *
@@ -33,16 +35,16 @@ public class IntegrationController {
     @Autowired
     IntegrationService integrationService;
 
-    @PostMapping("/smart/claim/{memberNumber}")
+    @PostMapping("/smart/claim")
     public @ResponseBody
-    ResponseEntity<?> createClaimFile(@PathVariable("memberNumber") final String memberNumber, @RequestBody @Valid final ClaimFileData claimFileData) throws JsonProcessingException {        
-//        ExchangeFile result = integrationService.createClaim(claimFileData);        
-//        Pager<ExchangeFileData> pagers = new Pager();
-//        pagers.setCode("0");
-//        pagers.setMessage("Smart Claim made successfully");
-//        pagers.setContent(ExchangeFileData.map(result));
+    ResponseEntity<?> createClaimFile(@RequestBody @Valid final ClaimFileData claimFileData) throws JsonProcessingException {        
+        ClientResponse result = integrationService.create(claimFileData);
+        Pager pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Smart Claim submitted successfully");
+        pagers.setContent(result);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("");
+        return ResponseEntity.ok(pagers);
     }
 
     @GetMapping("/smart/member-profile")

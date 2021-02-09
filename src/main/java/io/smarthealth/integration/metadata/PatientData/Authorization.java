@@ -22,3 +22,4 @@ public class Authorization {
     @JsonProperty("Pre_Authorization_Amount")
     private String preAuthorizationAmount = "0";
 }
+
