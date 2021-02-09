@@ -71,6 +71,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
+import org.codehaus.jettison.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -756,7 +758,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
             @RequestBody
             @Valid
             final VitalRecordData vital
-    ) {
+    ) throws JSONException {
 
         Patient patient = patientService.findPatientOrThrow(patientNo);
 

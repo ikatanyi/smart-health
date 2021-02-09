@@ -2,14 +2,22 @@ package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.smarthealth.clinical.record.domain.VitalsRecord;
+
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
+
+import io.smarthealth.clinical.triage.data.ExtraVitalValueData;
+import io.smarthealth.clinical.triage.domain.ExtraVitalValue;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Data;
 
 /**
- *
  * @author Kelsas
  */
 @Data
@@ -45,6 +53,10 @@ public class VitalRecordData {
     private int urgency;
     private String comments;
 
+    private JsonNode extraVitals;
+
+    private List<ExtraVitalValueData> extraVitalValueDataList = new ArrayList<>();
+
     public static VitalsRecord map(VitalRecordData triage) {
         VitalsRecord entity = new VitalsRecord();
         entity.setTemp(triage.getTemp());
@@ -77,6 +89,16 @@ public class VitalRecordData {
         triage.setCategory(entity.getCategory());
         triage.setBmi(entity.getBmi());
         triage.setComments(entity.getComments());
+        if (!entity.getExtraVitalValue().isEmpty()) {
+            List<ExtraVitalValueData> valueDataList = new ArrayList<>();
+            for (ExtraVitalValue e :
+                    entity.getExtraVitalValue()) {
+                ExtraVitalValueData xvvd = ExtraVitalValueData.map(e);
+
+                valueDataList.add(xvvd);
+            }
+            triage.setExtraVitalValueDataList(valueDataList);
+        }
         return triage;
     }
 

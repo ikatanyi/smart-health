@@ -1,8 +1,14 @@
 package io.smarthealth.clinical.record.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import io.smarthealth.clinical.triage.domain.ExtraVitalValue;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Patient Vital Records
@@ -25,4 +31,8 @@ public class VitalsRecord extends ClinicalRecord {
     private Float respiretory;
     private Float spo2;
     private String comments;
+
+    @OneToMany(mappedBy = "vitalRecord")
+    private List<ExtraVitalValue> extraVitalValue = new ArrayList<>();
+
 }
