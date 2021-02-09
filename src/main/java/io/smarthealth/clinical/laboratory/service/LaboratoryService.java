@@ -23,10 +23,12 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,18 +56,20 @@ import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
+
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
 import io.smarthealth.organization.facility.domain.Employee;
+
 import java.time.Instant;
 
 /**
- *
  * @author Kelsas
  */
 @Service
@@ -74,7 +78,7 @@ public class LaboratoryService {
 
     private final LabRegisterRepository repository;
     private final LabTestRepository labTestRepository;
-//    private final VisitRepository visitRepository;
+    //    private final VisitRepository visitRepository;
     private final VisitService visitService;
     private final PaymentDetailsService paymentDetailsService;
     private final LabRegisterTestRepository testRepository;
@@ -114,6 +118,14 @@ public class LaboratoryService {
         //notify registration has occured
         notificationEventPublisher.publishDocRequestEvent(Arrays.asList(DoctorRequestData.RequestType.Laboratory));
 
+        //if all goes well and the patient was sent on this service point direct (exclusive of doctor request) - mark on the patient visit the patient has been served, and remove from the waiting list
+        if(!data.getIsWalkin()) {
+            Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
+            if (visit.getServiceType().equals(VisitEnum.ServiceType.Other)) {
+                visit.setServedAtServicePoint(Boolean.TRUE);
+                visitService.createAVisit(visit);
+            }
+        }
         return savedRegister;
     }
 
@@ -169,7 +181,7 @@ public class LaboratoryService {
         repository.save(requests);
     }
 
-//    @Transactional
+    //    @Transactional
     private void updateRegisterStatus(LabRegister requests) {
 
         if (requests.isCompleted()) {
@@ -195,7 +207,7 @@ public class LaboratoryService {
         return testRepository.findAll(spec, page);
     }
 
-//RESULTS
+    //RESULTS
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabResult createLabResult(LabResultData data) {
         LabResult result = toLabResult(data);
@@ -262,7 +274,7 @@ public class LaboratoryService {
         return labResultRepository.findAll(spec, page);
     }
 
-//    @Transactional
+    //    @Transactional
     private void updateResultsEntry(LabResult savedResult, ArrayList<LabRegisterTest> testToNotify) {
 
         LabRegisterTest test = savedResult.getLabRegisterTest();
@@ -510,9 +522,9 @@ public class LaboratoryService {
         if (data.getIsWalkin()) {
             Optional<WalkIn> wi = walkingService.fetchWalkingByWalkingNo(data.getPatientNo());
             if (wi.isPresent()) {
-                patientbill.setOtherDetails(wi.get().getFirstName()+" "+wi.get().getSurname());
+                patientbill.setOtherDetails(wi.get().getFirstName() + " " + wi.get().getSurname());
             } else {
-                 patientbill.setOtherDetails(data.getRequestedBy());
+                patientbill.setOtherDetails(data.getRequestedBy());
             }
             patientbill.setReference(data.getPatientNo());
 //            patientbill.setOtherDetails(data.getRequestedBy());
@@ -528,31 +540,31 @@ public class LaboratoryService {
         List<PatientBillItem> lineItems = data.getTests()
                 .stream()
                 .map(lineData -> toPatientBill(lineData, srvpoint, data.getTransactionId(), method, parentLabTest)
-                //                {
-                //                    PatientBillItem billItem = new PatientBillItem();
-                ////                    Item item = billingService.getItemByBy(lineData.getTestId());
-                //                    Item item = lineData.getLabTest().getService();
-                //
-                //                    billItem.setBillingDate(LocalDate.now());
-                //                    billItem.setTransactionId(data.getTransactionId());
-                //                    billItem.setServicePointId(srvpoint.getId());
-                //                    billItem.setServicePoint(srvpoint.getName());
-                //                    billItem.setItem(item);
-                ////                    billItem.setPrice(lineData.getTestPrice().doubleValue());
-                //                    billItem.setPrice(lineData.getPrice().doubleValue());
-                //                    billItem.setQuantity(1d);
-                ////                    billItem.setAmount(lineData.getTestPrice().doubleValue());
-                //                    billItem.setAmount(lineData.getPrice().doubleValue());
-                //                    billItem.setDiscount(0.00);
-                //                    billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
-                ////                    billItem.setBalance(lineData.getTestPrice().doubleValue());
-                //                    billItem.setBalance(lineData.getPrice().doubleValue());
-                //                    billItem.setServicePoint(srvpoint.getName());
-                //                    billItem.setServicePointId(srvpoint.getId());
-                //                    billItem.setStatus(BillStatus.Draft);
-                //                    billItem.setRequestReference(lineData.getId());
-                //                    return billItem;
-                //                }
+                        //                {
+                        //                    PatientBillItem billItem = new PatientBillItem();
+                        ////                    Item item = billingService.getItemByBy(lineData.getTestId());
+                        //                    Item item = lineData.getLabTest().getService();
+                        //
+                        //                    billItem.setBillingDate(LocalDate.now());
+                        //                    billItem.setTransactionId(data.getTransactionId());
+                        //                    billItem.setServicePointId(srvpoint.getId());
+                        //                    billItem.setServicePoint(srvpoint.getName());
+                        //                    billItem.setItem(item);
+                        ////                    billItem.setPrice(lineData.getTestPrice().doubleValue());
+                        //                    billItem.setPrice(lineData.getPrice().doubleValue());
+                        //                    billItem.setQuantity(1d);
+                        ////                    billItem.setAmount(lineData.getTestPrice().doubleValue());
+                        //                    billItem.setAmount(lineData.getPrice().doubleValue());
+                        //                    billItem.setDiscount(0.00);
+                        //                    billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
+                        ////                    billItem.setBalance(lineData.getTestPrice().doubleValue());
+                        //                    billItem.setBalance(lineData.getPrice().doubleValue());
+                        //                    billItem.setServicePoint(srvpoint.getName());
+                        //                    billItem.setServicePointId(srvpoint.getId());
+                        //                    billItem.setStatus(BillStatus.Draft);
+                        //                    billItem.setRequestReference(lineData.getId());
+                        //                    return billItem;
+                        //                }
                 )
                 .filter(z -> z != null)
                 .collect(Collectors.toList());
