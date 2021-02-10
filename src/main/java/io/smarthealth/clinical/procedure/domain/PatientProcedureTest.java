@@ -68,6 +68,7 @@ public class PatientProcedureTest extends Identifiable {
         entity.setTestPrice(this.getTestPrice());
         if (this.getProcedureTest() != null) {
             entity.setProcedureName(this.getProcedureTest().getItemName());
+            entity.setGeneralFeeItem(this.getProcedureTest().getGeneralFeeItem());
         }
         if (this.getMedic() != null) {
             entity.setMedicId(this.getMedic().getId());
