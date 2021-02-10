@@ -260,8 +260,9 @@ public class PettyCashRequestController {
         pettyCashRequestsService.createCashRequests(pettyCashRequest);
 
         List<PettyCashApprovedItems> approvedItems = new ArrayList<>();
-        for (PettyCashRequestItems item : pettyCashRequest.getPettyCashRequestItems()) {
+        Double totalAmountApproved = 0.00;
 
+        for (PettyCashRequestItems item : pettyCashRequest.getPettyCashRequestItems()) {
             //insert into approvals table 
             PettyCashApprovedItems approve = new PettyCashApprovedItems();
             approve.setApprovalComments("Accepted");
@@ -269,7 +270,6 @@ public class PettyCashRequestController {
             approve.setApprovedBy(user);
             approve.setRequestNo(pettyCashRequest);
             approve.setItemNo(item);
-
 
             approve.setAmount(item.getAmount());
             approve.setPricePerUnit(item.getPricePerUnit());
@@ -279,10 +279,20 @@ public class PettyCashRequestController {
             approve.setApprovedPricePerUnit(item.getPricePerUnit());
             approve.setApprovedQuantity(item.getQuantity());
             approve.setApprovedAmount((item.getPricePerUnit()* item.getQuantity()));
+            totalAmountApproved = totalAmountApproved + approve.getApprovedAmount();
 
+            if (approvers.size() < 1) {
+                item.setFinalApprovalStatus(PettyCashStatus.Approved);
+                item.setApprovedQuantity(approve.getApprovedQuantity());
+                item.setApprovedPricePerUnit(approve.getApprovedPricePerUnit());
+                pettyCashItemsRepository.save(item);
+            }
 
             approvedItems.add(approve);
         }
+
+        pettyCashRequest.setApprovedAmount(totalAmountApproved);
+        pettyCashRequestsService.createCashRequests(pettyCashRequest);
 
         List<PettyCashApprovedItems> savedApprovedItems = approvalsService.createItemApproval(approvedItems);
 
