@@ -3,12 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.integration.metadata.PatientData;
+package io.smarthealth.integration.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 
 /**
@@ -16,7 +14,9 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-public class ClaimData{
-    @JsonProperty("Service") 
-    public List<Service> service=new ArrayList();
+public class ProviderData {
+    private String role = "SP";
+    private String countryCode = "Ke";
+    private String PracticeNumber;
+    private String PracticeName;
 }

@@ -16,6 +16,10 @@ import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.admission.domain.Admission;
+import io.smarthealth.clinical.admission.domain.Bed;
+import io.smarthealth.clinical.admission.service.AdmissionService;
+import io.smarthealth.clinical.admission.service.BedService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
@@ -71,6 +75,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
+import org.codehaus.jettison.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -160,6 +166,12 @@ public class ClinicalVisitController {
     
     @Autowired
     UserService service;
+
+    @Autowired
+    AdmissionService admissionService;
+
+    @Autowired
+    BedService bedService;
 
     @PostMapping("/visits")
     @PreAuthorize("hasAuthority('create_visits')")
@@ -350,6 +362,14 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
 
         visit.setStatus(VisitEnum.Status.valueOf(status));
         visit = this.visitService.createAVisit(visit);
+        //release bed
+        if(visit.getVisitType().equals(VisitEnum.VisitType.Inpatient)){
+            Admission a = admissionService.findAdmissionByNumber(visitNumber);
+            Bed bed = a.getBed();
+            bed.setStatus(Bed.Status.Available);
+            bedService.updateBed(bed);
+        }
+
         //Convert to data
         VisitData visitDat = VisitData.map(visit);
         auditTrailService.saveAuditTrail("Visit", "Edited a Patient visit status for patient "+visit.getPatient().getFullName());
@@ -756,7 +776,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
             @RequestBody
             @Valid
             final VitalRecordData vital
-    ) {
+    ) throws JSONException {
 
         Patient patient = patientService.findPatientOrThrow(patientNo);
 

@@ -6,7 +6,6 @@
 package io.smarthealth.integration.metadata.PatientData;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 
 /**
@@ -14,15 +13,15 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-@JacksonXmlRootElement(localName = "Provider")
-public class Provider {
-
-    @JsonProperty("Role")
-    private String role = "SP";
-    @JsonProperty("Country_Code")
-    private String countryCode = "Ke";
-    @JsonProperty("Group_Practice_Number")
-    private String groupPracticeNumber;
-    @JsonProperty("Group_Practice_Name")
-    private String groupPracticeName;
+public class Provider{
+    @JsonProperty("Role") 
+    public String role="SP";
+    @JsonProperty("Country_Code") 
+    public String countryCode = "Ke";
+    @JsonProperty("Group_Practice_Number") 
+    public String groupPracticeNumber = "SKSP_TEST";;
+    @JsonProperty("Group_Practice_Name") 
+    public String groupPracticeName = "SMART_TEST";
+    @JsonProperty("Practice_Number") 
+    public String practiceNumber = "SKSP_TEST";;
 }

@@ -49,6 +49,10 @@ public class PettyCashRequestsService {
         return pettyCashItemsRepository.findById(id);
     }
 
+    public PettyCashRequestItems findRequestedItemByIdWithNotFoundDetection(Long id) {
+        return pettyCashItemsRepository.findById(id).orElseThrow(()-> APIException.notFound("Item identified by id {0} not found", id));
+    }
+
     public Page<PettyCashRequests> findPettyCashRequests(final String requestNo, final Employee employee, final PettyCashStatus status, final Pageable pageable) {
         Specification<PettyCashRequests> s = PettyCashRequestSpecification.createSpecification(requestNo, employee, status);
         return cashRequestsRepository.findAll(s, pageable);

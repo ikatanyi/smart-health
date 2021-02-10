@@ -7,7 +7,6 @@ package io.smarthealth.integration.metadata.CardData;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 
 /**
@@ -16,16 +15,15 @@ import lombok.Data;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JacksonXmlRootElement(localName = "Benefit")
-public class Benefit {
-    @JsonProperty("Nr")
-    private String Nr;
-    @JsonProperty("Description")
-    private String Description;
-    @JsonProperty("Amount")
-    private String Amount;
-    @JsonProperty("PreAuthNeeded")
-    private String PreAuthNeeded;
-    @JsonProperty("Claimable")
-    private String Claimable;
+public class Benefit{
+    @JsonProperty("Nr") 
+    public int nr;
+    @JsonProperty("Description") 
+    public String description;
+    @JsonProperty("Amount") 
+    public int amount;
+    @JsonProperty("PreAuthNeeded") 
+    public boolean preAuthNeeded;
+    @JsonProperty("Claimable") 
+    public boolean claimable;
 }

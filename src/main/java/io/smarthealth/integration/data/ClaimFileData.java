@@ -5,29 +5,25 @@
  */
 package io.smarthealth.integration.data;
 
-
-import io.smarthealth.accounting.invoice.domain.Invoice;
-import io.smarthealth.accounting.invoice.domain.InvoiceItem;
-import io.smarthealth.integration.metadata.PatientData.Service;
+import io.smarthealth.integration.metadata.CardData.CardData;
+import io.smarthealth.integration.metadata.PatientData.*;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
 /**
  *
- * 
  * @author Kennedy.Imbenzi
  */
 @Data
 public class ClaimFileData {
     private String InvoiceNumber;
-    @ApiModelProperty(hidden=true, example="dd-MM-yyyy")
-    private String ClaimDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+    @ApiModelProperty(hidden=true, example="yyyy-MM-dd")
+    private String ClaimDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     @ApiModelProperty(hidden=true, example="HH:mm:ss")
     private String ClaimTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     @ApiModelProperty(hidden=true)
@@ -35,30 +31,71 @@ public class ClaimFileData {
     private Double grossAmount;
     private String practiceNumber;
     private String facilityName;
-    private String memberNumber;    
-    List<Service>services=new ArrayList();   
+    private String memberNumber;
+    private String patientForeNames;
+    private String surname;
+    List<ServiceData>services;
     
-    public ClaimFileData toData(Invoice invoice){
+    public Claim map(CardData smData){
+        Claim claimfile = new Claim();
+        ClaimHeader header = new ClaimHeader();
+        ClaimData claimData = new ClaimData();
+        Member member =new Member();
+        Patient patient =new Patient();
+        Provider provider =new Provider();
+        SProvider sprovider =new SProvider();
+        Authorization authorization = new Authorization();
+        PaymentModifiers paymentModifies = new PaymentModifiers();
+        PaymentModifier paymentModifier = new PaymentModifier();
+        
         int i=0;
-        ClaimFileData data = new ClaimFileData();
-        data.setInvoiceNumber(invoice.getNumber());
-        data.setGrossAmount(invoice.getAmount().doubleValue());
-        data.setMemberNumber(invoice.getMemberNumber());
-        for(InvoiceItem item:invoice.getItems()){
-            Service service = new Service();
-            service.setCode("");
-           service.setCodeType("");
-            service.setEncounterType(item.getBillItem().getServicePoint());
-            service.setGlobalInvoiceNr(item.getInvoice().getNumber());
-            service.setInvoiceNumber(item.getInvoice().getNumber());
-            service.setNumber(String.valueOf(i++));
-            service.setQuantity(item.getBillItem().getQuantity().intValue());
-            service.setReason("");
-            service.setStartTime(String.valueOf(item.getBillItem().getBillingDate().atStartOfDay()));
-            service.setStartdDate(String.valueOf(item.getBillItem().getBillingDate()));
-            service.setTotalAmount(item.getBillItem().getAmount());
-            services.add(service);
-        }
-        return data;
+
+        claimfile.setProvider(provider);
+        header.setGrossAmount(this.getGrossAmount());
+        header.setInvoiceNumber(this.getInvoiceNumber());
+        header.setPoolNumber(String.valueOf(smData.getBenefits().getBenefit().getNr()));
+        header.setTotalServices(this.getServices().size());
+        header.setClaimDate(this.getClaimDate());
+        header.setClaimTime(this.getClaimTime());
+        claimfile.setAuthorization(authorization);
+        paymentModifies.setPaymentModifier(paymentModifier);
+        claimfile.setPaymentModifiers(paymentModifies);
+
+        for(ServiceData service:this.getServices()){
+            Service serv = new Service();
+            Diagnosis diagnosis = new Diagnosis();
+            diagnosis.setCode(service.getDiagnosis().getCode());
+            diagnosis.setCode_Type(service.getDiagnosis().getCode_Type());
+
+            serv.setInvoiceNumber(this.getInvoiceNumber());
+            serv.setGlobalInvoiceNr(this.getInvoiceNumber());
+            serv.setNumber(String.valueOf(i++));
+            serv.setProvider(sprovider);
+            serv.setDiagnosis(diagnosis);
+            serv.setEncounterType(service.getEncounterType());
+            serv.setCode(service.getCode());
+            serv.setCodeType(service.getCodeType());
+            serv.setCodeDescription(service.getCodeDescription());
+            serv.setQuantity(service.getQuantity());
+            serv.setTotalAmount(service.getTotalAmount());
+            claimData.getService().add(serv);
+        };
+
+        member.setMembershipNumber(smData.getMedicalAid().getMedicalaidNumber());
+        member.setSchemeCode(smData.getMedicalAid().getMedicalaidCode());
+        member.setSchemePlan(smData.getMedicalAid().getMedicalaidPlan());
+        
+        patient.setFirstName(smData.getPatientdetails().getPatientForenames());
+        patient.setSurname(smData.getPatientdetails().getPatientSurname());
+        patient.setGender(smData.getPatientdetails().getPatientTitle().equals("Mrs") ? "F" : "M");
+        patient.setSurname(smData.getPatientdetails().getPatientSurname());
+        patient.setDateOfBBirth(smData.getPatientdetails().getPatientdob());
+        
+        claimfile.setClaimData(claimData);
+        claimfile.setClaimHeader(header);
+        claimfile.setMember(member);
+        claimfile.setPatient(patient);
+        return claimfile;
+        
     }
 }

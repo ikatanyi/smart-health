@@ -8,6 +8,21 @@ import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
+<<<<<<< HEAD
+=======
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.security.util.SecurityUtils;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.stock.inventory.domain.StockEntry;
+import io.smarthealth.stock.inventory.service.InventoryService;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.stock.stores.service.StoreService;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+>>>>>>> d2cd468d235b18da3fcc55e0cfe4fc960e8b0545
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugsInterface;
 import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecification;
@@ -169,8 +184,22 @@ public class DispensingService {
 
         drugRequest.setBillNumber(savedBill.getBillNumber());
 
+<<<<<<< HEAD
         dispenseItem(drugRequest, store);
 
+=======
+        dispenseItem(store, drugRequest);
+
+        //if all goes well and the patient was sent on this service point direct (exclusive of doctor request) - mark on the patient visit the patient has been served, and remove from the waiting list
+        if(!drugRequest.getIsWalkin()){
+            Visit visit = visitService.findVisitEntityOrThrow(drugRequest.getVisitNumber());
+            if (visit.getServiceType().equals(VisitEnum.ServiceType.Other)) {
+                visit.setServedAtServicePoint(Boolean.TRUE);
+                visitService.createAVisit(visit);
+            }
+        }
+        
+>>>>>>> d2cd468d235b18da3fcc55e0cfe4fc960e8b0545
         return trdId;
     }
 

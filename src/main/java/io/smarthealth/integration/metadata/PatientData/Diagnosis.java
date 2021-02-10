@@ -19,16 +19,11 @@ import lombok.Data;
 public class Diagnosis {
     @ApiModelProperty(hidden=true)
     @JsonProperty("Stage")
-    private String Stage="P";
-    
+    private String Stage="P";    
     @ApiModelProperty(example="ICD10")
     @JsonProperty(value = "Code_Type")
-    private String Code_Type="ICD10";
-    
-    @ApiModelProperty(example="0")
+    private String Code_Type="ICD10";    
+    @ApiModelProperty(example="icd10_code")
     @JsonProperty("Code")
     private String code="0";
-    
-//    @JsonProperty("Group_Practice_Name")
-//    private String GroupPracticeName;
 }

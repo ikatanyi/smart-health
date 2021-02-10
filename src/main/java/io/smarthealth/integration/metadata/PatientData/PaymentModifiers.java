@@ -14,10 +14,7 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-@JacksonXmlRootElement(localName="Payment_modifiers")
-public class PaymentModifiers {
-    @JsonProperty("Payment_Modifier")
-    private PaymentModifier paymentModifier;
-    @JsonProperty("PaymentModifier")
-    private NHIFPaymentModifier nhifPaymentModifier;
+public class PaymentModifiers{
+    @JsonProperty("Payment_Modifier") 
+    public PaymentModifier paymentModifier;
 }

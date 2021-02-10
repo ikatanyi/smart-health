@@ -15,6 +15,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import io.smarthealth.security.domain.User;
 import lombok.Data;
 
 /**
@@ -24,6 +25,10 @@ import lombok.Data;
 @Data
 @Entity 
 public class PettyCashApprovedItems extends Identifiable {
+
+    @ManyToOne(optional = false)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_approvals_items_request_no"))
+    private PettyCashRequests requestNo;
 
     @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_approvals_items_item_no"))
@@ -41,4 +46,12 @@ public class PettyCashApprovedItems extends Identifiable {
     private double pricePerUnit;
     private int quantity;
     private double amount;
+
+    private double approvedPricePerUnit;
+    private int approvedQuantity;
+    private double approvedAmount;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_approved_items_approved_by"))
+    private User approvedBy;
 }

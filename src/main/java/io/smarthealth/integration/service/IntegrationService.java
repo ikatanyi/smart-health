@@ -1,17 +1,31 @@
 package io.smarthealth.integration.service;
 
-import io.smarthealth.ApplicationProperties;
-import io.smarthealth.accounting.invoice.domain.Invoice;
-import io.smarthealth.organization.facility.service.FacilityService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smarthealth.integration.data.ClaimFileData;
-import io.smarthealth.integration.data.ExchangeFileData;
-import io.smarthealth.integration.domain.ExchangeFileRepository;
-import io.smarthealth.integration.domain.ExchangeLocationsRepository;
+import io.smarthealth.integration.metadata.CardData.*;
+import io.smarthealth.integration.metadata.PatientData.Claim;
+import io.smarthealth.integration.metadata.PatientData.Root;
+import io.smarthealth.organization.facility.domain.Facility;
+import io.smarthealth.organization.facility.service.FacilityService;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.service.PatientService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.springframework.boot.actuate.trace.http.HttpTrace;
+import org.springframework.http.MediaType;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 /**
  *
@@ -21,41 +35,69 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class IntegrationService {
 
-    @Autowired
-    RestTemplate restTemplate;
+    private final WebClient webClient;
+    private final FacilityService facilityService;
+    private final PatientService patientService;
 
-    private final ApplicationProperties properties;
+    public ClientResponse create(ClaimFileData data) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Patient patient = patientService.findPatientOrThrow(data.getMemberNumber());
+        Facility facility = facilityService.loggedFacility();
+        CardData cardData = findByPatientId(data.getMemberNumber());
+        Root root = new Root();
+        Claim claim = data.map(cardData);
+        claim.getPatient().setDateOfBBirth(patient.getDateOfBirth().format(DateTimeFormatter.ISO_DATE));
+        claim.getPatient().setFirstName(patient.getGivenName());
+        claim.getPatient().setSurname(patient.getSurname());
+        claim.getPatient().setMiddleName(patient.getMiddleName());
+        claim.getProvider().setGroupPracticeName(facility.getFacilityName());
+        root.setClaim(claim);
+        //Object to JSON in String
+        String jsonInString = mapper.writeValueAsString(root);
+        ClientResponse response = webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                .path("/submitinvoice")
+                .queryParam("patientid", data.getMemberNumber())
+                .queryParam("globalid", cardData.getMedicalAid().getGlobalId())
+                .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(jsonInString))
+                .exchange()
+                .block();
 
-    ExchangeLocationsRepository exchangeLocationRepository;
-    ExchangeFileRepository exchangeFileRepository;
-    FacilityService facilityService;
-
-    
-    /**
-     * Consuming a service by postForObject method, this method is exposed as a
-     * get operation if user doesn 't post a request object we will create a new
-     * request and post it to the URL /service endpoint
-     *
-     */
-    public ExchangeFileData getClaimStatus(String location) {
-        return restTemplate.postForObject("ws://"+properties.getIntegServer()+"/"+location, "", ExchangeFileData.class);
-    }
-
-    /**
-     * Consuming a service by postForEntity method, this method is exposed as a
-     * post operation if user post a request object(JSON) it will be
-     * automatically mapped to Request parameter.
-     */
-    
-    public ExchangeFileData createClaim(Invoice invoice) {
-        ClaimFileData data = new ClaimFileData();
-        ExchangeFileData response = restTemplate.postForObject(properties.getIntegServer(), data.toData(invoice),  ExchangeFileData.class);
         return response;
+
     }
 
-    @Bean
-    public RestTemplate rest() {
-        return new RestTemplate();
+    public CardData findByPatientId(String patientid) {
+        ObjectMapper mapper = new ObjectMapper();
+        TypedMap response = webClient.get()
+                .uri("/getmemberprofile?patientid=" + patientid)
+                //                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToFlux(TypedMap.class)
+                .blockFirst();
+        Map<String, Object> admissionInfo = (LinkedHashMap) response.get("AdmissionInformation");
+        return mapper.convertValue(admissionInfo, CardData.class);
+
     }
 
+    private static class TypedMap extends HashMap<String, Object> {
+    }
+
+//    public Mono<Employee> update(Employee e) {
+//        return webClient.put()
+//                .uri("/employees/" + e.getId())
+//                .body(Mono.just(e), Employee.class)
+//                .retrieve()
+//                .bodyToMono(Employee.class);
+//    }
+//
+//    public Mono<Void> delete(Integer id) {
+//        return webClient.delete()
+//                .uri("/employees/" + id)
+//                .retrieve()
+//                .bodyToMono(Void.class);
+//    
 }

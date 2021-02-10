@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import lombok.Data;
@@ -20,58 +19,37 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-@JacksonXmlRootElement(localName="Service")
-@JsonPropertyOrder({ "Number", "Invoice_Number", "Global_Invoice_Nr", "Start_Date","Start_Time","Provider", "Diagnosis"})
-public class Service {
-    @ApiModelProperty(hidden=true)
-    @JsonProperty("Number")
-    private String number;
-    
-    @ApiModelProperty(hidden=true)
-    @JsonProperty("Invoice_Number")
-    private String invoiceNumber;
-    
-    @ApiModelProperty(hidden=true)
-    @JsonProperty("Global_Invoice_Nr")
-    private String globalInvoiceNr;
-    
+public class Service{
+    @JsonProperty("Number") 
+    public String number;
+    @JsonProperty("Invoice_Number") 
+    public String invoiceNumber;
+    @JsonProperty("Global_Invoice_Nr") 
+    public String globalInvoiceNr;
     @ApiModelProperty(example="yyyy-MM-dd")
-    @JsonProperty("Start_Date")
+    @JsonProperty("Start_Date") 
     private String startdDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    
     @ApiModelProperty(example="HH:mm:ss")
-    @JsonProperty("Start_Time")
+    @JsonProperty("Start_Time") 
     private String startTime=LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));   
-    
-    @ApiModelProperty(example="CONSULTATION/PROCEDURE/LABORATORY")
-    @JsonProperty("Encounter_Type")
-    private String encounterType;
-    
-    @ApiModelProperty(hidden=true)
-    @JsonProperty("Code_Type")
-    private String codeType ="Nappi";
-    
-    @JsonProperty("Code")
-    private String code;
-    
-    @JsonProperty("Code_Description")
-    private String codeDescription;
-    
-    @JsonProperty("Quantity")
-    private Integer quantity;
-    
-    @JsonProperty("Total_Amount")
-    private Double totalAmount;
-    
-    @ApiModelProperty(hidden=true)
-    @JsonProperty("Reason")
-    private String reason="Non";
-    
-    @JsonProperty("Diagnosis")
-    private Diagnosis diagnosis;
-    
-    @ApiModelProperty(hidden=true)
-    @JsonProperty("Provider")
-    private Provider serviceProvider;
+    @JsonProperty("Provider") 
+    public SProvider provider;
+    @JsonProperty("Diagnosis") 
+    public Diagnosis diagnosis;
+    @ApiModelProperty(example="CONSULTATION/PROCEDURE/LABORATORY ETC")
+    @JsonProperty("Encounter_Type") 
+    public String encounterType;
+    @ApiModelProperty(example="CONS/PROC/LAB ETC")
+    @JsonProperty("Code_Type") 
+    public String codeType;
+    @ApiModelProperty(example="ServicePoint code")
+    @JsonProperty("Code") 
+    public String code;
+    @ApiModelProperty(example="Service description")
+    @JsonProperty("Code_Description") 
+    public String codeDescription;
+    @JsonProperty("Quantity") 
+    public int quantity;
+    @JsonProperty("Total_Amount") 
+    public Double totalAmount;
 }
-
