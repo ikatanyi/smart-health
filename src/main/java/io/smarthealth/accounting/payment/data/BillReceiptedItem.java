@@ -10,7 +10,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class BilledItem {
+public class BillReceiptedItem {
 
     private Long billItemId; //this can be the 
     private Double quantity;

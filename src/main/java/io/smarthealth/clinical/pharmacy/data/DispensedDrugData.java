@@ -6,6 +6,8 @@
 package io.smarthealth.clinical.pharmacy.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.io.Serializable;
@@ -20,7 +22,7 @@ import lombok.Data;
  */ 
 @Data
 public class DispensedDrugData implements Serializable {
-
+// What was I thinking this could have just extended bill items
     private Long id;
     private Long storeId;
     private String storeName;

@@ -9,6 +9,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  *
@@ -17,4 +18,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface SchemeConfigurationsRepository extends JpaRepository<SchemeConfigurations, Long>,JpaSpecificationExecutor<SchemeConfigurations> {
 
     Optional<SchemeConfigurations> findByScheme(Scheme scheme);
+
+    @Query(value = "SELECT c FROM SchemeConfigurations c WHERE c.scheme.id =: schemeId")
+    Optional<SchemeConfigurations> findSchemeConfigurationsBySchemeId(Long schemeId);
 }

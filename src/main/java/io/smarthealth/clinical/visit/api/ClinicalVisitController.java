@@ -468,7 +468,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         pagers.setCode("0");
         pagers.setMessage("Payment Mode");
         pagers.setContent(PaymentDetailsData.map(pde));
-        auditTrailService.saveAuditTrail("Visit", "Viewed a Patient payment mode for patient visit "+visit.getPatient().getFullName());
+        //auditTrailService.saveAuditTrail("Visit", "Viewed a Patient payment mode for patient visit "+visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 

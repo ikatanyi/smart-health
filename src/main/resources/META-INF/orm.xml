@@ -2,7 +2,6 @@
 
 <entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd"
                  version="2.2">
 
     <mapped-superclass class="io.smarthealth.infrastructure.domain.Identifiable">
@@ -12,7 +11,7 @@
             </id>
         </attributes>
     </mapped-superclass>
-    
+
     <!--Price list Fetch-->
     <named-native-query name="pricelistEntity.getAllPriceList">
         <query><![CDATA[
@@ -28,7 +27,7 @@
          ]]>
         </query>
     </named-native-query>
-    
+
     <!--Search Pricelist by item and pricebook-->
     <named-native-query name="pricelistEntity.searchPriceListByItem">
         <query><![CDATA[
@@ -44,7 +43,26 @@
          ]]>
         </query>
     </named-native-query>
-    
-    
+    <!--    get pending patient bills-->
+    <named-native-query name="patientBillEntity.getPendingBill">
+        <query><![CDATA[
+             SELECT
+             v.visit_number AS billNo,
+             pt.patient_number as patientNumber,
+             CONCAT( ps.given_name, " ", ps.middle_name, " ", ps.surname ) AS patientName,
+             v.visit_number as visitNumber,
+             v.start_datetime AS visitDate,
+             v.visit_type AS visitType,
+             SUM(case when entry_type='Debit' then bi.amount ELSE 0.00 end) as totalBillAmount,
+             SUM(case when entry_type='Credit' then bi.amount ELSE 0.00 end) as totalAmountPaid,
+             SUM((case when entry_type='Debit' then bi.amount ELSE 0.00 END)-(case when entry_type='Credit' then bi.amount ELSE 0.00 END))  as balance
+             FROM patient_billing b
+             LEFT JOIN patient_billing_item bi ON bi.patient_bill_id = b.id
+             LEFT JOIN patient_visit v ON b.visit_id = v.id
+             LEFT JOIN patient pt ON pt.id = v.patient_id
+             LEFT JOIN person ps ON ps.id = pt.id
+             GROUP BY v.visit_number
+        ]]></query>
+    </named-native-query>
 
 </entity-mappings>

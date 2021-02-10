@@ -21,5 +21,7 @@ public interface BillRepository {
     List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin,PaymentMethod paymentMode, DateRange range, Boolean includeCanceled,VisitEnum.VisitType visitType);
     
     BigDecimal getBillTotal(String visitNumber, Boolean includeCanceled, VisitEnum.VisitType visitType);
+
+    BigDecimal getTotalBill(String visitNumber);
     
 }

@@ -90,20 +90,20 @@ public class BillingController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Page<SummaryBill> list = service.getSummaryBill(visitNumber, patientNumber, hasBalance, range, pageable);
-         auditTrailService.saveAuditTrail("Billing", "Viewed a bill summary ");
-        Pager<List<SummaryBill>> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(list.getContent());
-        PageDetails details = new PageDetails();
-        details.setPage(list.getNumber() + 1);
-        details.setPerPage(list.getSize());
-        details.setTotalElements(list.getTotalElements());
-        details.setTotalPage(list.getTotalPages());
-        details.setReportName("Patient Bills");
-        pagers.setPageDetails(details);
-        return ResponseEntity.ok(pagers);
+//        Page<SummaryBill> list = service.getSummaryBill(visitNumber, patientNumber, hasBalance, range, pageable);
+//         auditTrailService.saveAuditTrail("Billing", "Viewed a bill summary ");
+//        Pager<List<SummaryBill>> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Success");
+//        pagers.setContent(list.getContent());
+//        PageDetails details = new PageDetails();
+//        details.setPage(list.getNumber() + 1);
+//        details.setPerPage(list.getSize());
+//        details.setTotalElements(list.getTotalElements());
+//        details.setTotalPage(list.getTotalPages());
+//        details.setReportName("Patient Bills");
+//        pagers.setPageDetails(details);
+        return ResponseEntity.ok("pagers");
     }
     
    @PostMapping("/billing/{visitNumber}/copay")
@@ -191,20 +191,20 @@ public class BillingController {
         Pageable pageable = PaginationUtil.createPage(page, size);
 //        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Page<SummaryBill> list = service.getWalkinSummaryBill(walkinNumber, hasBalance, pageable);
-        auditTrailService.saveAuditTrail("Billing", "Viewed bill for walkin with visitNo. "+walkinNumber);
-        Pager<List<SummaryBill>> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(list.getContent());
-        PageDetails details = new PageDetails();
-        details.setPage(list.getNumber() + 1);
-        details.setPerPage(list.getSize());
-        details.setTotalElements(list.getTotalElements());
-        details.setTotalPage(list.getTotalPages());
-        details.setReportName("Patient Bills");
-        pagers.setPageDetails(details);
-        return ResponseEntity.ok(pagers);
+//        Page<SummaryBill> list = service.getWalkinSummaryBill(walkinNumber, hasBalance, pageable);
+//        auditTrailService.saveAuditTrail("Billing", "Viewed bill for walkin with visitNo. "+walkinNumber);
+//        Pager<List<SummaryBill>> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Success");
+//        pagers.setContent(list.getContent());
+//        PageDetails details = new PageDetails();
+//        details.setPage(list.getNumber() + 1);
+//        details.setPerPage(list.getSize());
+//        details.setTotalElements(list.getTotalElements());
+//        details.setTotalPage(list.getTotalPages());
+//        details.setReportName("Patient Bills");
+//        pagers.setPageDetails(details);
+        return ResponseEntity.ok("pagers");
     }
 
     @GetMapping("/billing/walkin/items")

@@ -7,7 +7,7 @@ package io.smarthealth.accounting.billing.data;
 
 import java.time.LocalDate;
 import java.util.List;
-import io.smarthealth.accounting.payment.data.BilledItem;
+import io.smarthealth.accounting.payment.data.BillReceiptedItem;
 
 /**
  *
@@ -19,5 +19,5 @@ public class BillFinalizeData {
     private LocalDate billingDate;
     private String visitNumber;
     private String patientNumber;
-    private List<BilledItem> billItems = new java.util.ArrayList<>();
+    private List<BillReceiptedItem> billItems = new java.util.ArrayList<>();
 }

@@ -56,6 +56,7 @@ public class PatientBill extends Auditable {
     public void addBillItems(List<PatientBillItem> billItems) {
         this.billItems = billItems;
         this.billItems.forEach(x -> x.setPatientBill(this));
+
     }
 
     public Double getBillTotals() {

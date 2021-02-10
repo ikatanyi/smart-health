@@ -124,6 +124,15 @@ public class PatientBillItem extends Auditable {
         if (this.entryType != null) {
             data.setEntryType(this.entryType);
         }
+        if(scheme!=null){
+            data.setSchemeId(scheme.getId());
+            data.setSchemeName(scheme.getSchemeName());
+        }
+        if(this.billPayMode!=null && billPayMode == PaymentMethod.Insurance){
+            data.setPaymentStatus("Draft");
+        }else{
+            data.setPaymentStatus(status.name());
+        }
         return data;
     }
 

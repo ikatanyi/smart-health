@@ -57,8 +57,11 @@ public class BillItemData {
     private Boolean walkinFlag;
     private String createdBy;
     private PaymentMethod paymentMethod;
-    private String schemeId;
+    private Long schemeId;
     private String invoiceNumber;
     private boolean finalized = false;
-    private BillEntryType entryType;
+    private BillEntryType entryType = BillEntryType.Debit;
+    private String schemeName;
+    private String paymentStatus;
+
 }

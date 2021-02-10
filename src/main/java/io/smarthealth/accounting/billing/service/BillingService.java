@@ -1,48 +1,35 @@
 package io.smarthealth.accounting.billing.service;
 
 import io.smarthealth.accounting.accounts.data.FinancialActivity;
-import io.smarthealth.accounting.accounts.domain.Account;
-import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
-import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
-import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
-import io.smarthealth.accounting.accounts.domain.JournalState;
-import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.*;
-import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.data.nue.BillPayment;
+import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
-import io.smarthealth.accounting.payment.data.ReceiptData;
-import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
-import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.service.ItemService;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
-import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
+import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
-import io.smarthealth.accounting.payment.data.BilledItem;
+import io.smarthealth.accounting.payment.data.BillReceiptedItem;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
+import io.smarthealth.accounting.payment.domain.Receipt;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
+import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
 import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
@@ -50,29 +37,37 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.debtor.scheme.service.SchemeService;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.stores.domain.Store;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
-import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
-import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
-import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
-import io.smarthealth.accounting.payment.domain.Receipt;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -159,6 +154,7 @@ public class BillingService {
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(lineData.getMedicId());
                     billItem.setBillPayMode(lineData.getPaymentMethod());
+                    billItem.setEntryType(BillEntryType.Debit);
 
                     return billItem;
                 })
@@ -388,6 +384,7 @@ public class BillingService {
                     billLine.setServicePointId(lineData.getServicePointId());
                     billLine.setStatus(BillStatus.Draft);
                     billLine.setBillPayMode(lineData.getPaymentMethod());
+                    billLine.setEntryType(BillEntryType.Debit);
 
                     return billLine;
                 })
@@ -427,13 +424,13 @@ public class BillingService {
         return lists;
     }
 
-    public Page<SummaryBill> getSummaryBill(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range, Pageable pageable) {
-        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, range, pageable);
-    }
-
-    public Page<SummaryBill> getWalkinSummaryBill(String patientNumber, Boolean hasBalance, Pageable pageable) {
-        return billItemRepository.getWalkinBillSummary(patientNumber, hasBalance, pageable);
-    }
+//    public Page<SummaryBill> getSummaryBill(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range, Pageable pageable) {
+//        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, range, pageable);
+//    }
+//
+//    public Page<SummaryBill> getWalkinSummaryBill(String patientNumber, Boolean hasBalance, Pageable pageable) {
+//        return billItemRepository.getWalkinBillSummary(patientNumber, hasBalance, pageable);
+//    }
 
     public Page<PatientBillItem> getWalkBillItems(String walkIn, Boolean hasBalance, Pageable page) {
         Specification<PatientBillItem> spec = PatientBillSpecification.getWalkinBillItems(walkIn, hasBalance);
@@ -618,6 +615,7 @@ public class BillingService {
                             item.setStatus(BillStatus.Paid);
                             if (item.getItem().getCategory() == ItemCategory.CoPay) {
                                 item.setAmount((item.getAmount() * -1));
+                                item.setEntryType(BillEntryType.Credit);
                             } else {
                                 item.setAmount(totalAmount.doubleValue());
                             }
@@ -635,6 +633,7 @@ public class BillingService {
                             PatientBillItem item = createReciptItem(x);
                             if (item.getItem().getCategory() == ItemCategory.CoPay) {
                                 item.setAmount((item.getAmount() * -1));
+                                item.setEntryType(BillEntryType.Credit);
                             }
                             item.setMedicId(x.getMedicId());
                             item.setTransactionId(data.getTransactionNo());
@@ -679,17 +678,19 @@ public class BillingService {
 
         }
 
+        //insert an entry to represent the receipted bill here
+        //Create a receipt entry
         return receiptingBills;
     }
 
-    private PatientBillItem createReciptItem(BilledItem billedItem) {
-        Item item = getItemByBy(billedItem.getPricelistItemId());
+    private PatientBillItem createReciptItem(BillReceiptedItem billReceiptedItem) {
+        Item item = getItemByBy(billReceiptedItem.getPricelistItemId());
 
         PatientBillItem savedItem = new PatientBillItem();
-        savedItem.setPrice(billedItem.getPrice());
-        savedItem.setQuantity(billedItem.getQuantity());
-        savedItem.setAmount(billedItem.getAmount().doubleValue());
-        savedItem.setBalance(billedItem.getAmount().doubleValue());
+        savedItem.setPrice(billReceiptedItem.getPrice());
+        savedItem.setQuantity(billReceiptedItem.getQuantity());
+        savedItem.setAmount(billReceiptedItem.getAmount().doubleValue());
+        savedItem.setBalance(billReceiptedItem.getAmount().doubleValue());
         savedItem.setBillingDate(LocalDate.now());
         savedItem.setDiscount(0D);
         savedItem.setTaxes(0D);
@@ -697,9 +698,10 @@ public class BillingService {
         savedItem.setPaid(Boolean.TRUE);
         savedItem.setStatus(BillStatus.Paid);
         savedItem.setBalance(0D);
-        savedItem.setServicePoint(billedItem.getServicePoint());
-        savedItem.setServicePointId(billedItem.getServicePointId());
+        savedItem.setServicePoint(billReceiptedItem.getServicePoint());
+        savedItem.setServicePointId(billReceiptedItem.getServicePointId());
         savedItem.setBillPayMode(PaymentMethod.Cash);
+        savedItem.setEntryType(BillEntryType.Credit);
 
         return savedItem;
     }
@@ -727,7 +729,6 @@ public class BillingService {
         Optional<SchemeConfigurations> schemeConfigs = schemeService.fetchSchemeConfigByScheme(scheme);
         if (schemeConfigs.isPresent()) {
             SchemeConfigurations config = schemeConfigs.get();
-
             BigDecimal copayAmount = BigDecimal.valueOf(config.getCoPayValue());
 
             if (config.getCoPayType() == CoPayType.Percentage) {
@@ -781,6 +782,7 @@ public class BillingService {
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(null);
                     billItem.setBillPayMode(PaymentMethod.Cash);
+                    billItem.setEntryType(BillEntryType.Credit);
 
                     patientbill.addBillItem(billItem);
 
@@ -799,7 +801,7 @@ public class BillingService {
     }
 
     public BillDetail getBillDetails(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, Pageable pageable) {
-        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, paymentMethod));
+        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, paymentMethod, null));
         List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber, includeCanceled, paymentMethod));
         if (!walkinItems.isEmpty()) {
             patientItems.addAll(walkinItems);
@@ -858,7 +860,7 @@ public class BillingService {
     }
 
     public List<BillItem> getAllBillDetails(String visitNumber, boolean includeCanceled) {
-        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, null));
+        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, null,null));
         List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber, includeCanceled, null));
         if (!walkinItems.isEmpty()) {
             patientItems.addAll(walkinItems);
@@ -877,7 +879,7 @@ public class BillingService {
     }
     //when changing billing I should only show those
 
-    private Specification<PatientBillItem> withVisitNumber(String visitNo, boolean includeCanceled, PaymentMethod paymentMethod) {
+    private Specification<PatientBillItem> withVisitNumber(String visitNo, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), Boolean.FALSE));
@@ -889,6 +891,10 @@ public class BillingService {
             }
             if (paymentMethod != null) {
                 predicates.add(cb.equal(root.get("billPayMode"), paymentMethod));
+            }
+
+            if (billEntryType != null) {
+                predicates.add(cb.equal(root.get("entryType"), billEntryType));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -1121,6 +1127,7 @@ public class BillingService {
             billItem.setStatus(BillStatus.Paid);
             billItem.setMedicId(null);
             billItem.setBillPayMode(PaymentMethod.Cash);
+            billItem.setEntryType(BillEntryType.Credit);
 
             patientbill.addBillItem(billItem);
 
@@ -1174,9 +1181,13 @@ public class BillingService {
         billItemRepository.updatePaymentReference(newReference, oldReference);
     }
 
-    public Page<PatientBillDetails> getPatientBills(Pageable pageable){
-        //
-        return null;
+    public List<PatientBillDetail> getPatientBills(String search, String patientNumber, String visitNumber, PaymentMethod paymentMethod, DateRange range, Pageable pageable){
+        //TODO a better pagination on the creteria search
+        List<PatientBillDetail> patientBills = patientBillRepository.getPatientBills(search, patientNumber, visitNumber, paymentMethod, range);
+        return patientBills;
+    }
+    public Page<PatientBillItem> getPatientBillItems(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType, Pageable pageable){
+        return billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, paymentMethod, billEntryType), pageable);
     }
 //    private JournalEntry toJournalDeposits(Receipt payment, CreateRemittance data) {
 //        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.DeferredRevenue);
