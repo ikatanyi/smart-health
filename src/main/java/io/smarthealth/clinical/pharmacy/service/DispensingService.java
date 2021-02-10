@@ -8,6 +8,7 @@ import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -133,6 +134,15 @@ public class DispensingService {
         drugRequest.setBillNumber(savedBill.getBillNumber());
 
         dispenseItem(store, drugRequest);
+
+        //if all goes well and the patient was sent on this service point direct (exclusive of doctor request) - mark on the patient visit the patient has been served, and remove from the waiting list
+        if(!drugRequest.getIsWalkin()){
+            Visit visit = visitService.findVisitEntityOrThrow(drugRequest.getVisitNumber());
+            if (visit.getServiceType().equals(VisitEnum.ServiceType.Other)) {
+                visit.setServedAtServicePoint(Boolean.TRUE);
+                visitService.createAVisit(visit);
+            }
+        }
         
         return trdId;
     }
