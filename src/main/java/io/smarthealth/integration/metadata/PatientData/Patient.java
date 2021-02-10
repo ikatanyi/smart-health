@@ -14,7 +14,6 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-@JacksonXmlRootElement(localName = "Patient")
 public class Patient {
     @JsonProperty("Dependant")
     private String dependant = "Y";

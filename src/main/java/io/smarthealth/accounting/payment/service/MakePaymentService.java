@@ -25,12 +25,17 @@ import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.accounting.payment.domain.repository.PaymentRepository;
 import io.smarthealth.accounting.payment.domain.PettyCashPayment;
 import io.smarthealth.accounting.payment.domain.repository.PettyCashPaymentRepository;
+import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
+import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
+import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,13 +55,14 @@ import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoiceRepository;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.domain.SupplierRepository;
+
 import java.util.ArrayList;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- *
  * @author Kelsas
  */
 @Slf4j
@@ -77,6 +83,8 @@ public class MakePaymentService {
     private final PettyCashPaymentRepository pettyCashPaymentRepository;
     private final AccountRepository accountRepository;
     private final PettyCashApprovedItemsRepository pettyCashApprovedItemsRepository;
+    private final PettyCashRequestsService pettyCashRequestsService;
+
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Payment makePayment(MakePayment data) {
@@ -310,6 +318,10 @@ public class MakePaymentService {
 
         Payment savedPayment = repository.save(payment);
         //update bills status and the once paid
+        PettyCashRequests re = pettyCashRequestsService.fetchCashRequestByRequestNo(data.getReferenceNumber());
+        re.setPaid(Boolean.TRUE);
+        re.setStatus(PettyCashStatus.Paid);
+        pettyCashRequestsService.createCashRequests(re);
 
         List<PettyCashPayment> pettycashpayments = data.getRequests()
                 .stream()
@@ -343,7 +355,7 @@ public class MakePaymentService {
         if (payment.isPresent()) {
             pettyCashPayment = pettyCashPaymentRepository.findByPayment(payment.get())
                     .stream()
-                    .map((petty)->petty.toData())
+                    .map((petty) -> petty.toData())
                     .collect(Collectors.toList());
         }
         return pettyCashPayment;
@@ -377,12 +389,12 @@ public class MakePaymentService {
         List<JournalEntryItem> items = new ArrayList<>();
         requests.stream()
                 .forEach(request -> {
-                    //credit the account we paying from and not his
-                    Account debitAccount = findAccountByNumber(request.getLedgerAccountNumber());
+                            //credit the account we paying from and not his
+                            Account debitAccount = findAccountByNumber(request.getLedgerAccountNumber());
 
-                    String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for petty cash payment, voucher no. " + payment.getVoucherNo();
-                    items.add(new JournalEntryItem(debitAccount, narration, request.getAmount(), BigDecimal.ZERO));
-                }
+                            String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for petty cash payment, voucher no. " + payment.getVoucherNo();
+                            items.add(new JournalEntryItem(debitAccount, narration, request.getAmount(), BigDecimal.ZERO));
+                        }
                 );
 
         Optional<FinancialActivityAccount> pettycashAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Petty_Cash);

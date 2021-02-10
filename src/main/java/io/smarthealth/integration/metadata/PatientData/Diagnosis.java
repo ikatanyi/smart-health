@@ -15,7 +15,6 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-@JacksonXmlRootElement(localName="Diagnosis")
 public class Diagnosis {
     @ApiModelProperty(hidden=true)
     @JsonProperty("Stage")
