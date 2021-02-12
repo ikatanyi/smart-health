@@ -129,8 +129,8 @@ public class Invoice extends Auditable {
             data.setVisitDate(this.visit.getStartDatetime().toLocalDate());
             data.setAge(ChronoUnit.DAYS.between(this.date, LocalDate.now()));
             data.setVisitType(this.getVisit().getVisitType().name());
-
         }
+
         data.setIdNumber(this.idNumber);
         data.setMemberName(this.memberName);
         data.setMemberNumber(this.memberNumber);

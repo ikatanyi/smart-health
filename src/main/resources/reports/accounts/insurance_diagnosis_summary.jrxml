@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="insurance_diagnosis_summary" pageWidth="555" pageHeight="802" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
@@ -27,8 +28,6 @@
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="from" class="java.util.Date"/>
 	<parameter name="to" class="java.util.Date"/>
 	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
@@ -88,7 +87,7 @@
 		</band>
 	</title>
 	<columnHeader>
-		<band height="65" splitType="Stretch">
+		<band height="70" splitType="Stretch">
 			<staticText>
 				<reportElement mode="Opaque" x="12" y="54" width="40" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
 				<box>
@@ -117,7 +116,7 @@
 				<text><![CDATA[Patient No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="433" y="54" width="47" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="60d06f24-e225-44e6-89f1-960d465d5bca"/>
+				<reportElement mode="Opaque" x="440" y="54" width="40" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="60d06f24-e225-44e6-89f1-960d465d5bca"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -127,7 +126,7 @@
 				<text><![CDATA[Invoice]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="249" y="54" width="101" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="db90166d-3d72-4d13-8d8d-8e4ac04c3234"/>
+				<reportElement mode="Opaque" x="280" y="54" width="80" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="db90166d-3d72-4d13-8d8d-8e4ac04c3234"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -137,7 +136,7 @@
 				<text><![CDATA[Insurance]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="350" y="54" width="83" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
+				<reportElement mode="Opaque" x="360" y="54" width="80" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -148,7 +147,7 @@
 				<text><![CDATA[Diagnosis]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="173" y="54" width="76" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="46d751bb-1a89-425f-8acc-de69bd7a8fe8"/>
+				<reportElement mode="Opaque" x="150" y="54" width="70" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="46d751bb-1a89-425f-8acc-de69bd7a8fe8"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -204,17 +203,27 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement mode="Opaque" x="99" y="54" width="74" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="0c60fcd2-1710-446e-80b5-fbdc2c0a2d32"/>
+				<reportElement mode="Opaque" x="99" y="54" width="51" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="0c60fcd2-1710-446e-80b5-fbdc2c0a2d32"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Id No]]></text>
 			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="220" y="54" width="60" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="dea4f858-cc82-4d93-97b9-cb959c387ccf"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mem No.]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
-			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy" isBlankWhenNull="true">
+		<band height="33" splitType="Stretch">
+			<textField textAdjust="StretchHeight" pattern="dd-MM-yyyy" isBlankWhenNull="true">
 				<reportElement x="12" y="0" width="40" height="18" uuid="d2539c45-a4e2-42f0-8ef4-fee0acdab46b"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -224,7 +233,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="12" height="18" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -234,7 +243,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="52" y="0" width="47" height="18" uuid="c67db78c-e18a-4e91-90d2-5b3d73d213f7"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -244,8 +253,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement mode="Transparent" x="433" y="0" width="47" height="18" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
+			<textField textAdjust="StretchHeight" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="440" y="0" width="40" height="18" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -255,8 +264,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="350" y="0" width="83" height="18" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="360" y="0" width="80" height="18" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -266,8 +275,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{diagnosis}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="249" y="0" width="101" height="18" uuid="2d6e050e-2ef4-4dad-92ed-d48c91ec8afb"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="280" y="0" width="80" height="18" uuid="2d6e050e-2ef4-4dad-92ed-d48c91ec8afb"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -276,8 +285,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payer}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="173" y="0" width="76" height="18" uuid="92a92b20-7cc8-473e-9f22-80b3e4191c90"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="150" y="0" width="70" height="18" uuid="92a92b20-7cc8-473e-9f22-80b3e4191c90"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -286,7 +295,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="480" y="0" width="35" height="18" uuid="f303dd24-3e1c-4f78-9075-371e9a7e4728"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -303,12 +312,19 @@
 					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#000000"/>
 				</graphicElement>
 			</line>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="99" y="0" width="74" height="18" uuid="ce9e3d44-59c9-4e2b-b9f3-c0aecafa1bb9"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="99" y="0" width="51" height="18" uuid="ce9e3d44-59c9-4e2b-b9f3-c0aecafa1bb9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{idNumber}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="221" y="0" width="59" height="18" uuid="2e3e11f4-ee83-45c8-8c5d-7b4e83e4c6a5"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -19,6 +19,7 @@ import io.smarthealth.report.storage.StorageService;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
+
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,6 +40,7 @@ import java.util.Optional;
 import javax.activation.DataSource;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
@@ -80,7 +82,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Kelsas
- *
  */
 @Slf4j
 @Component
@@ -117,7 +118,7 @@ public class JasperReportsService {
     }
 
     public byte[] generatePDFReport(ExportFormat format, String inputFileName, Map<String, Object> params,
-            JRDataSource dataSource) {
+                                    JRDataSource dataSource) {
         byte[] bytes = null;
         JasperReport jasperReport = null;
         try {
@@ -171,9 +172,9 @@ public class JasperReportsService {
         JRDataSource ds = new JRBeanCollectionDataSource(reportData.getData());
         Resource report = resourceLoader.getResource(appProperties.getReportLoc() + reportData.getTemplate() + ".jasper");//new ClassPathResource("static/jasper/rpt_report.jasper");
 
-        HashMap param = reportConfig(null, null,null);
+        HashMap param = reportConfig(null, null, null);
         param.putAll(reportData.getFilters());
-        
+
         JasperPrint jasperPrint = JasperFillManager.fillReport(report.getInputStream(), param, ds);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JasperExportManager.exportReportToPdfStream(jasperPrint, baos);
@@ -196,7 +197,7 @@ public class JasperReportsService {
         Long supplierId = reportData.getSupplierId();
         JasperReport jasperReport = null;
         HashMap param = reportConfig(patientNumber, employeeId, supplierId);
-        InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
+        InputStream reportInputStream = null; resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
         LocalDateTime startTime = LocalDateTime.now();
         // Check if a compiled report exists
         if (reportInputStream != null) {
@@ -204,11 +205,13 @@ public class JasperReportsService {
 
         } // Compile report from source and save
         else {
-            reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getInputStream();
-            String jrxml = storageService.loadJrxmlFile(resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getFile().getAbsolutePath());
+//            reportInputStream = resourceLoader.getResource(appProperties.getReportLoc().concat(template).concat(".jrxml")).getInputStream();
+//            String jrxml = storageService.loadJrxmlFile(resourceLoader.getResource(appProperties.getReportLoc().concat(template).concat(".jrxml")).getFile().getAbsolutePath());
+            String jrxml = resourceLoader.getResource(appProperties.getReportLoc().concat(template).concat(".jrxml")).getFile().getAbsolutePath();
+            System.out.println("jrxml " + jrxml);
             jasperReport = JasperCompileManager.compileReport(jrxml);
         }
-        // Get your data source
+        //Get your data source
         JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList, false);
 
         // Add parameters
@@ -258,7 +261,7 @@ public class JasperReportsService {
                 break;
 
             case CSV:
-                exporter = new JRCsvExporter();                
+                exporter = new JRCsvExporter();
                 exporter.setExporterOutput(new SimpleWriterExporterOutput(out));
                 response.setContentType("text/csv");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
@@ -292,7 +295,7 @@ public class JasperReportsService {
                 config.setWrapText(Boolean.FALSE);
                 config.setColumnWidthRatio(2.0F);
                 config.setWhitePageBackground(Boolean.FALSE);
-                config.setShowGridLines(Boolean.TRUE); 
+                config.setShowGridLines(Boolean.TRUE);
                 config.setDetectCellType(Boolean.TRUE);
                 config.setRemoveEmptySpaceBetweenColumns(Boolean.TRUE);
                 config.setFontSizeFixEnabled(Boolean.TRUE);
@@ -302,7 +305,7 @@ public class JasperReportsService {
 //                config.setCollapseRowSpan(Boolean.FALSE);
                 config.setIgnoreGraphics(Boolean.TRUE);
                 exporter.setConfiguration(config);
-                
+
                 exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
 //                File outputFile = new File("excelTest.xlsx");
 //                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputFile));
@@ -345,7 +348,7 @@ public class JasperReportsService {
 
         Header headerData = Header.map(facility);
         Footer footerData = Footer.map(facility);
-        if (facility.getCompanyLogo()==null) {
+        if (facility.getCompanyLogo() == null) {
             headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
             jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
         } else {
@@ -361,7 +364,7 @@ public class JasperReportsService {
 
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());
-         jasperParameter.put("facilityCode", facility.getRegistrationNumber());
+        jasperParameter.put("facilityCode", facility.getRegistrationNumber());
         if (facility.getCompanyLogo() != null) {
             jasperParameter.put("logo", facility.getCompanyLogo().getData());
 
