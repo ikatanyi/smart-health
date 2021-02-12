@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="4aae1193-a82d-4555-b88f-e537201ac06a">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="207"/>
+	<property name="ireport.y" value="0"/>
 	<style name="headerStyles" mode="Opaque" forecolor="#0000FF" backcolor="#FF0033"/>
 	<scriptlet name="Helper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -204,7 +204,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="335" y="147" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="f4112b91-7a30-4a94-ad6d-ef9b01f85ce3">
+				<reportElement positionType="Float" mode="Transparent" x="335" y="150" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="f4112b91-7a30-4a94-ad6d-ef9b01f85ce3">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -213,7 +213,7 @@
 				<text><![CDATA[Discharge Date :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="147" width="140" height="16" isRemoveLineWhenBlank="true" uuid="e5003b73-baac-45bd-a87e-f9b2397e4475">
+				<reportElement positionType="Float" x="414" y="150" width="140" height="16" isRemoveLineWhenBlank="true" uuid="e5003b73-baac-45bd-a87e-f9b2397e4475">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -222,7 +222,7 @@
 				<textFieldExpression><![CDATA[$P{dischargeDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="335" y="130" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="d2b76eb3-f1aa-48ed-bc54-c4d86193c3e4">
+				<reportElement positionType="Float" mode="Transparent" x="335" y="133" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="d2b76eb3-f1aa-48ed-bc54-c4d86193c3e4">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -231,7 +231,7 @@
 				<text><![CDATA[Admission Date :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="130" width="140" height="16" isRemoveLineWhenBlank="true" uuid="371a0fbe-10e9-41a6-ab98-e4061dba6590">
+				<reportElement positionType="Float" x="414" y="133" width="140" height="16" isRemoveLineWhenBlank="true" uuid="371a0fbe-10e9-41a6-ab98-e4061dba6590">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
