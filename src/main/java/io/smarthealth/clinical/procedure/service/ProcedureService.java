@@ -26,6 +26,7 @@ import io.smarthealth.clinical.radiology.domain.TotalTest;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -133,14 +134,14 @@ public class ProcedureService {
         PatientProcedureRegister patientProcReg = PatientProcedureRegisterData.map(patientProcRegData);
         String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         patientProcReg.setTransactionId(transactionId);
-        
+        Visit visit = null;
         if (patientProcRegData.getIsWalkin()) {
             patientProcReg.setPatientName(patientProcRegData.getPatientName());
             patientProcReg.setPatientNo(patientProcRegData.getPatientNumber());
             patientProcReg.setIsWalkin(Boolean.TRUE);
             patientProcReg.setRequestedBy(patientProcRegData.getRequestedBy());
         } else {
-            Visit visit = visitService.findVisitEntityOrThrow(visitNo);
+             visit = visitService.findVisitEntityOrThrow(visitNo);
             patientProcReg.setVisit(visit);            
             patientProcReg.setPatientName(visit.getPatient().getFullName());
             patientProcReg.setPatientNo(visit.getPatient().getPatientNumber());
@@ -170,7 +171,11 @@ public class ProcedureService {
                 pte.setStatus(ProcedureTestState.Scheduled);
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
-                pte.setPaid(Boolean.FALSE);
+                if (patientProcRegData.getPaymentMode().equals("Cash") && visit != null && visit.getVisitType() == VisitEnum.VisitType.Outpatient) {
+                    pte.setPaid(Boolean.FALSE);
+                } else{
+                    pte.setPaid(Boolean.TRUE);
+                }
                 pte.setProcedureTest(item);
                 pte.setPaymentMethod(id.getPaymentMethod());
                 pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));

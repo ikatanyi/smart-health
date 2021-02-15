@@ -46,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
@@ -57,6 +58,7 @@ import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRSaver;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.AbstractXlsReportConfiguration;
 import net.sf.jasperreports.export.Exporter;
 import net.sf.jasperreports.export.SimpleCsvReportConfiguration;
@@ -79,6 +81,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
 /**
  * @author Kelsas
@@ -197,7 +200,8 @@ public class JasperReportsService {
         Long supplierId = reportData.getSupplierId();
         JasperReport jasperReport = null;
         HashMap param = reportConfig(patientNumber, employeeId, supplierId);
-        InputStream reportInputStream = null; resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
+        InputStream reportInputStream = null;
+        resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
         LocalDateTime startTime = LocalDateTime.now();
         // Check if a compiled report exists
         if (reportInputStream != null) {
@@ -205,30 +209,25 @@ public class JasperReportsService {
 
         } // Compile report from source and save
         else {
-//            reportInputStream = resourceLoader.getResource(appProperties.getReportLoc().concat(template).concat(".jrxml")).getInputStream();
-//            String jrxml = storageService.loadJrxmlFile(resourceLoader.getResource(appProperties.getReportLoc().concat(template).concat(".jrxml")).getFile().getAbsolutePath());
-            String jrxml = resourceLoader.getResource(appProperties.getReportLoc().concat(template).concat(".jrxml")).getFile().getAbsolutePath();
-            System.out.println("jrxml " + jrxml);
-            jasperReport = JasperCompileManager.compileReport(jrxml);
+            Resource resource = resourceLoader.getResource(appProperties.getReportLoc().concat(template).concat(".jrxml"));
+            InputStream input = resource.getInputStream();
+
+            InputStream inputStream = getClass().getResourceAsStream("/reports/".concat(template).concat(".jrxml"));
+            JasperDesign jasperDesign = JRXmlLoader.load(input);
+
+            jasperReport = JasperCompileManager.compileReport(jasperDesign);
         }
         //Get your data source
         JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList, false);
 
         // Add parameters
-//            param.putAll(param);
         param.putAll(reportData.getFilters());
         // Fill the report
         JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
         jasperReportsContext.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
         jasperReportsContext.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
 
-//        if (dataList.isEmpty()) {
-//            Connection conn = jdbcTemplate.getDataSource().getConnection();
-//            jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
-//        } else {
         jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
-
-//        }
         System.out.println("Report generated in" + ChronoUnit.MILLIS.between(startTime, LocalDateTime.now()) + "ms");
         export(jasperPrint, format, reportName, response);
 
