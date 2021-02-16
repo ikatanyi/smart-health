@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
@@ -27,7 +27,6 @@
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -266,11 +265,11 @@
 				<textFieldExpression><![CDATA[$F{visitNo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="3" y="96" width="286" height="14" isRemoveLineWhenBlank="true" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
+				<reportElement positionType="Float" x="133" y="96" width="135" height="14" isRemoveLineWhenBlank="true" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Institution/Doctor Transferred To: "+$F{doctorName}.equals( null )?"":$F{doctorName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{doctorName}]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement positionType="Float" x="291" y="72" width="281" height="38" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
@@ -283,6 +282,13 @@
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Referring Physiscian :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="96" width="130" height="14" uuid="eff1d222-4367-4b4c-8ea3-35db1f68597f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Institution/Doctor Transferred To:]]></text>
 			</staticText>
 		</band>
 	</pageHeader>

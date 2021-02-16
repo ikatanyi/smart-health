@@ -22,9 +22,9 @@ public class ClaimHeader{
     @JsonProperty("Invoice_Number") 
     public String invoiceNumber;
     @JsonProperty("Claim_Date") 
-    public String claimDate = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+    public LocalDate claimDate;
     @JsonProperty("Claim_Time") 
-    public String claimTime= LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    public String claimTime;
     @JsonProperty("Pool_Number") 
     public String poolNumber;
     @JsonProperty("Total_Services") 

@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.domain.Copayment;
+import io.smarthealth.accounting.payment.service.CopaymentService;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.service.DiagnosisService;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.integration.data.ClaimFileData;
 import io.smarthealth.integration.data.ServiceData;
 import io.smarthealth.integration.metadata.CardData.*;
@@ -20,10 +22,7 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import lombok.RequiredArgsConstructor;
 
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -47,15 +46,18 @@ public class IntegrationService {
     private final PatientService patientService;
     private final InvoiceService invoiceService;
     private final DiagnosisService diagnosisService;
+    private final CopaymentService copaymentService;
 
     public ClientResponse create(ClaimFileData data) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Patient patient = patientService.findPatientOrThrow(data.getMemberNumber());
         Facility facility = facilityService.loggedFacility();
         CardData cardData = findByPatientId(data.getMemberNumber());
+        if(cardData==null)
+            throw APIException.badRequest("Please capture Card Data from smartlink");
         Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(data.getInvoiceNumber());
         Root root = new Root();
-        List<Copayment> copays = invoice.getCopays();
+        Optional<Copayment> copay = copaymentService.getCopaymentByVisit(invoice.getVisit());
 
         List<PatientDiagnosis> diagnosis = diagnosisService.fetchAllDiagnosis(invoice.getVisit().getVisitNumber(),null,null, Pageable.unpaged()).getContent();
         String diagString = "[";
@@ -63,12 +65,12 @@ public class IntegrationService {
             diagString.concat(diagn.getDiagnosis().getCode()).concat(",");
         }
         diagString.concat("]");
-        for(Copayment copay:copays){
+        if(copay.isPresent()){
             ServiceData service = new ServiceData();
             service.setCodeDescription("Copay");
             service.setCode("Copay");
             service.setEncounterType("Consultation");
-            service.setTotalAmount(copay.getAmount().doubleValue());
+            service.setTotalAmount(-1*(copay.get().getAmount().doubleValue()));
             service.getDiagnosis().setCode(diagString);
             data.getServices().add(service);
         }

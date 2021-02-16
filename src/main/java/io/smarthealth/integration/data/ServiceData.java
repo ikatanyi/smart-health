@@ -33,7 +33,7 @@ public class ServiceData {
     private Integer quantity=1;
     private Double totalAmount;
     private String reason="Non";
-    private DiagnosisData diagnosis;
+    private DiagnosisData diagnosis=new DiagnosisData();
     private ProviderData serviceProvider;
 }
 

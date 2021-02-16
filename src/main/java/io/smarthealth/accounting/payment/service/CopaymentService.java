@@ -68,6 +68,10 @@ public class CopaymentService {
         return copaymentRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Copayment with ID {0} Not Found", id));
     }
+    
+    public Optional<Copayment> getCopaymentByVisit(Visit visit) {
+        return copaymentRepository.findByVisit(visit);
+    }
 
     public Page<Copayment> getCopayments(String visitNumber, String patientNumber, String invoiceNumber, String receiptNo, Boolean paid, DateRange range, Pageable page) {
         Specification<Copayment> spec = ReceiptSpecification.getCopayment(visitNumber, patientNumber, invoiceNumber, receiptNo, paid, range);
