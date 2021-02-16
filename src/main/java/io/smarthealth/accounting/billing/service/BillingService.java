@@ -278,6 +278,14 @@ public class BillingService {
         String trdId = bill.getTransactionId() == null ? sequenceNumberService.next(1L, Sequences.Transactions.name()) : bill.getTransactionId();
         bill.setBillNumber(bill_no);
         bill.setTransactionId(trdId);
+//        //This code caters for inpatient apparently, with no much clarifications
+//        //TODO: validate if inpatient has any deposits or pre-payments - can be globally set
+//        if (bill.getVisit() != null ) {
+//            System.out.println("TO create bill visit type "+bill.getVisit().getVisitType().name());
+//            if(bill.getVisit().getVisitType().equals(VisitEnum.VisitType.Inpatient)){
+//                bill.setStatus(BillStatus.Paid);
+//            }
+//        }
 
         PatientBill savedBill = patientBillRepository.saveAndFlush(bill);
 

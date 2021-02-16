@@ -316,8 +316,10 @@ public class LaboratoryService {
         request.setOrderNumber(data.getOrderNumber());
         request.setIsWalkin(data.getIsWalkin());
         request.setPaymentMode(data.getPaymentMode());
+        VisitEnum.VisitType visitType ;
         if (!data.getIsWalkin()) {
             Visit visit = getPatientVisit(data.getVisitNumber());
+            visitType= visit.getVisitType();
             request.setVisit(visit);
             request.setRequestedBy(data.getRequestedBy());
 
@@ -339,6 +341,7 @@ public class LaboratoryService {
             }
 
         } else {
+           visitType= VisitEnum.VisitType.Outpatient;
             WalkIn w = createWalking(data.getPatientName());
             if (data.getMedicId() != null) {
                 Optional<Employee> employee = employeeService.findByEmployeeID(data.getMedicId());
@@ -358,7 +361,7 @@ public class LaboratoryService {
 
         List<LabRegisterTest> registeredlist = data.getTests()
                 .stream()
-                .map(x -> toLabRegisterTest(x, method, panels))
+                .map(x -> toLabRegisterTest(x, method, panels, visitType))
                 .filter(x -> x != null)
                 .collect(Collectors.toList());
 
@@ -372,7 +375,7 @@ public class LaboratoryService {
         return request;
     }
 
-    private LabRegisterTest toLabRegisterTest(LabRegisterTestData data, String paymentMode, ArrayList<LabRegisterTestData> panels) {
+    private LabRegisterTest toLabRegisterTest(LabRegisterTestData data, String paymentMode, ArrayList<LabRegisterTestData> panels, VisitEnum.VisitType visitType) {
         LabTest labTest = getLabTest(data.getTestId());
         if (labTest.getIsPanel() != null && labTest.getIsPanel()) {
             panels.add(data);
@@ -385,7 +388,7 @@ public class LaboratoryService {
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
         test.setPaymentMethod(data.getPaymentMethod());
-        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+        test.setPaid(paymentMode.equals("Cash") && visitType.equals(VisitEnum.VisitType.Outpatient)? Boolean.FALSE : Boolean.TRUE);
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
         test.setRequestId(data.getRequestId());

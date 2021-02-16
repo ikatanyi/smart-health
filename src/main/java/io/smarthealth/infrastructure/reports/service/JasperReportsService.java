@@ -19,6 +19,7 @@ import io.smarthealth.report.storage.StorageService;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
+
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,11 +40,13 @@ import java.util.Optional;
 import javax.activation.DataSource;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
@@ -55,6 +58,7 @@ import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRSaver;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.AbstractXlsReportConfiguration;
 import net.sf.jasperreports.export.Exporter;
 import net.sf.jasperreports.export.SimpleCsvReportConfiguration;
@@ -77,10 +81,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
 /**
  * @author Kelsas
- *
  */
 @Slf4j
 @Component
@@ -117,7 +121,7 @@ public class JasperReportsService {
     }
 
     public byte[] generatePDFReport(ExportFormat format, String inputFileName, Map<String, Object> params,
-            JRDataSource dataSource) {
+                                    JRDataSource dataSource) {
         byte[] bytes = null;
         JasperReport jasperReport = null;
         try {
@@ -171,9 +175,9 @@ public class JasperReportsService {
         JRDataSource ds = new JRBeanCollectionDataSource(reportData.getData());
         Resource report = resourceLoader.getResource(appProperties.getReportLoc() + reportData.getTemplate() + ".jasper");//new ClassPathResource("static/jasper/rpt_report.jasper");
 
-        HashMap param = reportConfig(null, null,null);
+        HashMap param = reportConfig(null, null, null);
         param.putAll(reportData.getFilters());
-        
+
         JasperPrint jasperPrint = JasperFillManager.fillReport(report.getInputStream(), param, ds);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JasperExportManager.exportReportToPdfStream(jasperPrint, baos);
@@ -196,7 +200,8 @@ public class JasperReportsService {
         Long supplierId = reportData.getSupplierId();
         JasperReport jasperReport = null;
         HashMap param = reportConfig(patientNumber, employeeId, supplierId);
-        InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
+        InputStream reportInputStream = null;
+        resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
         LocalDateTime startTime = LocalDateTime.now();
         // Check if a compiled report exists
         if (reportInputStream != null) {
@@ -204,28 +209,25 @@ public class JasperReportsService {
 
         } // Compile report from source and save
         else {
-            reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getInputStream();
-            String jrxml = storageService.loadJrxmlFile(resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getFile().getAbsolutePath());
-            jasperReport = JasperCompileManager.compileReport(jrxml);
+            Resource resource = resourceLoader.getResource(appProperties.getReportLoc().concat(template).concat(".jrxml"));
+            InputStream input = resource.getInputStream();
+
+            InputStream inputStream = getClass().getResourceAsStream("/reports/".concat(template).concat(".jrxml"));
+            JasperDesign jasperDesign = JRXmlLoader.load(input);
+
+            jasperReport = JasperCompileManager.compileReport(jasperDesign);
         }
-        // Get your data source
+        //Get your data source
         JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList, false);
 
         // Add parameters
-//            param.putAll(param);
         param.putAll(reportData.getFilters());
         // Fill the report
         JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
         jasperReportsContext.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
         jasperReportsContext.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
 
-//        if (dataList.isEmpty()) {
-//            Connection conn = jdbcTemplate.getDataSource().getConnection();
-//            jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
-//        } else {
         jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
-
-//        }
         System.out.println("Report generated in" + ChronoUnit.MILLIS.between(startTime, LocalDateTime.now()) + "ms");
         export(jasperPrint, format, reportName, response);
 
@@ -258,7 +260,7 @@ public class JasperReportsService {
                 break;
 
             case CSV:
-                exporter = new JRCsvExporter();                
+                exporter = new JRCsvExporter();
                 exporter.setExporterOutput(new SimpleWriterExporterOutput(out));
                 response.setContentType("text/csv");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
@@ -292,7 +294,7 @@ public class JasperReportsService {
                 config.setWrapText(Boolean.FALSE);
                 config.setColumnWidthRatio(2.0F);
                 config.setWhitePageBackground(Boolean.FALSE);
-                config.setShowGridLines(Boolean.TRUE); 
+                config.setShowGridLines(Boolean.TRUE);
                 config.setDetectCellType(Boolean.TRUE);
                 config.setRemoveEmptySpaceBetweenColumns(Boolean.TRUE);
                 config.setFontSizeFixEnabled(Boolean.TRUE);
@@ -302,7 +304,7 @@ public class JasperReportsService {
 //                config.setCollapseRowSpan(Boolean.FALSE);
                 config.setIgnoreGraphics(Boolean.TRUE);
                 exporter.setConfiguration(config);
-                
+
                 exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
 //                File outputFile = new File("excelTest.xlsx");
 //                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputFile));
@@ -345,7 +347,7 @@ public class JasperReportsService {
 
         Header headerData = Header.map(facility);
         Footer footerData = Footer.map(facility);
-        if (facility.getCompanyLogo()==null) {
+        if (facility.getCompanyLogo() == null) {
             headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
             jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
         } else {
@@ -361,7 +363,7 @@ public class JasperReportsService {
 
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());
-         jasperParameter.put("facilityCode", facility.getRegistrationNumber());
+        jasperParameter.put("facilityCode", facility.getRegistrationNumber());
         if (facility.getCompanyLogo() != null) {
             jasperParameter.put("logo", facility.getCompanyLogo().getData());
 
