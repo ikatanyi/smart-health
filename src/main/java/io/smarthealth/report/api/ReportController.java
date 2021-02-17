@@ -2,6 +2,7 @@ package io.smarthealth.report.api;
 
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.report.domain.enumeration.ReportName;
+import io.smarthealth.report.experiments.ReportExportService;
 import io.smarthealth.report.service.LabReportService;
 import io.smarthealth.report.service.PatientReportServices;
 import io.smarthealth.report.service.RadiologyReportService;
@@ -47,6 +48,7 @@ public class ReportController {
     private final StockReportService stockReportService;
     private final AdmissionReportService admissionReportService;
     private final AuditTrailService auditTrailService;
+    private final ReportExportService reportExportService;
 
     @GetMapping("/report")
     @PreAuthorize("hasAuthority('view_reports')")
@@ -316,6 +318,9 @@ public class ReportController {
                 break;
             case Inventory_Stock_Reorder_Statement:
                 stockReportService.InventoryReorderStock(queryParams, format, response);
+                break;
+            case WalkingRegister:
+                reportExportService.walkingRegister(queryParams, format, response);
                 break;
             case NHIF_Statement:
                 reportService.genNHIFStatement(queryParams, format, response);

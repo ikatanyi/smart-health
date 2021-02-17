@@ -95,5 +95,8 @@ public enum ReportName {
         Care_Team_Report,
         Shift_Per_Cashier,
         NHIF_Statement,
-        Capitation_Invoice
+        Capitation_Invoice,
+        /* */
+        WalkingRegister
+        /* */
 }
