@@ -14,4 +14,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface CopaymentRepository extends JpaRepository<Copayment, Long>, JpaSpecificationExecutor<Copayment> {
 
     public Optional<Copayment> findByVisitAndAmountEqualsAndPaidFalse(Visit visit, BigDecimal amount);
+    public Optional<Copayment> findByVisit(Visit visit);
 }

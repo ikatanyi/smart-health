@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sick_off_note" pageWidth="595" pageHeight="421" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="68296f96-ca94-47a9-b01b-b335bed808e6">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="200"/>
 	<property name="ireport.y" value="0"/>
-        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
@@ -27,7 +28,6 @@
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
 		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
 	</parameter>
@@ -64,11 +64,18 @@
 		<band height="35">
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="34" uuid="8badccb3-6b16-40a3-94f1-5bc66f2a8eba"/>
+				<parametersMapExpression><![CDATA[$P{SUBREPORT_DIR}]]></parametersMapExpression>
 				<subreportParameter name="Patient_Data">
 					<subreportParameterExpression><![CDATA[$P{Patient_Data}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
@@ -156,7 +163,7 @@
 				</textElement>
 				<text><![CDATA[Reason :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="1" y="88" width="535" height="12" isRemoveLineWhenBlank="true" uuid="ac097733-a8a3-4279-bc85-7e1672c6f015"/>
 				<textFieldExpression><![CDATA[$F{reason}]]></textFieldExpression>
 			</textField>
@@ -167,7 +174,7 @@
 				</textElement>
 				<text><![CDATA[Recommendations:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="1" y="119" width="535" height="13" isRemoveLineWhenBlank="true" uuid="1d29bfb8-0007-4bcb-93e7-ced6e288c9da"/>
 				<textFieldExpression><![CDATA[$F{recommendation}]]></textFieldExpression>
 			</textField>

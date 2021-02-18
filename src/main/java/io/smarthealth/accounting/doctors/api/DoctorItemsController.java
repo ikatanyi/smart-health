@@ -101,8 +101,7 @@ public class DoctorItemsController {
     }
 
     @GetMapping("/doctors-items")
-    @PreAuthorize("hasAuthority('view_doctorItems')")
-
+    @PreAuthorize("hasAuthority('view_doctorItems')") 
     public ResponseEntity<?> getDoctorItems(
             @RequestParam(value = "doctor", required = false) Long doctor,
             @RequestParam(value = "staffNo", required = false) String staffNo,
@@ -113,9 +112,7 @@ public class DoctorItemsController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<DoctorItemData> list = doctorService.getDoctorItems(doctor, staffNo, service, pageable)
                 .map(x -> x.toData());
-
-        //auditTrailService.saveAuditTrail("Doctor Items", "Viewed all Billable doctor item ");
-
+//        auditTrailService.saveAuditTrail("Doctor Items", "Viewed all Billable doctor item ");
         Pager<List<DoctorItemData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

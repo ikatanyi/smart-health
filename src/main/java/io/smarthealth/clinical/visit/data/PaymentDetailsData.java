@@ -53,6 +53,7 @@ public class PaymentDetailsData {
     private BillPayMode excessAmountPayMode;
 
     private Boolean excessAmountEnabled;
+    private String idNumber;
     
 
     public static PaymentDetailsData map(PaymentDetails e) {
@@ -84,6 +85,7 @@ public class PaymentDetailsData {
         d.setCapitationAmount(e.getCapitationAmount());
         d.setRunningLimit(e.getRunningLimit());
         d.setLimitEnabled(e.getLimitEnabled());
+        d.setIdNumber(e.getIdNo());
         return d;
     }
 
@@ -94,6 +96,7 @@ public class PaymentDetailsData {
         e.setPolicyNo(d.getPolicyNo());
         e.setRelation(d.getRelation());
         e.setLimitAmount(d.getLimitAmount());
+        e.setIdNo(d.getIdNumber());
         return e;
     }
 }

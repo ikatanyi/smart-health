@@ -2,9 +2,18 @@ package io.smarthealth.integration.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smarthealth.accounting.invoice.domain.Invoice;
+import io.smarthealth.accounting.invoice.service.InvoiceService;
+import io.smarthealth.accounting.payment.domain.Copayment;
+import io.smarthealth.accounting.payment.service.CopaymentService;
+import io.smarthealth.clinical.record.domain.PatientDiagnosis;
+import io.smarthealth.clinical.record.service.DiagnosisService;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.integration.data.ClaimFileData;
+import io.smarthealth.integration.data.ServiceData;
 import io.smarthealth.integration.metadata.CardData.*;
 import io.smarthealth.integration.metadata.PatientData.Claim;
+import io.smarthealth.integration.metadata.PatientData.Diagnosis;
 import io.smarthealth.integration.metadata.PatientData.Root;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.FacilityService;
@@ -12,20 +21,17 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import lombok.RequiredArgsConstructor;
 
-import java.time.Duration;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
-import org.springframework.boot.actuate.trace.http.HttpTrace;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+
 
 /**
  *
@@ -38,13 +44,36 @@ public class IntegrationService {
     private final WebClient webClient;
     private final FacilityService facilityService;
     private final PatientService patientService;
+    private final InvoiceService invoiceService;
+    private final DiagnosisService diagnosisService;
+    private final CopaymentService copaymentService;
 
     public ClientResponse create(ClaimFileData data) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Patient patient = patientService.findPatientOrThrow(data.getMemberNumber());
         Facility facility = facilityService.loggedFacility();
         CardData cardData = findByPatientId(data.getMemberNumber());
+        if(cardData==null)
+            throw APIException.badRequest("Please capture Card Data from smartlink");
+        Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(data.getInvoiceNumber());
         Root root = new Root();
+        Optional<Copayment> copay = copaymentService.getCopaymentByVisit(invoice.getVisit());
+
+        List<PatientDiagnosis> diagnosis = diagnosisService.fetchAllDiagnosis(invoice.getVisit().getVisitNumber(),null,null, Pageable.unpaged()).getContent();
+        String diagString = "[";
+        for(PatientDiagnosis diagn:diagnosis){
+            diagString.concat(diagn.getDiagnosis().getCode()).concat(",");
+        }
+        diagString.concat("]");
+        if(copay.isPresent()){
+            ServiceData service = new ServiceData();
+            service.setCodeDescription("Copay");
+            service.setCode("Copay");
+            service.setEncounterType("Consultation");
+            service.setTotalAmount(-1*(copay.get().getAmount().doubleValue()));
+            service.getDiagnosis().setCode(diagString);
+            data.getServices().add(service);
+        }
         Claim claim = data.map(cardData);
         claim.getPatient().setDateOfBBirth(patient.getDateOfBirth().format(DateTimeFormatter.ISO_DATE));
         claim.getPatient().setFirstName(patient.getGivenName());
@@ -52,6 +81,8 @@ public class IntegrationService {
         claim.getPatient().setMiddleName(patient.getMiddleName());
         claim.getProvider().setGroupPracticeName(facility.getFacilityName());
         root.setClaim(claim);
+
+
         //Object to JSON in String
         String jsonInString = mapper.writeValueAsString(root);
         ClientResponse response = webClient.post()
