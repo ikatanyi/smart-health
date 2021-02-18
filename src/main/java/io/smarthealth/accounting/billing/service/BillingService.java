@@ -614,7 +614,7 @@ public class BillingService {
                             item.setPaid(Boolean.TRUE);
                             item.setStatus(BillStatus.Paid);
                             if (item.getItem().getCategory() == ItemCategory.CoPay) {
-                                item.setAmount((item.getAmount() * -1));
+//                                item.setAmount((item.getAmount() * -1));
                                 item.setEntryType(BillEntryType.Credit);
                             } else {
                                 item.setAmount(totalAmount.doubleValue());
@@ -1181,9 +1181,9 @@ public class BillingService {
         billItemRepository.updatePaymentReference(newReference, oldReference);
     }
 
-    public List<PatientBillDetail> getPatientBills(String search, String patientNumber, String visitNumber, PaymentMethod paymentMethod, DateRange range, Pageable pageable){
+    public List<PatientBillDetail> getPatientBills(String search, String patientNumber, String visitNumber, PaymentMethod paymentMethod, Long payerId, Long schemeId,VisitEnum.VisitType visitType, DateRange range, Pageable pageable){
         //TODO a better pagination on the creteria search
-        List<PatientBillDetail> patientBills = patientBillRepository.getPatientBills(search, patientNumber, visitNumber, paymentMethod, range);
+        List<PatientBillDetail> patientBills = patientBillRepository.getPatientBills(search, patientNumber, visitNumber, paymentMethod, payerId, schemeId, visitType, range);
         return patientBills;
     }
     public Page<PatientBillItem> getPatientBillItems(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType, Pageable pageable){

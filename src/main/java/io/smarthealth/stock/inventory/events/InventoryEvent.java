@@ -3,9 +3,10 @@ package io.smarthealth.stock.inventory.events;
 import io.smarthealth.sequence.UuidGenerator;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 /**
  *

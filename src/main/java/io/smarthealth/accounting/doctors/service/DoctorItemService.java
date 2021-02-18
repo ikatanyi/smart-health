@@ -90,6 +90,7 @@ public class DoctorItemService {
         return save(toUpdateItem);
     }
 
+    @Transactional(readOnly = true)
     public Page<DoctorItem> getDoctorItems(Long doctorId, final String staffNumber, String service, Pageable page) {
         Specification<DoctorItem> spec = DoctorItemSpecification.createSpecification(doctorId, staffNumber, service);
         return repository.findAll(spec, page);

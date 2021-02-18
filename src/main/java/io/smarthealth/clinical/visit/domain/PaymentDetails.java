@@ -26,6 +26,7 @@ import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import  io.smarthealth.clinical.visit.domain.Visit;
 
 /**
  *
@@ -36,7 +37,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "patient_visit_payment_details")
 public class PaymentDetails extends Auditable {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "visit_id", foreignKey = @ForeignKey(name = "fk_payment_details_visit_id"))
     private Visit visit;

@@ -7,9 +7,10 @@ package io.smarthealth.stock.purchase.data;
 
 import io.smarthealth.stock.purchase.domain.PurchaseOrderItem;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import lombok.Data;
 
 /**
  *

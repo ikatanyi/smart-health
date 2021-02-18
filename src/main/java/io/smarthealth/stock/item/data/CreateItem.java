@@ -3,10 +3,11 @@ package io.smarthealth.stock.item.data;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List; 
-import lombok.Data;
+import java.util.List;
 
 /**
  *

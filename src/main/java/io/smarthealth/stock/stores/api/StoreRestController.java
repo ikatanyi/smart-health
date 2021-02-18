@@ -4,13 +4,11 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  *
@@ -70,12 +71,13 @@ public class StoreRestController {
     @PreAuthorize("hasAuthority('view_stores')")
     public ResponseEntity<?> getAllStorees( 
              @RequestParam(value = "isPatientStore", required = false) Boolean patientStore,
-            @RequestParam(value = "page", required = false) Integer page,
+             @RequestParam(value = "storeType", required = false) Store.Type storeType,
+                     @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<StoreData> list = service.fetchAllStores(patientStore,pageable).map(store -> StoreData.map(store)); 
+        Page<StoreData> list = service.fetchAllStores(storeType,patientStore,pageable).map(store -> StoreData.map(store));
         Pager<List<StoreData>> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

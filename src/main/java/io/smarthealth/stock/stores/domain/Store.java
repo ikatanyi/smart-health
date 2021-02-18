@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import javax.persistence.*;
 import lombok.Data;
+
+import javax.persistence.*;
 
 /**
  *
@@ -23,6 +24,7 @@ public class Store extends Identifiable {
     private Type storeType;
     private String storeName;
     private boolean patientStore;
+
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_service_point_id"))

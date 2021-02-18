@@ -6,11 +6,11 @@
 package io.smarthealth.stock.inventory.events;
 
 import io.smarthealth.stock.inventory.events.InventoryEvent.Type;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.stores.domain.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.stores.domain.Store;
 
 /**
  *

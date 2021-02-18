@@ -44,9 +44,12 @@ public class ServicePoint extends Identifiable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_inventory_asset_account_id"))
     private Account inventoryAssetAccount;
 
-    @OneToMany(mappedBy = "servicePoint",  cascade = CascadeType.ALL)
-    private List<Store> stores = new ArrayList();
-     
+//    @OneToMany(mappedBy = "servicePoint",  cascade = CascadeType.ALL)
+//    private List<Store> stores = new ArrayList();
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_inventory_store_id"))
+    private Store store;
+
     private Boolean active;
 
     public ServicePointData toData() {
@@ -68,11 +71,15 @@ public class ServicePoint extends Identifiable {
         if (this.getInventoryAssetAccount() != null) {
             data.setInventoryAssetAccount(SimpleAccountData.map(this.getInventoryAssetAccount()));
         }
-        data.setStores(
-           this.stores.stream()
-                .map(StoreData::map)
-                .collect(Collectors.toList())
-        );
+//        data.setStores(
+//           this.stores.stream()
+//                .map(StoreData::map)
+//                .collect(Collectors.toList())
+//        );
+        if(this.store!=null){
+            data.setStoreId(this.store.getId());
+            data.setStoreName(this.store.getStoreName());
+        }
 
         return data;
     }

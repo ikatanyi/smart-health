@@ -129,7 +129,8 @@ public class PatientBillItem extends Auditable {
             data.setSchemeName(scheme.getSchemeName());
         }
         if(this.billPayMode!=null && billPayMode == PaymentMethod.Insurance){
-            data.setPaymentStatus("Draft");
+
+            data.setPaymentStatus(finalized ? "Finalized" : "Draft");
         }else{
             data.setPaymentStatus(status.name());
         }

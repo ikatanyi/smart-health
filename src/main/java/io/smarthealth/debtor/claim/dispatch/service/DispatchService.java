@@ -1,12 +1,10 @@
 package io.smarthealth.debtor.claim.dispatch.service;
 
-import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
-import io.smarthealth.debtor.claim.dispatch.data.DispatchedInvoiceData;
 import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import io.smarthealth.debtor.claim.dispatch.domain.DispatchRepository;
 import io.smarthealth.debtor.claim.dispatch.domain.InvoiceAgeSummaryInterface;
@@ -17,11 +15,6 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,6 +22,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  *

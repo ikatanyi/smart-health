@@ -1,8 +1,8 @@
 package io.smarthealth.stock.purchase.data;
 
-import io.smarthealth.stock.purchase.domain.*;
-import java.math.BigDecimal;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  *

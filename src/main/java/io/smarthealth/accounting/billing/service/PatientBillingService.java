@@ -69,6 +69,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static io.smarthealth.stock.item.domain.enumeration.ItemCategory.CoPay;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -141,7 +143,7 @@ public class PatientBillingService {
                     } else {
                         billItem.setAmount(lineData.getAmount());
                     }
-                    if (item.getCategory().equals(ItemCategory.CoPay)) {
+                    if (item.getCategory().equals(CoPay)) {
                         billItem.setPrice(data.getAmount());
                     }
 
@@ -245,7 +247,7 @@ public class PatientBillingService {
                 if (copay <= 0) {
                     return null;
                 }
-                Optional<Item> copayItem = itemRepository.findFirstByCategory(ItemCategory.CoPay);
+                Optional<Item> copayItem = itemRepository.findFirstByCategory(CoPay);
                 if (copayItem.isPresent()) {
                     PatientBill receiptBill = createPatientBill("", "", visitNumber, LocalDate.now(), "Cash", copay, 0D, false);
                     PatientBillItem billsItem = new PatientBillItem();
@@ -264,7 +266,7 @@ public class PatientBillingService {
                     billsItem.setStatus(BillStatus.Draft);
                     billsItem.setMedicId(null);
                     billsItem.setBillPayMode(PaymentMethod.Cash);
-                    billsItem.setEntryType(BillEntryType.Debit);
+                    billsItem.setEntryType(BillEntryType.Credit);
                     receiptBill.addBillItem(billsItem);
                     return save(receiptBill);
                 }
@@ -275,8 +277,8 @@ public class PatientBillingService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public PatientBill createReceiptItem(String patientNumber, String patientName, String visitNumber, Double amount, ItemCategory itemCategory, boolean isWalking) {
-        //Id the patient, visit, service, amount
+    public PatientBill createReceiptItem(String patientNumber, String patientName, String visitNumber, Double amount, ItemCategory itemCategory, boolean isWalking,String reference) {
+        //I need to pass copay as part of this
         Visit visit = null;
         if (!isWalking) {
             visit = visitRepository.findByVisitNumberAndStatusNot(visitNumber, VisitEnum.Status.CheckOut)
@@ -287,6 +289,7 @@ public class PatientBillingService {
         Optional<Item> receiptItem = itemRepository.findFirstByCategory(itemCategory);
 
         Item creditItem = receiptItem.get();
+        //define the type of receipting if copay
         String description = creditItem.getItemName() != null ? creditItem.getItemName() : "Receipt";
 
         if (creditItem != null) {
@@ -308,6 +311,8 @@ public class PatientBillingService {
             billsItem.setMedicId(null);
             billsItem.setBillPayMode(PaymentMethod.Cash);
             billsItem.setEntryType(BillEntryType.Credit);
+            billsItem.setPaymentReference(reference);
+
             receiptBill.addBillItem(billsItem);
             return save(receiptBill);
         }
@@ -340,8 +345,8 @@ public class PatientBillingService {
         return billSaved;
     }
 
-    public List<PatientBillDetail> getPatientBills(String search, String patientNumber, String visitNumber, PaymentMethod paymentMethod, DateRange range, Pageable pageable) {
-        List<PatientBillDetail> patientBills = patientBillRepository.getPatientBills(search, patientNumber, visitNumber, paymentMethod, range);
+    public List<PatientBillDetail> getPatientBills(String search, String patientNumber, String visitNumber, PaymentMethod paymentMethod, Long payerId, Long schemeId, VisitEnum.VisitType visitType, DateRange range, Pageable pageable) {
+        List<PatientBillDetail> patientBills = patientBillRepository.getPatientBills(search, patientNumber, visitNumber, paymentMethod, payerId, schemeId, visitType, range);
         return patientBills;
     }
 
@@ -386,6 +391,7 @@ public class PatientBillingService {
     public String finalizeBill(String visitNumber, BillFinalizeData finalizeBill) {
         Visit visit = visitRepository.findByVisitNumberAndStatusNot(visitNumber, VisitEnum.Status.CheckOut)
                 .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
+
         String cinvoice = sequenceNumberService.next(1L, Sequences.CashBillNumber.name());
         List<PatientBillItem> lists = finalizeBill.getBillItems()
                 .stream()
@@ -442,7 +448,7 @@ public class PatientBillingService {
                             BigDecimal balance = netAmount.subtract(x.getAmount());
                             item.setPaid(Boolean.TRUE);
                             item.setStatus(BillStatus.Paid);
-                            if (item.getItem().getCategory() == ItemCategory.CoPay) {
+                            if (item.getItem().getCategory() == CoPay) {
                                 item.setAmount((item.getAmount() * -1));
                             } else {
                                 item.setAmount(totalAmount.doubleValue());
@@ -457,7 +463,7 @@ public class PatientBillingService {
 
                         } else {
                             PatientBillItem item = createBillItem(x);
-                            if (item.getItem().getCategory() == ItemCategory.CoPay) {
+                            if (item.getItem().getCategory() == CoPay) {
                                 item.setAmount((item.getAmount() * -1));
                             }
                             item.setMedicId(x.getMedicId());
@@ -512,9 +518,9 @@ public class PatientBillingService {
         BigDecimal receiptAmount = data.getBillItems().stream()
                 .map(BillReceiptedItem::getAmount)
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
-
-
-        createReceiptItem(patientNumber, patientName, data.getVisitNumber(), receiptAmount.doubleValue(), ItemCategory.Receipt, isWalking);
+        System.err.println("Comparing Incoming: "+data.getAmount()+" : Calculated. "+receiptAmount);
+//        if this is copay no need to create the receipt
+        createReceiptItem(patientNumber, patientName, data.getVisitNumber(), receiptAmount.doubleValue(), ItemCategory.Receipt, isWalking, data.getReceiptNo());
 
         return receiptingBills;
     }
@@ -721,7 +727,7 @@ public class PatientBillingService {
         //update the scheme that paid this bill if insurance
         for (PatientBillItem b : bill.getBillItems()) {
             //ignore for now the receipts and copay from limit checks
-            if (b.getItem().getCategory() != ItemCategory.CoPay || b.getItem().getCategory() != ItemCategory.Receipt) {
+            if (b.getItem().getCategory() != CoPay || b.getItem().getCategory() != ItemCategory.Receipt) {
                 amountToBill = amountToBill + b.getAmount();
                 itemCount++;
             }

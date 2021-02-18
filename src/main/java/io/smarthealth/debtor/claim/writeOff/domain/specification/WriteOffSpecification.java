@@ -2,9 +2,10 @@ package io.smarthealth.debtor.claim.writeOff.domain.specification;
 
 import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.infrastructure.lang.DateRange;
-import java.util.ArrayList;
-import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 /**
  *

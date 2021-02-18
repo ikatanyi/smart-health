@@ -5,10 +5,11 @@ import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.inventory.domain.Requisition;
 import io.smarthealth.stock.inventory.domain.enumeration.RequisitionStatus;
 import io.smarthealth.stock.inventory.domain.enumeration.RequisitionType;
+import lombok.Data;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Data;
 
 /**
  *

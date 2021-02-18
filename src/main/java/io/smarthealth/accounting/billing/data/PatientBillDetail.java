@@ -23,12 +23,13 @@ public class PatientBillDetail {
     private BigDecimal totalAmountPaid;
     private BigDecimal balance;
     private PaymentMethod paymentMethod;
+    private String payerName;
 
     public PatientBillDetail() {
 
     }
 
-    public PatientBillDetail(String billNo, String patientNumber, String patientName, String visitNumber, LocalDateTime visitDate, VisitType visitType, BigDecimal totalBillAmount, BigDecimal totalAmountPaid, BigDecimal balance, PaymentMethod paymentMethod) {
+    public PatientBillDetail(String billNo, String patientNumber, String patientName, String visitNumber, LocalDateTime visitDate, VisitType visitType, BigDecimal totalBillAmount, BigDecimal totalAmountPaid, BigDecimal balance, PaymentMethod paymentMethod, String payerName) {
         this.billNo = billNo;
         this.patientNumber = patientNumber;
         this.patientName = patientName;
@@ -39,6 +40,7 @@ public class PatientBillDetail {
         this.totalAmountPaid = totalAmountPaid;
         this.balance = balance;
         this.paymentMethod = paymentMethod;
+        this.payerName = payerName;
     }
 
     public String getBillNo() {
@@ -119,5 +121,13 @@ public class PatientBillDetail {
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getPayerName() {
+        return payerName;
+    }
+
+    public void setPayerName(String payerName) {
+        this.payerName = payerName;
     }
 }

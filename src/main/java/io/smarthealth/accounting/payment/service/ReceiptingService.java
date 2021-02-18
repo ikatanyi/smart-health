@@ -12,6 +12,7 @@ import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.billing.service.PatientBillingService;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
@@ -79,6 +80,7 @@ public class ReceiptingService {
     private final RemittanceRepository remittanceRepository;
     private final CopaymentService copaymentService;
     private final ReceiptTransactionRepository transactionRepository;
+    private final PatientBillingService patientBillingService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
@@ -109,7 +111,9 @@ public class ReceiptingService {
         data.setReceiptNo(receiptNo);
         data.setTransactionNo(trdId);
 
-        List<PatientBillItem> billedItems = billingService.validatedBilledItem(data);
+//        List<PatientBillItem> billedItems = billingService.validatedBilledItem(data);
+        List<PatientBillItem> billedItems = patientBillingService.allocateBillPayment(data);
+        //this I am going to surface them out and have the right de
         billedItems.stream()
                 .forEach(item -> {
                     if (item.getItem().getCategory() == ItemCategory.CoPay) {

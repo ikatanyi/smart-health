@@ -63,5 +63,4 @@ public class BillItemData {
     private BillEntryType entryType = BillEntryType.Debit;
     private String schemeName;
     private String paymentStatus;
-
 }

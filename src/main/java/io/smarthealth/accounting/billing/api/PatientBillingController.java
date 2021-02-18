@@ -13,6 +13,7 @@ import io.smarthealth.accounting.billing.service.PatientBillingService;
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -66,7 +67,10 @@ public class PatientBillingController {
              @RequestParam(value = "search" , required = false) String search,
              @RequestParam(value = "patientNumber", required = false) String patientNumber,
              @RequestParam(value = "visitNumber", required = false) String visitNumber,
-             @RequestParam(value = "paymentMethod", required = false) PaymentMethod paymentMethod,
+             @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMethod,
+             @RequestParam(value = "payerId", required = false) Long payerId,
+             @RequestParam(value = "schemeId", required = false) Long schemeId,
+             @RequestParam(value = "visitType", required = false) VisitEnum.VisitType visitType,
              @RequestParam(value = "dateRange", required = false) String dateRange,
              @RequestParam(value = "page", required = false) Integer page,
              @RequestParam(value = "pageSize", required = false) Integer size
@@ -74,7 +78,7 @@ public class PatientBillingController {
           DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
           Pageable pageable = PaginationUtil.createPage(page, size);
 
-          List<PatientBillDetail> patientBills = service.getPatientBills(search, patientNumber, visitNumber, paymentMethod, range, pageable);
+          List<PatientBillDetail> patientBills = service.getPatientBills(search, patientNumber, visitNumber, paymentMethod, payerId, schemeId, visitType, range, pageable);
 
           Pager<List<PatientBillDetail>> list = (Pager<List<PatientBillDetail>>) PaginationUtil.paginateList(patientBills,"Patients Bills", "", pageable);
           return ResponseEntity.ok(list);

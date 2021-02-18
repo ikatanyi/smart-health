@@ -8,10 +8,11 @@ package io.smarthealth.stock.purchase.domain.specification;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
+import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.criteria.Predicate;
-import org.springframework.data.jpa.domain.Specification;
 
 /**
  *

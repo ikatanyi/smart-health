@@ -9,10 +9,9 @@ import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.inventory.domain.StockAdjustment;
 import io.smarthealth.stock.inventory.domain.StockAdjustmentRepository;
 import io.smarthealth.stock.inventory.domain.StockEntry;
+import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import io.smarthealth.stock.inventory.domain.specification.StockAdjustmentSpecification;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.inventory.events.InventorySpringEventPublisher;
@@ -20,12 +19,13 @@ import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 
 /**
  *

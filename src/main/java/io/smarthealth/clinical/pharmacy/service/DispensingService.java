@@ -5,6 +5,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
@@ -80,6 +81,7 @@ public class DispensingService {
     private final VisitService visitService;
     private final DoctorsRequestRepository doctorRequestRepository;
     private final WalkingService walkingService;
+    private final ServicePointRepository servicePointRepository;
 
     public List<DispensedDrug> dispenseItem(DrugRequest drugRequest, Store store) {
         List<DispensedDrug> dispensedDrugList = new ArrayList<>();
@@ -141,8 +143,12 @@ public class DispensingService {
                     if (consumable.getServicePointId() == null) {
                         throw APIException.badRequest("Inventory Store is Required for the Service Point");
                     }
-                    Store store = storeRepository.findStoreByServicePointId(consumable.getServicePointId())
-                            .orElseThrow(() -> APIException.notFound("Store with Id {} not found", consumable.getServicePointId()));
+                    ServicePoint servicePoint =servicePointRepository.findById(consumable.getServicePointId())
+                            .orElseThrow(() -> APIException.notFound("Service Point with Id {} not found", consumable.getServicePointId()));
+
+                    Store store =  Optional.of(servicePoint.getStore())
+                            .orElseThrow(() -> APIException.badRequest("Item Inventory Location for the service point {} not configured. Item requires Store Location.", servicePoint.getName()));
+
                     StockEntry stock = new StockEntry();
                     stock.setAmount(NumberUtils.toScaledBigDecimal((consumable.getQuantity()) * (consumable.getPrice())));
                     stock.setDeliveryNumber(consumable.getTransactionId());

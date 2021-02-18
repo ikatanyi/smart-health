@@ -1,10 +1,10 @@
 package io.smarthealth.stock.inventory.domain.specification;
 
 import io.smarthealth.stock.inventory.domain.InventoryItem;
-import io.smarthealth.stock.stores.domain.Store;
-import java.util.ArrayList;
-import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 /**
  *

@@ -2,8 +2,9 @@ package io.smarthealth.stock.item.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.stores.domain.Store;
-import javax.persistence.*;
 import lombok.Data;
+
+import javax.persistence.*;
 
 /**
  *
