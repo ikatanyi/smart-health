@@ -22,7 +22,7 @@ public class ClaimHeader{
     @JsonProperty("Invoice_Number") 
     public String invoiceNumber;
     @JsonProperty("Claim_Date") 
-    public LocalDate claimDate;
+    public String claimDate;
     @JsonProperty("Claim_Time") 
     public String claimTime;
     @JsonProperty("Pool_Number") 
