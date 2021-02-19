@@ -105,7 +105,7 @@ public class IntegrationService {
         ObjectMapper mapper = new ObjectMapper();
         TypedMap response = webClient.get()
                 .uri("/getmemberprofile?patientid=" + patientid)
-                //                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToFlux(TypedMap.class)
                 .blockFirst();

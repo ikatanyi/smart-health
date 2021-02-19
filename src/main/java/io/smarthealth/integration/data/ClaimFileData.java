@@ -55,7 +55,7 @@ public class ClaimFileData {
         header.setInvoiceNumber(this.getInvoiceNumber());
         header.setPoolNumber(String.valueOf(smData.getBenefits().getBenefit().getNr()));
         header.setTotalServices(this.getServices().size());
-//        header.setClaimDate(this.getClaimDate());
+        header.setClaimDate(this.getClaimDate());
         header.setClaimTime(this.getClaimTime());
         claimfile.setAuthorization(authorization);
         paymentModifies.setPaymentModifier(paymentModifier);
