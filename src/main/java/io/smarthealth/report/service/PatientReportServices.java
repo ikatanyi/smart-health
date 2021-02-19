@@ -758,6 +758,8 @@ public class PatientReportServices {
                     data.setService(spec.get().getSpecialization());
                 }
             }
+            data.setServiceType(visit.getServiceType().name());
+            data.setVisitNumber(visit.getVisitNumber());
             dataArray.add(data);
         }
 
@@ -773,7 +775,7 @@ public class PatientReportServices {
         reportData.getFilters().put("range", DateRange.getReportPeriod(dateRange));
         reportData.setData(dataArray);
         reportData.setFormat(format);
-        reportData.setTemplate("/patient/PatientAttendanceReport");
+        reportData.setTemplate("/patient/PatientAttendancev2Report");
         reportData.setReportName("Patient_Attendance_Report");
         reportService.generateReport(reportData, response);
     }

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="WalkingRegister" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoPages" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="27d40df4-30c0-4fc4-a7d7-b704672c2036">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Local SH"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="468"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="518"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="39"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\Smart\\smarthealth\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Date_From" class="java.lang.String"/>
+	<parameter name="Date_To" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select * from walk_in where created_on   between  $P{Date_From} AND $P{Date_To} ]]>
+	</queryString>
+	<field name="id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="id"/>
+		<property name="com.jaspersoft.studio.field.label" value="id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="company_id" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="company_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="company_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="created_by" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="created_by"/>
+		<property name="com.jaspersoft.studio.field.label" value="created_by"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="created_on" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="created_on"/>
+		<property name="com.jaspersoft.studio.field.label" value="created_on"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="last_modified_by" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="last_modified_by"/>
+		<property name="com.jaspersoft.studio.field.label" value="last_modified_by"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="last_modified_on" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="last_modified_on"/>
+		<property name="com.jaspersoft.studio.field.label" value="last_modified_on"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="version" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="version"/>
+		<property name="com.jaspersoft.studio.field.label" value="version"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="age" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="age"/>
+		<property name="com.jaspersoft.studio.field.label" value="age"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="first_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="first_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="first_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="id_number" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="id_number"/>
+		<property name="com.jaspersoft.studio.field.label" value="id_number"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="phone_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="phone_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="phone_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="second_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="second_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="second_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="special_comments" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="special_comments"/>
+		<property name="com.jaspersoft.studio.field.label" value="special_comments"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="surname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="surname"/>
+		<property name="com.jaspersoft.studio.field.label" value="surname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="walking_identitification_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="walking_identitification_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="walking_identitification_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="walk_in"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="78" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="59" width="100" height="19" uuid="dda178b8-f058-459d-909d-33d36af6c6ef"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Walking Register]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="600" y="60" width="70" height="16" uuid="b47f0af4-b6e9-4e22-97c3-56b5be014c91"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Print Date: ]]></text>
+			</staticText>
+			<textField pattern="MMM d, yyyy">
+				<reportElement positionType="Float" x="660" y="60" width="100" height="16" uuid="43953dbd-6b3c-45c6-aa24-61e382b0728a"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="-10" width="200" height="60" uuid="cf81c6f2-8459-4411-8b75-f142375835c5"/>
+				<subreportParameter name="Header_Data">
+					<subreportParameterExpression><![CDATA[]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement positionType="Float" x="0" y="59" width="822" height="1" uuid="9cd27845-98ad-4e0e-8fcd-b4cda05858bd"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="1" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="0" width="822" height="1" uuid="ad1ac127-b17a-4ab7-b7a4-9638e2befe78"/>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="137" height="30" uuid="a1f216e0-d03a-45f8-bd71-e51cf1eabb3f">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d36d6a0d-968b-4294-a210-aa221ba4e02f"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reg Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="677" y="0" width="125" height="30" uuid="18004393-807b-490c-986e-7dc86e2599f2">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="183664db-6da3-46a5-99e6-47c27c7298c8"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Age]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="543" y="0" width="133" height="30" uuid="0669bfe5-a418-4ae7-8feb-657635db9d23">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7238803d-ee4d-4138-b5a6-abd872f76958"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ID Number]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="410" y="0" width="133" height="30" uuid="1c557b09-49b3-455c-bbbf-726139b64f2d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b61c687b-d5b4-4b12-aae6-1369a41a2773"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Phone No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="137" y="0" width="136" height="30" uuid="faf1c3fc-2e9f-43ad-927f-678ee121df07">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="95158fc6-a3cb-4af1-8ed8-ae7fd6618dca"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Walk-In No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="0" width="126" height="30" uuid="4d221e30-6aed-4fe8-9f43-3b4be98b242e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="78108c2c-8504-4d68-8ca3-0258f79425e1"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField pattern="MMM d, yyyy" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="137" height="30" uuid="b54a4dbf-7b84-4712-9764-55dbefe36ee2">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d36d6a0d-968b-4294-a210-aa221ba4e02f"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{created_on}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="676" y="0" width="125" height="30" uuid="f76b95c6-cbef-47fb-8d18-98f1d6bd4e80">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="183664db-6da3-46a5-99e6-47c27c7298c8"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{age}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="273" y="0" width="133" height="30" uuid="56cee590-5e6d-479a-b45d-bcf77bc67024">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="78108c2c-8504-4d68-8ca3-0258f79425e1"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{first_name}+" "+($F{second_name} == null ? "": $F{second_name})+" "+$F{surname}).toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="540" y="0" width="136" height="30" uuid="b9ca25d5-ac96-44cb-8e17-6cd2df9dee2f">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7238803d-ee4d-4138-b5a6-abd872f76958"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{id_number}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="410" y="0" width="133" height="30" uuid="74b44c71-318e-4dd1-a906-082f5778c0b3">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b61c687b-d5b4-4b12-aae6-1369a41a2773"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{phone_no}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="137" y="0" width="136" height="30" uuid="af6ac26c-70d8-43b1-a6a1-aa63ec8f675e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="95158fc6-a3cb-4af1-8ed8-ae7fd6618dca"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{walking_identitification_no}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="-2" y="0" width="823" height="1" uuid="820a4cb6-3a96-4ae8-96bf-de8b0b6f8434"/>
+				<graphicElement>
+					<pen lineWidth="0.05" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>
