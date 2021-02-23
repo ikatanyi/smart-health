@@ -65,13 +65,14 @@ public class IntegrationService {
             diagString.concat(diagn.getDiagnosis().getCode()).concat(",");
         }
         diagString.concat("]");
+        cardData.setDiagnosis(diagString);
         if(copay.isPresent()){
             ServiceData service = new ServiceData();
             service.setCodeDescription("Copay");
             service.setCode("Copay");
             service.setEncounterType("Consultation");
             service.setTotalAmount(-1*(copay.get().getAmount().doubleValue()));
-            service.getDiagnosis().setCode(diagString);
+//            service.getDiagnosis().setCode(diagString);
             data.getServices().add(service);
         }
         Claim claim = data.map(cardData);
@@ -105,7 +106,7 @@ public class IntegrationService {
         ObjectMapper mapper = new ObjectMapper();
         TypedMap response = webClient.get()
                 .uri("/getmemberprofile?patientid=" + patientid)
-                .accept(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToFlux(TypedMap.class)
                 .blockFirst();

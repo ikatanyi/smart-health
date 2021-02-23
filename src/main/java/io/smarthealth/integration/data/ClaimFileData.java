@@ -64,7 +64,7 @@ public class ClaimFileData {
         for(ServiceData service:this.getServices()){
             Service serv = new Service();
             Diagnosis diagnosis = new Diagnosis();
-            diagnosis.setCode(service.getDiagnosis().getCode());
+            diagnosis.setCode(smData.getDiagnosis());
             diagnosis.setCode_Type(service.getDiagnosis().getCode_Type());
 
             serv.setInvoiceNumber(this.getInvoiceNumber());
