@@ -97,6 +97,7 @@ public enum ReportName {
         NHIF_Statement,
         Capitation_Invoice,
         /* */
-        WalkingRegister
+        WalkingRegister,
+        PricelistSummary
         /* */
 }

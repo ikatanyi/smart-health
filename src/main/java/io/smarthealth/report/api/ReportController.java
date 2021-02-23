@@ -327,6 +327,9 @@ public class ReportController {
                 break;
             case Capitation_Invoice:
                 break;
+            case PricelistSummary:
+                reportExportService.pricelistSummary(queryParams, format, response);
+                break;
             default:
                 break;
         }
