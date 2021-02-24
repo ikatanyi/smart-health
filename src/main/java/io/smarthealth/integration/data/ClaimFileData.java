@@ -55,7 +55,7 @@ public class ClaimFileData {
         header.setInvoiceNumber(this.getInvoiceNumber());
         header.setPoolNumber(String.valueOf(smData.getBenefits().getBenefit().getNr()));
         header.setTotalServices(this.getServices().size());
-//        header.setClaimDate(this.getClaimDate());
+        header.setClaimDate(this.getClaimDate());
         header.setClaimTime(this.getClaimTime());
         claimfile.setAuthorization(authorization);
         paymentModifies.setPaymentModifier(paymentModifier);
@@ -64,7 +64,7 @@ public class ClaimFileData {
         for(ServiceData service:this.getServices()){
             Service serv = new Service();
             Diagnosis diagnosis = new Diagnosis();
-            diagnosis.setCode(service.getDiagnosis().getCode());
+            diagnosis.setCode(smData.getDiagnosis());
             diagnosis.setCode_Type(service.getDiagnosis().getCode_Type());
 
             serv.setInvoiceNumber(this.getInvoiceNumber());

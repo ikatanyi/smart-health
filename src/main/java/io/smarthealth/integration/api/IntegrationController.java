@@ -37,11 +37,13 @@ public class IntegrationController {
 
     @PostMapping("/smart/claim")
     public @ResponseBody
-    ResponseEntity<?> createClaimFile(@RequestBody @Valid final ClaimFileData claimFileData) throws JsonProcessingException {        
+    ResponseEntity<?> createClaimFile(@RequestBody @Valid final ClaimFileData claimFileData) throws JsonProcessingException {
+        String msg="Smart Claim submitted successfully";
         ClientResponse result = integrationService.create(claimFileData);
         Pager pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Smart Claim submitted successfully");
+        String code = result.statusCode().toString();
+//        pagers.setCode(code);
+        pagers.setMessage(code);
         pagers.setContent(result);
 
         return ResponseEntity.ok(pagers);

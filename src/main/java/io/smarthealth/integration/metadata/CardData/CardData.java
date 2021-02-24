@@ -36,4 +36,6 @@ public class CardData {
     private NonMemMap nonMemMap;
     @JsonProperty("Benefits")
     private Benefits benefits;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String diagnosis;
 }
