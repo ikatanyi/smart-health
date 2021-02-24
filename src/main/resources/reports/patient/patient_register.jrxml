@@ -114,7 +114,7 @@
 	<columnHeader>
 		<band height="18">
 			<staticText>
-				<reportElement x="19" y="0" width="46" height="18" uuid="263ba3f2-4855-4731-84d3-169e3d06d503"/>
+				<reportElement x="19" y="0" width="61" height="18" uuid="263ba3f2-4855-4731-84d3-169e3d06d503"/>
 				<box rightPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -129,7 +129,7 @@
 				<text><![CDATA[Patient No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="65" y="0" width="116" height="18" uuid="75429f40-c5c5-48ce-8a6d-98f5df4271b8"/>
+				<reportElement x="80" y="0" width="109" height="18" uuid="75429f40-c5c5-48ce-8a6d-98f5df4271b8"/>
 				<box rightPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -144,7 +144,7 @@
 				<text><![CDATA[Patient Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="208" y="0" width="34" height="18" uuid="c026adf4-63dc-4fea-8dc0-19b18a976390"/>
+				<reportElement x="216" y="0" width="34" height="18" uuid="c026adf4-63dc-4fea-8dc0-19b18a976390"/>
 				<box rightPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -159,7 +159,7 @@
 				<text><![CDATA[Gender]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="181" y="0" width="27" height="18" uuid="2f17ed8c-afcb-49bb-8d90-95497a115c34"/>
+				<reportElement x="189" y="0" width="27" height="18" uuid="2f17ed8c-afcb-49bb-8d90-95497a115c34"/>
 				<box rightPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -187,7 +187,7 @@
 				<text><![CDATA[No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="242" y="0" width="108" height="18" uuid="99c8e844-6437-4d7c-8fb9-ccd2b912bd2f"/>
+				<reportElement x="250" y="0" width="108" height="18" uuid="99c8e844-6437-4d7c-8fb9-ccd2b912bd2f"/>
 				<box rightPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -217,7 +217,7 @@
 				<text><![CDATA[Registered By]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="420" y="0" width="78" height="18" uuid="66d32900-2fd9-48c5-8405-176e04122d24"/>
+				<reportElement x="428" y="0" width="70" height="18" uuid="66d32900-2fd9-48c5-8405-176e04122d24"/>
 				<box rightPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -232,7 +232,7 @@
 				<text><![CDATA[Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="350" y="0" width="70" height="18" uuid="3827c1de-8470-49db-b105-dd4924686a6e"/>
+				<reportElement x="358" y="0" width="70" height="18" uuid="3827c1de-8470-49db-b105-dd4924686a6e"/>
 				<box rightPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -251,7 +251,7 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="208" y="0" width="34" height="12" uuid="0797b2f2-15a9-4e18-8546-c0b543e4c3ad"/>
+				<reportElement positionType="Float" x="216" y="0" width="34" height="12" uuid="0797b2f2-15a9-4e18-8546-c0b543e4c3ad"/>
 				<box>
 					<pen lineWidth="0.15"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -266,7 +266,7 @@
 				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="181" y="0" width="27" height="12" uuid="40d3bdb5-d777-4f35-b6c5-1b7665cf387d"/>
+				<reportElement positionType="Float" x="189" y="0" width="27" height="12" uuid="40d3bdb5-d777-4f35-b6c5-1b7665cf387d"/>
 				<box>
 					<pen lineWidth="0.15"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -281,7 +281,7 @@
 				<textFieldExpression><![CDATA[$F{age}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="19" y="0" width="46" height="12" uuid="aabcb449-0ebb-4ddc-aede-56381b6f08bc"/>
+				<reportElement positionType="Float" x="19" y="0" width="61" height="12" uuid="aabcb449-0ebb-4ddc-aede-56381b6f08bc"/>
 				<box>
 					<pen lineWidth="0.15"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -296,7 +296,7 @@
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="2" y="0" width="17" height="12" uuid="3267125e-a357-4f46-8446-7f31e5ec3452"/>
+				<reportElement positionType="Float" x="2" y="0" width="17" height="12" uuid="3267125e-a357-4f46-8446-7f31e5ec3452"/>
 				<box>
 					<pen lineWidth="0.15"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -310,7 +310,7 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="242" y="0" width="108" height="12" uuid="16009c45-4c4a-4a8f-a9f2-0d550ea88423"/>
+				<reportElement positionType="Float" x="250" y="0" width="108" height="12" uuid="16009c45-4c4a-4a8f-a9f2-0d550ea88423"/>
 				<box>
 					<pen lineWidth="0.15"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -325,7 +325,7 @@
 				<textFieldExpression><![CDATA[$F{diagnosis}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="498" y="0" width="56" height="12" uuid="bf3f1f51-2d6b-49d7-8a9c-43f2f2e2bf96"/>
+				<reportElement positionType="Float" x="498" y="0" width="56" height="12" uuid="bf3f1f51-2d6b-49d7-8a9c-43f2f2e2bf96"/>
 				<box>
 					<pen lineWidth="0.15"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -340,7 +340,7 @@
 				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" pattern="M/d/yy h:mm a" isBlankWhenNull="true">
-				<reportElement x="420" y="0" width="78" height="12" uuid="79d8f6b4-d701-4024-83d7-af9871f4f6cb"/>
+				<reportElement positionType="Float" x="428" y="0" width="70" height="12" uuid="79d8f6b4-d701-4024-83d7-af9871f4f6cb"/>
 				<box>
 					<pen lineWidth="0.15"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -355,7 +355,7 @@
 				<textFieldExpression><![CDATA[java.util.Date.from($F{date}.atZone(java.time.ZoneId.systemDefault()).toInstant())]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="350" y="0" width="70" height="12" uuid="bc361b69-7f8f-46a0-a813-8f6fff0077ac"/>
+				<reportElement positionType="Float" x="358" y="0" width="70" height="12" uuid="bc361b69-7f8f-46a0-a813-8f6fff0077ac"/>
 				<box>
 					<pen lineWidth="0.15"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -369,14 +369,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{residence}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement positionType="Float" x="0" y="11" width="554" height="1" uuid="db8dc1a2-b7d0-4a36-812e-bb7c21d54c58"/>
-				<graphicElement>
-					<pen lineWidth="0.05" lineStyle="Dotted" lineColor="#E0DADA"/>
-				</graphicElement>
-			</line>
 			<textField>
-				<reportElement x="65" y="0" width="116" height="11" uuid="7439b7db-2f80-43e3-ab4d-2a90b191a227">
+				<reportElement positionType="Float" x="80" y="0" width="109" height="11" uuid="7439b7db-2f80-43e3-ab4d-2a90b191a227">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9b6b2aef-683b-4763-92eb-86b0137caab3"/>
 				</reportElement>
 				<box>
@@ -390,6 +384,12 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fullName}.toUpperCase()]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement positionType="Float" x="0" y="-1" width="554" height="1" uuid="db8dc1a2-b7d0-4a36-812e-bb7c21d54c58"/>
+				<graphicElement>
+					<pen lineWidth="0.05" lineStyle="Dotted" lineColor="#E0DADA"/>
+				</graphicElement>
+			</line>
 		</band>
 	</detail>
 	<summary>
