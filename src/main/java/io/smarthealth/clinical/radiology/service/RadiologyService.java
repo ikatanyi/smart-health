@@ -141,9 +141,13 @@ public class RadiologyService {
                 pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
-                if (patientScanReg.getPaymentMode().equals("Cash") && visit != null && visit.getVisitType() == VisitEnum.VisitType.Outpatient) {
-                    pte.setPaid(Boolean.FALSE);
-                } else{
+                pte.setPaid(Boolean.FALSE);
+                if (patientScanReg.getPaymentMode().equals("Cash")) {
+                    if (visit != null &&
+                            visit.getVisitType() == VisitEnum.VisitType.Outpatient) {
+                        pte.setPaid(Boolean.FALSE);
+                    }
+                } else {
                     pte.setPaid(Boolean.TRUE);
                 }
                 pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));
@@ -168,7 +172,7 @@ public class RadiologyService {
         PatientBill bill = toBill(scanRegister);
         billService.save(bill);
         //if all goes well and the patient was sent on this service point direct (exclusive of doctor request) - mark on the patient visit the patient has been served, and remove from the waiting list
-        if(!patientScanRegData.getIsWalkin()) {
+        if (!patientScanRegData.getIsWalkin()) {
             if (visit.getServiceType().equals(VisitEnum.ServiceType.Other)) {
                 visit.setServedAtServicePoint(Boolean.TRUE);
                 visitService.createAVisit(visit);
