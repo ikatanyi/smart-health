@@ -118,7 +118,7 @@ public class LaboratoryService {
         //notify registration has occured
         notificationEventPublisher.publishDocRequestEvent(Arrays.asList(DoctorRequestData.RequestType.Laboratory));
 
-        //if all goes well and the patient was sent on this service point direct (exclusive of doctor request) - mark on the patient visit the patient has been served, and remove from the waiting list
+        //if all goes well and the patient was directly sent on this service point  (exclusive of doctor request) - mark on the patient visit the patient has been served, and remove from the waiting list
         if(!data.getIsWalkin()) {
             Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
             if (visit.getServiceType().equals(VisitEnum.ServiceType.Other)) {
@@ -351,9 +351,9 @@ public class LaboratoryService {
             }
             request.setPatientNo(w.getWalkingIdentitificationNo());
             request.setPaymentMode("Cash");
+            request.setWalkIn(w);
         }
         String method = request.getPaymentMode();
-        System.out.println("method " + method);
 
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
