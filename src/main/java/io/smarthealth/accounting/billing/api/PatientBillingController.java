@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.billing.api;
 
 import io.smarthealth.accounting.billing.data.*;
+import io.smarthealth.accounting.billing.domain.BillingQuery;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
@@ -63,26 +64,45 @@ public class PatientBillingController {
      }
 
      @GetMapping("/patient-billing")
-     public ResponseEntity<?> getBills(
+     public ResponseEntity<Pager<List<VisitBillSummary>>> getBills(
              @RequestParam(value = "search" , required = false) String search,
              @RequestParam(value = "patientNumber", required = false) String patientNumber,
-             @RequestParam(value = "visitNumber", required = false) String visitNumber,
-             @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMethod,
-             @RequestParam(value = "payerId", required = false) Long payerId,
-             @RequestParam(value = "schemeId", required = false) Long schemeId,
              @RequestParam(value = "visitType", required = false) VisitEnum.VisitType visitType,
+             @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMethod,
              @RequestParam(value = "dateRange", required = false) String dateRange,
              @RequestParam(value = "page", required = false) Integer page,
-             @RequestParam(value = "pageSize", required = false) Integer size
-     ){
-          DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+             @RequestParam(value = "pageSize", required = false) Integer size){
+
           Pageable pageable = PaginationUtil.createPage(page, size);
+          DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+          BillingQuery query = new BillingQuery(search, patientNumber, visitType, paymentMethod, range, pageable);
 
-          List<PatientBillDetail> patientBills = service.getPatientBills(search, patientNumber, visitNumber, paymentMethod, payerId, schemeId, visitType, range, pageable);
-
-          Pager<List<PatientBillDetail>> list = (Pager<List<PatientBillDetail>>) PaginationUtil.paginateList(patientBills,"Patients Bills", "", pageable);
-          return ResponseEntity.ok(list);
+          Page<VisitBillSummary> list = service.getVisitBills(query);
+          Pager<List<VisitBillSummary>> pager = (Pager<List<VisitBillSummary>>) PaginationUtil.toPager(list, "Patient Visit Bill");
+          return ResponseEntity.ok(pager);
      }
+
+//     @GetMapping("/patient-billing")
+//     public ResponseEntity<?> getBills(
+//             @RequestParam(value = "search" , required = false) String search,
+//             @RequestParam(value = "patientNumber", required = false) String patientNumber,
+//             @RequestParam(value = "visitNumber", required = false) String visitNumber,
+//             @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMethod,
+//             @RequestParam(value = "payerId", required = false) Long payerId,
+//             @RequestParam(value = "schemeId", required = false) Long schemeId,
+//             @RequestParam(value = "visitType", required = false) VisitEnum.VisitType visitType,
+//             @RequestParam(value = "dateRange", required = false) String dateRange,
+//             @RequestParam(value = "page", required = false) Integer page,
+//             @RequestParam(value = "pageSize", required = false) Integer size
+//     ){
+//          DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+//          Pageable pageable = PaginationUtil.createPage(page, size);
+//
+//          List<PatientBillDetail> patientBills = service.getPatientBills(search, patientNumber, visitNumber, paymentMethod, payerId, schemeId, visitType, range, pageable);
+//
+//          Pager<List<PatientBillDetail>> list = (Pager<List<PatientBillDetail>>) PaginationUtil.paginateList(patientBills,"Patients Bills", "", pageable);
+//          return ResponseEntity.ok(list);
+//     }
      @GetMapping("/patient-billing/{visitNumber}")
      public ResponseEntity<Pager<List<BillItemData>>> getBillsItems(
              @PathVariable(value = "visitNumber") String visitNumber,

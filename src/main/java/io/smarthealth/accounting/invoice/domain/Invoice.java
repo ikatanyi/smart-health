@@ -83,6 +83,9 @@ public class Invoice extends Auditable {
     private Boolean awaitingSmart = Boolean.FALSE;
     @Column(name = "is_capitation_invoice")
     private Boolean capitation = Boolean.FALSE;
+
+    //@Column(name = "is_rebate")
+    //private Boolean rebate = Boolean.FALSE;
     @Transient
     private BigDecimal invoiceAmount; //temporarly holding for orginal invoice amount
 

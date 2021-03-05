@@ -32,4 +32,6 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long>, Jpa
 
     @Query(name = "select p from PriceList p where p.item.category=:category", nativeQuery = true)
     Optional<PriceList> getPriceListByItemCategory(@Param("category") ItemCategory category);
+
+
 }

@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.Query;
  *
  * @author Kennedy.Imbenzi
  */
-public interface PatientBillRepository extends JpaRepository<PatientBill, Long>, JpaSpecificationExecutor<PatientBill>, CustomPatientBillRepository {
+public interface PatientBillRepository extends JpaRepository<PatientBill, Long>, JpaSpecificationExecutor<PatientBill>, VisitBillSummaryRepository {
 
     Optional<PatientBill> findByBillNumber(final String identifier);
 

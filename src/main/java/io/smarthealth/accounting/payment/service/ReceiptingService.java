@@ -16,18 +16,15 @@ import io.smarthealth.accounting.billing.service.PatientBillingService;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
-import io.smarthealth.accounting.payment.data.ReceiptItemData;
-import io.smarthealth.accounting.payment.data.ReceiptMethod;
-import io.smarthealth.accounting.payment.data.ReceivePayment;
-import io.smarthealth.accounting.payment.domain.Banking;
-import io.smarthealth.accounting.payment.domain.Receipt;
-import io.smarthealth.accounting.payment.domain.ReceiptItem;
-import io.smarthealth.accounting.payment.domain.repository.ReceiptItemRepository;
-import io.smarthealth.accounting.payment.domain.ReceiptTransaction;
-import io.smarthealth.accounting.payment.domain.Remittance;
-import io.smarthealth.accounting.payment.domain.repository.RemittanceRepository;
+import io.smarthealth.accounting.payment.data.*;
+import io.smarthealth.accounting.payment.domain.*;
+import io.smarthealth.accounting.payment.domain.enumeration.PayerType;
+import io.smarthealth.accounting.payment.domain.enumeration.RecordType;
+import io.smarthealth.accounting.payment.domain.repository.*;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.domain.specification.ReceiptSpecification;
+import io.smarthealth.accounting.pricelist.domain.PriceList;
+import io.smarthealth.accounting.pricelist.domain.PriceListRepository;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.debtor.payer.domain.Payer;
@@ -54,8 +51,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
-import io.smarthealth.accounting.payment.domain.repository.ReceiptTransactionRepository;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 
 /**
@@ -81,6 +76,8 @@ public class ReceiptingService {
     private final CopaymentService copaymentService;
     private final ReceiptTransactionRepository transactionRepository;
     private final PatientBillingService patientBillingService;
+    private final ReceivePaymenttRepository receivePaymenttRepository;
+    private final PriceListRepository priceListRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
@@ -352,12 +349,9 @@ public class ReceiptingService {
                     //revenue
                     ServicePoint srv = servicePointService.getServicePoint(k);
                     String narration = "Expensing Inventory for " + srv.getName();
-                    Account debit = srv.getExpenseAccount();//store.getInventoryAccount();// srv.getExpenseAccount();// cost of sales
-                    Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
-                    BigDecimal amount = BigDecimal.valueOf(v);
-
-                    items.add(new JournalEntryItem(debit, narration, amount, BigDecimal.ZERO));
-                    items.add(new JournalEntryItem(credit, narration, BigDecimal.ZERO, amount));
+                     BigDecimal amount = BigDecimal.valueOf(v);
+                    items.add(new JournalEntryItem(srv.getExpenseAccount(), narration, amount, BigDecimal.ZERO));
+                    items.add(new JournalEntryItem(srv.getInventoryAssetAccount(), narration, BigDecimal.ZERO, amount));
                 });
             }
         }
@@ -435,4 +429,121 @@ public class ReceiptingService {
         return BigDecimal.valueOf(val);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Receipt receiptCopay(ReceiptInvoiceData data) {
+
+        Receipt receipt = new Receipt();
+        receipt.setAmount(data.getAmount());
+        receipt.setPayer(data.getPatientName());
+        receipt.setPaid(data.getAmount());
+        receipt.setPaymentMethod(data.getPaymentMethod());
+        receipt.setTenderedAmount(data.getAmount());
+        receipt.setReferenceNumber(data.getReference());
+        receipt.setRefundedAmount(BigDecimal.ZERO);
+        if (data.getShiftNo() != null) {
+            Shift shift = shiftRepository.findByShiftNo(data.getShiftNo()).orElse(null);
+            receipt.setShift(shift);
+        }
+        receipt.setTransactionDate(LocalDateTime.now());
+        receipt.setDescription(data.getDescription());
+
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String receiptNo = sequenceNumberService.next(1L, Sequences.Receipt.name());
+
+        receipt.setTransactionNo(trdId);
+        receipt.setReceiptNo(receiptNo);
+        receipt.setPrepayment(Boolean.FALSE);
+        receipt.setReceivedFrom(data.getPatientName());
+        Receipt savedReceipt = repository.save(receipt);
+
+        patientBillingService.createReceiptItem(data.getPatientNumber(),data.getPatientName(),data.getVisitNumber(),data.getAmount().doubleValue(),ItemCategory.CoPay,false, savedReceipt.getReceiptNo());
+
+        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+        Optional<FinancialActivityAccount> copay = activityAccountRepository.findByFinancialActivity(FinancialActivity.Copayment);
+
+        String desc= String.format("Copayment Receipting. Patient %s Receipt No. %s", data.getPatientNumber(), savedReceipt.getReceiptNo());
+
+        List<JournalEntryItem> items = new ArrayList<>();
+        BigDecimal amount = savedReceipt.getAmount();
+        items.add(new JournalEntryItem(debitAccount.get().getAccount(), desc, amount, BigDecimal.ZERO));
+        items.add(new JournalEntryItem(copay.get().getAccount(), desc, BigDecimal.ZERO, amount));
+
+        JournalEntry copayJournal = new JournalEntry(savedReceipt.getTransactionDate().toLocalDate(), desc, items);
+        copayJournal.setTransactionType(TransactionType.Receipting);
+        copayJournal.setTransactionNo(savedReceipt.getTransactionNo());
+        copayJournal.setStatus(JournalState.PENDING);
+
+        journalEntryService.save(copayJournal);
+
+        return receipt;
+    }
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Receipt receiptPatient(PatientReceipt data) {
+
+        Receipt receipt = new Receipt();
+        receipt.setAmount(data.getAmount());
+        receipt.setPayer(data.getPatientName());
+        receipt.setPaid(data.getAmount());
+        receipt.setPaymentMethod(data.getPaymentMethod());
+        receipt.setTenderedAmount(data.getAmount());
+        receipt.setReferenceNumber(data.getReference());
+        receipt.setRefundedAmount(BigDecimal.ZERO);
+        if (data.getShiftNo() != null) {
+            Shift shift = shiftRepository.findByShiftNo(data.getShiftNo()).orElse(null);
+            receipt.setShift(shift);
+        }
+        receipt.setTransactionDate(LocalDateTime.now());
+        receipt.setDescription(data.getDescription());
+
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String receiptNo = sequenceNumberService.next(1L, Sequences.Receipt.name());
+
+        receipt.setTransactionNo(trdId);
+        receipt.setReceiptNo(receiptNo);
+        receipt.setPrepayment(data.getReceiptType() == PatientReceipt.Type.Deposit);
+        receipt.setReceivedFrom(data.getPatientName());
+
+        Receipt savedReceipt = repository.save(receipt);
+
+        ItemCategory category = (data.getReceiptType() == PatientReceipt.Type.Deposit) ? ItemCategory.CoPay : ItemCategory.Receipt;
+
+        patientBillingService.createReceiptItem(data.getPatientNumber(),data.getPatientName(),data.getVisitNumber(),data.getAmount().doubleValue(),category,false, savedReceipt.getReceiptNo());
+
+        if (data.getReceiptType() == PatientReceipt.Type.Deposit) {
+            PaymentDeposit deposit = new PaymentDeposit();
+            deposit.setAmount(savedReceipt.getAmount());
+            deposit.setBalance(savedReceipt.getAmount());
+            deposit.setCustomerType(PayerType.Patient);
+            deposit.setDescription(data.getDescription());
+            deposit.setPaymentDate(data.getDate());
+            deposit.setPaymentMethod(data.getPaymentMethod());
+            deposit.setReceipt(savedReceipt);
+            deposit.setReference(data.getReference());
+            deposit.setTransactionNo(savedReceipt.getTransactionNo());
+            deposit.setType(RecordType.Deposit);
+
+            receivePaymenttRepository.save(deposit);
+        }else{
+            Optional<PriceList> priceList = priceListRepository.getPriceListByItemCategory(ItemCategory.Admission);
+            if(priceList.isPresent()) {
+                Account creditAccount = priceList.get().getServicePoint().getIncomeAccount();
+                Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+
+                String desc = String.format("Medical Bills Receipting. Patient %s Receipt No. %s", data.getPatientNumber(), savedReceipt.getReceiptNo());
+
+                List<JournalEntryItem> items = new ArrayList<>();
+                BigDecimal amount = savedReceipt.getAmount();
+                items.add(new JournalEntryItem(debitAccount.get().getAccount(), desc, amount, BigDecimal.ZERO));
+                items.add(new JournalEntryItem(creditAccount, desc, BigDecimal.ZERO, amount));
+
+                JournalEntry copayJournal = new JournalEntry(savedReceipt.getTransactionDate().toLocalDate(), desc, items);
+                copayJournal.setTransactionType(TransactionType.Receipting);
+                copayJournal.setTransactionNo(savedReceipt.getTransactionNo());
+                copayJournal.setStatus(JournalState.PENDING);
+                journalEntryService.save(copayJournal);
+            }
+        }
+
+        return savedReceipt;
+    }
 }

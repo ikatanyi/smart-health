@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.billing.domain;
 
+import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -30,6 +31,7 @@ public class PatientBill extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_visit_id"))
     private Visit visit;
+
     private LocalDate billingDate;
     private String billNumber; //can also be an invoice
     private String paymentMode;

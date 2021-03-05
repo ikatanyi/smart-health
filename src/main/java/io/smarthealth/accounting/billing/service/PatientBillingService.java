@@ -4,15 +4,13 @@ import io.smarthealth.accounting.accounts.data.FinancialActivity;
 import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.*;
-import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.domain.PatientBillItem;
-import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
-import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.accounting.billing.domain.*;
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
+import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.payment.data.BillReceiptedItem;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Receipt;
@@ -70,6 +68,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.smarthealth.stock.item.domain.enumeration.ItemCategory.CoPay;
+import static io.smarthealth.stock.item.domain.enumeration.ItemCategory.NHIF_Rebate;
 
 @Slf4j
 @Service
@@ -281,10 +280,11 @@ public class PatientBillingService {
         //I need to pass copay as part of this
         Visit visit = null;
         if (!isWalking) {
-            visit = visitRepository.findByVisitNumberAndStatusNot(visitNumber, VisitEnum.Status.CheckOut)
-                    .orElseThrow(() -> APIException.badRequest("Patient Visit {} is not Active. Patient is Checked out", visitNumber));
+//            visit = visitRepository.findByVisitNumberAndStatusNot(visitNumber, VisitEnum.Status.CheckOut)
+//                    .orElseThrow(() -> APIException.badRequest("Patient Visit {0} is not Active. Patient is Checked out", visitNumber));
+            visit = visitRepository.findByVisitNumber(visitNumber)
+                    .orElseThrow(() -> APIException.notFound("Visit ID {0} Not Found", visitNumber));
         }
-
 
         Optional<Item> receiptItem = itemRepository.findFirstByCategory(itemCategory);
 
@@ -309,14 +309,64 @@ public class PatientBillingService {
             billsItem.setServicePointId(0L);
             billsItem.setStatus(BillStatus.Paid);
             billsItem.setMedicId(null);
-            billsItem.setBillPayMode(PaymentMethod.Cash);
+            billsItem.setBillPayMode(itemCategory == NHIF_Rebate ? PaymentMethod.Insurance :PaymentMethod.Cash);
             billsItem.setEntryType(BillEntryType.Credit);
             billsItem.setPaymentReference(reference);
+//            billsItem.setTransactionType(TransactionType.Receipting);
+            //can add the transaction type
+
 
             receiptBill.addBillItem(billsItem);
             return save(receiptBill);
         }
         return null;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public PatientBill createReceiptItem(String visitNumber, Invoice invoice){
+        Patient patient  = invoice.getPatient();
+
+        Visit visit = visitRepository.findByVisitNumber(visitNumber)
+                    .orElseThrow(() -> APIException.notFound("Visit ID {0} Not Found", visitNumber));
+
+
+        Optional<Item> receiptItem = itemRepository.findFirstByCategory(ItemCategory.Receipt);
+
+        Item creditItem = receiptItem.get();
+        //define the type of receipting if copay
+        String description = "Invoice";
+        Double amount = invoice.getAmount().doubleValue();
+
+        if (creditItem != null) {
+            PatientBill receiptBill = createPatientBill(patient.getPatientNumber(), patient.getFullName(), visitNumber, LocalDate.now(), "Cash", amount, 0D, false);
+            PatientBillItem billsItem = new PatientBillItem();
+            billsItem.setBillingDate(LocalDate.now());
+            billsItem.setTransactionId(receiptBill.getTransactionId());
+            billsItem.setItem(creditItem);
+            billsItem.setPaid(true);
+            billsItem.setPrice(amount);
+            billsItem.setQuantity(1D);
+            billsItem.setAmount(amount);
+            billsItem.setDiscount(0D);
+            billsItem.setBalance(amount);
+            billsItem.setServicePoint(description);
+            billsItem.setServicePointId(0L);
+            billsItem.setStatus(BillStatus.Paid);
+            billsItem.setMedicId(null);
+            billsItem.setBillPayMode(PaymentMethod.Insurance);
+            billsItem.setEntryType(BillEntryType.Credit);
+            billsItem.setPaymentReference(invoice.getNumber());
+            billsItem.setInvoiceNumber(invoice.getNumber());
+//            billsItem.setTransactionType(TransactionType.Receipting);
+            //can add the transaction type
+            //instead of creating new invoice
+
+            receiptBill.addBillItem(billsItem);
+            return save(receiptBill);
+        }
+        return null;
+        //Patient patient = invoice.getPatient();
+        //return createReceiptItem(patient.getPatientNumber(), patient.getFullName(), visitNumber, invoice.getAmount().doubleValue(),ItemCategory.Receipt, false,invoice.getNumber());
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -345,9 +395,13 @@ public class PatientBillingService {
         return billSaved;
     }
 
-    public List<PatientBillDetail> getPatientBills(String search, String patientNumber, String visitNumber, PaymentMethod paymentMethod, Long payerId, Long schemeId, VisitEnum.VisitType visitType, DateRange range, Pageable pageable) {
-        List<PatientBillDetail> patientBills = patientBillRepository.getPatientBills(search, patientNumber, visitNumber, paymentMethod, payerId, schemeId, visitType, range);
-        return patientBills;
+//    public List<PatientBillDetail> getPatientBills(String search, String patientNumber, String visitNumber, PaymentMethod paymentMethod, Long payerId, Long schemeId, VisitEnum.VisitType visitType, DateRange range, Pageable pageable) {
+//        List<PatientBillDetail> patientBills = patientBillRepository.getPatientBills(search, patientNumber, visitNumber, paymentMethod, payerId, schemeId, visitType, range);
+//        return patientBills;
+//    }
+
+    public Page<VisitBillSummary> getVisitBills(BillingQuery query){
+       return patientBillRepository.getVisitBill(query);
     }
 
     //TODO also find the walking bills and add them
@@ -430,6 +484,7 @@ public class PatientBillingService {
 
         return cinvoice;
     }
+   // create an invoice entry
 
     @Transactional
     public List<PatientBillItem> allocateBillPayment(ReceivePayment data) {
@@ -449,7 +504,7 @@ public class PatientBillingService {
                             item.setPaid(Boolean.TRUE);
                             item.setStatus(BillStatus.Paid);
                             if (item.getItem().getCategory() == CoPay) {
-                                item.setAmount((item.getAmount() * -1));
+//                                item.setAmount((item.getAmount() * -1));
                             } else {
                                 item.setAmount(totalAmount.doubleValue());
                             }
@@ -463,9 +518,9 @@ public class PatientBillingService {
 
                         } else {
                             PatientBillItem item = createBillItem(x);
-                            if (item.getItem().getCategory() == CoPay) {
-                                item.setAmount((item.getAmount() * -1));
-                            }
+//                            if (item.getItem().getCategory() == CoPay) {
+//                                item.setAmount((item.getAmount() * -1));
+//                            }
                             item.setMedicId(x.getMedicId());
                             item.setTransactionId(data.getTransactionNo());
                             item.setPaymentReference(data.getReceiptNo());

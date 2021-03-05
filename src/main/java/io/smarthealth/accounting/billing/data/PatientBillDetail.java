@@ -23,13 +23,18 @@ public class PatientBillDetail {
     private BigDecimal totalAmountPaid;
     private BigDecimal balance;
     private PaymentMethod paymentMethod;
+    private Long payerId;
     private String payerName;
+    private Long schemeId;
+    private String schemeName;
+    private Double copayValue;
+    private String copayType;
 
     public PatientBillDetail() {
 
     }
 
-    public PatientBillDetail(String billNo, String patientNumber, String patientName, String visitNumber, LocalDateTime visitDate, VisitType visitType, BigDecimal totalBillAmount, BigDecimal totalAmountPaid, BigDecimal balance, PaymentMethod paymentMethod, String payerName) {
+    public PatientBillDetail(String billNo, String patientNumber, String patientName, String visitNumber, LocalDateTime visitDate, VisitType visitType, BigDecimal totalBillAmount, BigDecimal totalAmountPaid, BigDecimal balance, PaymentMethod paymentMethod, Long payerId, String payerName, Long schemeId, String schemeName,Double copayValue, String copayType) {
         this.billNo = billNo;
         this.patientNumber = patientNumber;
         this.patientName = patientName;
@@ -40,7 +45,12 @@ public class PatientBillDetail {
         this.totalAmountPaid = totalAmountPaid;
         this.balance = balance;
         this.paymentMethod = paymentMethod;
+        this.payerId = payerId;
         this.payerName = payerName;
+        this.schemeId = schemeId;
+        this.schemeName = schemeName;
+        this.copayValue = copayValue;
+        this.copayType = copayType;
     }
 
     public String getBillNo() {
@@ -129,5 +139,45 @@ public class PatientBillDetail {
 
     public void setPayerName(String payerName) {
         this.payerName = payerName;
+    }
+
+    public Long getPayerId() {
+        return payerId;
+    }
+
+    public void setPayerId(Long payerId) {
+        this.payerId = payerId;
+    }
+
+    public Long getSchemeId() {
+        return schemeId;
+    }
+
+    public void setSchemeId(Long schemeId) {
+        this.schemeId = schemeId;
+    }
+
+    public String getSchemeName() {
+        return schemeName;
+    }
+
+    public void setSchemeName(String schemeName) {
+        this.schemeName = schemeName;
+    }
+
+    public Double getCopayValue() {
+        return copayValue;
+    }
+
+    public void setCopayValue(Double copayValue) {
+        this.copayValue = copayValue;
+    }
+
+    public String getCopayType() {
+        return copayType;
+    }
+
+    public void setCopayType(String copayType) {
+        this.copayType = copayType;
     }
 }

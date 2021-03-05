@@ -19,6 +19,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -149,6 +150,14 @@ public class AdmissionController {
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
-
+    @GetMapping("/admission/{admissionNo}/details")
+    public ResponseEntity<AdmissionData> getAdmission(@PathVariable("admissionNo") String admissionNo){
+        Optional<Admission> admission =admissionService.findByAdmissionNo(admissionNo);
+        AdmissionData data=null;
+        if(admission.isPresent()){
+            data = AdmissionData.map(admission.get());
+        }
+        return ResponseEntity.ok(data);
+    }
 
 }

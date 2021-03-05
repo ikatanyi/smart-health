@@ -2,11 +2,7 @@ package io.smarthealth.accounting.payment.api;
 
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.ShiftStatus;
-import io.smarthealth.accounting.payment.data.CreateReceipt;
-import io.smarthealth.accounting.payment.data.ReceiptData;
-import io.smarthealth.accounting.payment.data.ReceiptItemData;
-import io.smarthealth.accounting.payment.data.ReceiptMethod;
-import io.smarthealth.accounting.payment.data.ReceivePayment;
+import io.smarthealth.accounting.payment.data.*;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
@@ -18,6 +14,7 @@ import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -63,6 +60,17 @@ public class ReceiptingController {
         pagers.setContent(payment.toData());
         auditTrailService.saveAuditTrail("Receipts", "Created a payment receipt "+payment.getReceiptNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+    @PostMapping("/receipting/copay")
+    public  ResponseEntity<ReceiptData> createCopayReceipt(@Valid @RequestBody ReceiptInvoiceData data){
+        Receipt receipt = service.receiptCopay(data);
+       return ResponseEntity.ok(receipt.toData());
+    }
+
+    @PostMapping("/receipting/patient")
+    public  ResponseEntity<ReceiptData> createPatientReceipt(@Valid @RequestBody PatientReceipt data){
+        Receipt receipt = service.receiptPatient(data);
+        return ResponseEntity.ok(receipt.toData());
     }
 
     @PostMapping("/receipting/deposits")

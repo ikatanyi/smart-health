@@ -30,6 +30,7 @@ public class RebateInvoice {
     private String memberNumber;
     private String memberName;
     private String description;
+    private String visitDays;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate date;
 }

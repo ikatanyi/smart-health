@@ -31,4 +31,5 @@ public interface PatientBillItemRepository extends JpaRepository<PatientBillItem
     @Modifying
     @Query(value = "UPDATE PatientBillItem p SET p.paymentReference =:newRef WHERE p.paymentReference=:oldRef ")
     int updatePaymentReference(@Param("newRef") String newRef, @Param("oldRef") String oldRef);
+
 }

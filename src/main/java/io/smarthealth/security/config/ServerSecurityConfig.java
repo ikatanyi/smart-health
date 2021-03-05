@@ -54,6 +54,7 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
         this.userDetailsService = userDetailsService;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
+    //Thursday & Friday
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {

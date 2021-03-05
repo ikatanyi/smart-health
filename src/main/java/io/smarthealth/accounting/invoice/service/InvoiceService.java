@@ -15,6 +15,7 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.billing.service.PatientBillingService;
 import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceEditData;
@@ -83,6 +84,7 @@ public class InvoiceService {
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final VisitService visitService;
     private final PaymentDetailsService paymentDetailsService;
+    private final PatientBillingService patientBillingService;
 //    private final TxnService txnService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -155,7 +157,7 @@ public class InvoiceService {
                     invoice.setTransactionNo(trxId);
                     invoice.setVisit(visit);
                     if (paymentDetails.isPresent()) {
-                        invoice.setIdNumber(paymentDetails.get().getIdNo());
+                        invoice.setIdNumber(paymentDetails.get().getIdNo()); // ?? am not sure
                     }
 
                     if (config.isPresent()) {
@@ -185,11 +187,15 @@ public class InvoiceService {
                                         item.setInvoiceNumber(invoiceNo);
                                         item.setBalance(0D);
 
-                                        PatientBillItem updatedItem = billingService.updateBillItem(item);
+                                        PatientBillItem updatedItem = patientBillingService.updateBillItem(item);
                                         lineItem.setBillItem(updatedItem);
 //                                            lineItem.setBalance(inv.getAmount().doubleValue() > 0 ? inv.getAmount() : BigDecimal.ZERO);
                                         lineItem.setBalance(inv.getAmount());
-                                        if (updatedItem.getItem().getCategory() == ItemCategory.CoPay || updatedItem.getItem().getCategory() == ItemCategory.Receipt || updatedItem.getBillPayMode() != PaymentMethod.Cash) {
+                                        if (updatedItem.getItem().getCategory() == ItemCategory.CoPay
+                                                || updatedItem.getItem().getCategory() == ItemCategory.Receipt
+                                                || updatedItem.getItem().getCategory() == ItemCategory.NHIF_Rebate
+                                                || updatedItem.getItem().getCategory() == ItemCategory.Discount
+                                                || updatedItem.getBillPayMode() != PaymentMethod.Cash) {
                                             invoice.addItem(lineItem);
                                         }
                                         //this is
@@ -209,13 +215,18 @@ public class InvoiceService {
                     savedInvoices.add(saveInvoice(invoice));
                 }
                 );
+        // create an invoice entry to the patient bill as a receipt
 
+        for (Invoice savedInvoice : savedInvoices) {
+            patientBillingService.createReceiptItem(visit.getVisitNumber(), savedInvoice);
+        }
         return savedInvoices;
 
     }
-
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Invoice createInvoiceRebate(RebateInvoice invoiceData) {
 
+        //check if patient rebate has already been past
 //        select date_part('year',now())||lpad(date_part('month',now())::text,2,'0')||lpad('5',5,'0'),date('now')
 //20210100005
         String trxId = sequenceNumberService.next(1L, Sequences.Transactions.name());
@@ -263,9 +274,10 @@ public class InvoiceService {
         invoice.setVisit(visit);
         Invoice savedInvoice = saveInvoice(invoice);
        //
-        
+        patientBillingService.createReceiptItem(visit.getPatient().getPatientNumber(), visit.getPatient().getFullName(),visit.getVisitNumber(),savedInvoice.getAmount().doubleValue(),ItemCategory.NHIF_Rebate,false,savedInvoice.getNumber());
         //debt Debtor
-        //credit sales
+        //save the rebates
+
         return savedInvoice;
     }
 
