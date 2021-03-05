@@ -7,6 +7,9 @@ import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.Objects;
+
+import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.stock.stores.domain.StoreRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,10 +28,12 @@ public class ServicePointService {
 
     private final ServicePointRepository repository;
     private final AccountService accountService;
+    private final StoreRepository storeRepository;
 
-    public ServicePointService(ServicePointRepository repository, AccountService accountService) {
+    public ServicePointService(ServicePointRepository repository, AccountService accountService, StoreRepository storeRepository) {
         this.repository = repository;
         this.accountService = accountService;
+        this.storeRepository = storeRepository;
     }
 
     public ServicePointData createPoint(ServicePointData data) {
@@ -56,6 +61,16 @@ public class ServicePointService {
         if (data.getIncomeAccount() != null && data.getIncomeAccount().getAccountNumber() != null) {
             Account acc = accountService.findByAccountNumberOrThrow(data.getIncomeAccount().getAccountNumber());
             point.setIncomeAccount(acc);
+        }
+
+        if (data.getInventoryAssetAccount() != null && data.getInventoryAssetAccount().getAccountNumber() != null) {
+            Account acc = accountService.findByAccountNumberOrThrow(data.getInventoryAssetAccount().getAccountNumber());
+            point.setInventoryAssetAccount(acc);
+        }
+        if(data.getStoreId()!=null){
+            Store store = storeRepository.findById(data.getStoreId())
+                    .orElseThrow(() -> APIException.notFound("Store with ID {} not found", data.getStoreId()));
+            point.setStore(store);
         }
 
         ServicePoint savedPoint = repository.save(point);
@@ -100,6 +115,26 @@ public class ServicePointService {
         if (!point.getDescription().equals(data.getDescription())) {
             point.setDescription(data.getDescription());
         }
+        if (data.getExpenseAccount() != null && data.getExpenseAccount().getAccountNumber() != null || !"".equals(data.getExpenseAccount().getAccountNumber())) {
+            Account acc = accountService.findByAccountNumberOrThrow(data.getExpenseAccount().getAccountNumber());
+            point.setExpenseAccount(acc);
+        }
+
+        if (data.getIncomeAccount() != null && data.getIncomeAccount().getAccountNumber() != null) {
+            Account acc = accountService.findByAccountNumberOrThrow(data.getIncomeAccount().getAccountNumber());
+            point.setIncomeAccount(acc);
+        }
+
+        if (data.getInventoryAssetAccount() != null && data.getInventoryAssetAccount().getAccountNumber() != null) {
+            Account acc = accountService.findByAccountNumberOrThrow(data.getInventoryAssetAccount().getAccountNumber());
+            point.setInventoryAssetAccount(acc);
+        }
+        if(data.getStoreId()!=null){
+            Store store = storeRepository.findById(data.getStoreId())
+                    .orElseThrow(() -> APIException.notFound("Store with ID {} not found", data.getStoreId()));
+            point.setStore(store);
+        }
+
         ServicePoint savedPoint = repository.save(point);
 
         return savedPoint.toData();

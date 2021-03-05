@@ -5,9 +5,10 @@
  */
 package io.smarthealth.stock.purchase.data;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import lombok.Data;
 
 /**
  *

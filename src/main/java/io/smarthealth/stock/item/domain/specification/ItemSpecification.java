@@ -3,9 +3,10 @@ package io.smarthealth.stock.item.domain.specification;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
-import java.util.ArrayList;
-import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 /**
  * Filters for searching the data and filtering for the user

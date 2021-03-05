@@ -5,11 +5,13 @@ package io.smarthealth.debtor.claim.allocation.data;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import io.smarthealth.debtor.claim.allocation.domain.*;
+
+import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import lombok.Data;
 
 /**
  *

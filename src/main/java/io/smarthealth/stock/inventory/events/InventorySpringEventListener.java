@@ -5,12 +5,10 @@
  */
 package io.smarthealth.stock.inventory.events;
 
+import io.smarthealth.stock.inventory.service.InventoryItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import io.smarthealth.stock.inventory.service.InventoryItemService;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
  *

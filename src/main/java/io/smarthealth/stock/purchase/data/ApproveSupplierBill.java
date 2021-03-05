@@ -5,8 +5,9 @@
  */
 package io.smarthealth.stock.purchase.data;
 
-import javax.validation.constraints.NotNull;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  *

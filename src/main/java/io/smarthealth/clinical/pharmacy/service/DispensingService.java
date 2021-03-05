@@ -5,6 +5,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
@@ -31,26 +32,38 @@ import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.person.domain.WalkIn;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.WalkingService;
+import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
+import io.smarthealth.stock.inventory.service.InventoryService;
+import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemRepository;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.stock.stores.domain.StoreRepository;
+import io.smarthealth.stock.stores.service.StoreService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 /**
- *
  * @author Kelsas
  */
 @Service
@@ -60,6 +73,7 @@ public class DispensingService {
     private final DispensedDrugRepository repository;
     private final ItemRepository itemRepository;
     private final PatientService patientService;
+    private final StoreRepository storeRepository;
     private final StoreService storeService;
     private final BillingService billingService;
     private final InventoryService inventoryService;
@@ -67,8 +81,10 @@ public class DispensingService {
     private final VisitService visitService;
     private final DoctorsRequestRepository doctorRequestRepository;
     private final WalkingService walkingService;
+    private final ServicePointRepository servicePointRepository;
 
-    private void dispenseItem(Store store, DrugRequest drugRequest) {
+    public List<DispensedDrug> dispenseItem(DrugRequest drugRequest, Store store) {
+        List<DispensedDrug> dispensedDrugList = new ArrayList<>();
         Visit visit = visitService.findVisit(drugRequest.getVisitNumber()).orElse(null);
 //        Store store = storeService.getStoreWithNoFoundDetection(patientDrugs.getStoreId());
         if (!drugRequest.getDrugItems().isEmpty()) {
@@ -81,9 +97,10 @@ public class DispensingService {
 
             drugRequest.getDrugItems()
                     .stream()
-                    .forEach(drugData -> {
+                    .map(drugData -> {
                         DispensedDrug drugs = new DispensedDrug();
                         Item item = billingService.getItemByCode(drugData.getItemCode());
+
                         drugs.setPatient(patient);
                         drugs.setDrug(item);
                         drugs.setStore(store);
@@ -111,8 +128,45 @@ public class DispensingService {
                         DispensedDrug savedDrug = repository.saveAndFlush(drugs);
                         doStockEntries(savedDrug.getId());
                         fulfillDocRequest(drugData.getRequestId());
-                    });
+                        return savedDrug;
+                    })
+                    .collect(Collectors.toList())
+                    .forEach(dispensedDrugList::add);
         }
+        return dispensedDrugList;
+    }
+
+    public void dispenseConsumables(List<PatientBillItem> consumables, MovementType movementType, MovementPurpose movementPurpose) {
+         if(consumables.isEmpty()) return;
+        consumables.stream()
+                .forEach(consumable -> {
+                    if (consumable.getServicePointId() == null) {
+                        throw APIException.badRequest("Inventory Store is Required for the Service Point");
+                    }
+                    ServicePoint servicePoint =servicePointRepository.findById(consumable.getServicePointId())
+                            .orElseThrow(() -> APIException.notFound("Service Point with Id {} not found", consumable.getServicePointId()));
+
+                    Store store =  Optional.of(servicePoint.getStore())
+                            .orElseThrow(() -> APIException.badRequest("Item Inventory Location for the service point {} not configured. Item requires Store Location.", servicePoint.getName()));
+
+                    StockEntry stock = new StockEntry();
+                    stock.setAmount(NumberUtils.toScaledBigDecimal((consumable.getQuantity()) * (consumable.getPrice())));
+                    stock.setDeliveryNumber(consumable.getTransactionId());
+                    stock.setQuantity(consumable.getQuantity());
+                    stock.setItem(consumable.getItem());
+                    stock.setMoveType(movementType);
+                    stock.setPrice(NumberUtils.createBigDecimal(String.valueOf(consumable.getPrice())));
+                    stock.setPurpose(movementPurpose);
+                    if (consumable.getPatientBill().getWalkinFlag()) {
+                        stock.setReferenceNumber(consumable.getPatientBill().getReference());
+                    } else {
+                        stock.setReferenceNumber(consumable.getPatientBill().getPatient().getPatientNumber());
+                    }
+                    stock.setStore(store);
+                    stock.setTransactionDate(LocalDate.now());
+                    stock.setTransactionNumber(consumable.getTransactionId());
+                    inventoryService.save(stock);
+                });
     }
 
     @Transactional
@@ -133,7 +187,7 @@ public class DispensingService {
 
         drugRequest.setBillNumber(savedBill.getBillNumber());
 
-        dispenseItem(store, drugRequest);
+        dispenseItem(drugRequest, store);
 
         //if all goes well and the patient was sent on this service point direct (exclusive of doctor request) - mark on the patient visit the patient has been served, and remove from the waiting list
         if(!drugRequest.getIsWalkin()){
@@ -143,7 +197,7 @@ public class DispensingService {
                 visitService.createAVisit(visit);
             }
         }
-        
+
         return trdId;
     }
 
@@ -294,6 +348,7 @@ public class DispensingService {
 //                    billItem.setServicePointId(lineData.getServicePointId());
                     billItem.setBillPayMode(lineData.getPaymentMethod());
                     billItem.setStatus(BillStatus.Draft);
+                    billItem.setEntryType(lineData.getEntryType());
                     return billItem;
                 })
                 .collect(Collectors.toList());
@@ -336,4 +391,5 @@ public class DispensingService {
     public List<DispensedDrug> findDispensedDrugs(Long drugId, String visitNo, LocalDate date, String transNo) {
         return repository.findDispensedDrug(drugId, visitNo, date, transNo);
     }
+
 }

@@ -6,17 +6,19 @@ import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Data;
+
+import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 
 /**
- *
  * @author Kelsas
  */
 @Data
@@ -79,6 +81,7 @@ public class AdmissionData {
 
     private PaymentDetailsData paymentDetailsData;
     private String inpatientNumber;
+    private Integer stayDuration;
 
     public static AdmissionData map(Admission adm) {
         AdmissionData d = new AdmissionData();
@@ -95,8 +98,8 @@ public class AdmissionData {
         d.setDischargedBy(adm.getDischargedBy());
         d.setId(adm.getId());
         d.setAdmittingReason(adm.getAdmissionReason());
-        if(adm.getHealthProvider()!=null)
-           d.setAdmittingDoctor(adm.getHealthProvider().getFullName());
+        if (adm.getHealthProvider() != null)
+            d.setAdmittingDoctor(adm.getHealthProvider().getFullName());
         d.setPatientName(adm.getPatient().getFullName());
         d.setPatientNumber(adm.getPatient().getPatientNumber());
         d.setAge(adm.getPatient().getAge());
@@ -109,6 +112,17 @@ public class AdmissionData {
         d.setStatus(VisitEnum.Status.Admitted);
         d.setWardId(adm.getWard().getId());
         d.setWardName(adm.getWard().getName());
+
+
+        LocalDateTime end = adm.getDischargeDate() != null ? adm.getDischargeDate() : LocalDateTime.now();
+        int duration = 0;
+        if(adm.getAdmissionDate().toLocalDate().equals(adm.getDischargeDate())){
+           duration = 1;
+        }else{
+            Period period = Period.between(adm.getAdmissionDate().toLocalDate(), end.toLocalDate());
+            duration = period.getDays();
+        }
+        d.setStayDuration(duration);
         return d;
     }
 

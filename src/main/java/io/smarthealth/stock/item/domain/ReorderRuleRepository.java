@@ -1,8 +1,9 @@
 package io.smarthealth.stock.item.domain;
 
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import io.smarthealth.stock.stores.domain.Store;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
 
 /**
  *

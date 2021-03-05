@@ -99,4 +99,10 @@ public class ServicePointController {
 
         return ResponseEntity.ok(pagers);
     }
+
+    @GetMapping("/servicepoints/types")
+    public ResponseEntity<ServicePointType[]> getServicePointTypes(){
+        return ResponseEntity.ok(ServicePointType.values());
+    }
+
 }

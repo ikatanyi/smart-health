@@ -4,11 +4,12 @@ import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
-import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
 
 /**
  * Balance Transaction Line of a given {@link Item } . It holds the current

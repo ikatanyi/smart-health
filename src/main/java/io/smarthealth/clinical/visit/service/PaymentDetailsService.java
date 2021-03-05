@@ -30,7 +30,9 @@ public class PaymentDetailsService {
     }
 
     public PaymentDetails fetchPaymentDetailsByVisit(Visit visit) {
-        return paymentDetailsRepository.findByVisit(visit).orElseThrow(() -> APIException.notFound("Visit payment details identified by visit number {0} not available", visit.getVisitNumber()));
+        return paymentDetailsRepository.findByVisit(visit)
+                .orElse(null);
+//                .orElseThrow(() -> APIException.notFound("Visit payment details identified by visit number {0} not available", visit.getVisitNumber()));
     }
 
     public Optional<PaymentDetails> fetchPaymentDetailsByVisitWithoutNotFoundDetection(Visit visit) {

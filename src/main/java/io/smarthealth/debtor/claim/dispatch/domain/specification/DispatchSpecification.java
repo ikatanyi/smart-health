@@ -2,9 +2,10 @@ package io.smarthealth.debtor.claim.dispatch.domain.specification;
 
 import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import io.smarthealth.infrastructure.lang.DateRange;
-import java.util.ArrayList;
-import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 /**
  *

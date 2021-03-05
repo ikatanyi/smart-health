@@ -10,6 +10,7 @@ import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.accounting.invoice.data.RebateInvoice;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -47,7 +48,7 @@ public class InvoiceController {
     public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
 
         List<InvoiceData> trans = service.createInvoice(invoiceData).stream().map(x -> x.toData()).collect(Collectors.toList());
-        auditTrailService.saveAuditTrail("Patient Invoice", "Created Patient invoice with invoiceNo "+trans.get(0).getNumber());
+        auditTrailService.saveAuditTrail("Patient Invoice", "Created Patient invoice with invoiceNo " + trans.get(0).getNumber());
         Pager<List<InvoiceData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Invoice (s) successfully Created.");
@@ -56,11 +57,17 @@ public class InvoiceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
+    @PostMapping("/invoices/rebate")
+    public ResponseEntity<InvoiceData> createInvoiceRebate(@Valid @RequestBody RebateInvoice invoiceData) {
+        Invoice invoice = service.createInvoiceRebate(invoiceData);
+        return ResponseEntity.status(HttpStatus.CREATED).body(invoice.toData());
+    }
+
     @GetMapping("/invoices/{id}")
     @PreAuthorize("hasAuthority('view_invoices')")
     public ResponseEntity<?> getInvoice(@PathVariable(value = "id") Long id) {
         Invoice trans = service.getInvoiceByIdOrThrow(id);
-        auditTrailService.saveAuditTrail("Patient Invoice", "Searched Invoice  identified by id "+id);
+        auditTrailService.saveAuditTrail("Patient Invoice", "Searched Invoice  identified by id " + id);
         return ResponseEntity.ok(trans.toData());
     }
 
@@ -69,7 +76,7 @@ public class InvoiceController {
     public ResponseEntity<?> updateInvoice(@PathVariable(value = "id") Long id, @Valid @RequestBody InvoiceEditData invoiceData) {
 
         Invoice trans = service.updateInvoice(id, invoiceData);
-        auditTrailService.saveAuditTrail("Patient Invoice", "Edited Invoice by id "+id);
+        auditTrailService.saveAuditTrail("Patient Invoice", "Edited Invoice by id " + id);
         return ResponseEntity.ok(trans.toData());
     }
 
@@ -121,7 +128,7 @@ public class InvoiceController {
     @PostMapping("/invoices/{id}/emails")
     @PreAuthorize("hasAuthority('send_invoices')")
     public String sendReceipt(@PathVariable(value = "id") Long id) {
-        auditTrailService.saveAuditTrail("Patient Invoice", "Emailed Invoice identified by id "+id);
+        auditTrailService.saveAuditTrail("Patient Invoice", "Emailed Invoice identified by id " + id);
         return service.emailInvoice(id);
     }
 
@@ -129,14 +136,14 @@ public class InvoiceController {
     @PreAuthorize("hasAuthority('create_invoices')")
     public ResponseEntity<?> sendInvoiceToEDI(@PathVariable(value = "id") Long id) {
         InvoiceData trans = service.invoiceToEDI(id);
-        auditTrailService.saveAuditTrail("Patient Invoice", "Send Invoice identified by id "+id+" to EDI");
+        auditTrailService.saveAuditTrail("Patient Invoice", "Send Invoice identified by id " + id + " to EDI");
         return ResponseEntity.status(HttpStatus.CREATED).body(trans);
     }
 
     @PostMapping("/invoices/{invoiceNo}/void")
     public ResponseEntity<?> cancelInvoice(@PathVariable(value = "invoiceNo") String invoiceNo, @Valid @RequestBody List<InvoiceItemData> invoiceItems) {
         Invoice invoice = service.cancelInvoice(invoiceNo, invoiceItems);
-        auditTrailService.saveAuditTrail("Patient Invoice", "Cancelled Invoice "+invoiceNo);
+        auditTrailService.saveAuditTrail("Patient Invoice", "Cancelled Invoice " + invoiceNo);
         return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
     }
 
@@ -145,7 +152,7 @@ public class InvoiceController {
     public ResponseEntity<?> updateInvoiceSmartStatus(@PathVariable(value = "id") Long id, @RequestParam(value = "awaitingSmart", required = true) Boolean status) {
 
         service.updateInvoiceSmartStatus(id, status);
-        auditTrailService.saveAuditTrail("Patient Invoice", "Edited Invoice identified by id "+id);
+        auditTrailService.saveAuditTrail("Patient Invoice", "Edited Invoice identified by id " + id);
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
@@ -153,25 +160,24 @@ public class InvoiceController {
     /*
       Provide mpesa integrations, credit cards,
      */
-
     @PostMapping("/invoices/merge")
     public ResponseEntity<?> mergeInvoice(@Valid @RequestBody MergeInvoice mergeInvoice) {
         Invoice invoice = service.mergeInvoice(mergeInvoice);
-        auditTrailService.saveAuditTrail("Patient Invoice", "merged Invoice"+mergeInvoice.getInvoiceNo()+ " with "+ mergeInvoice.getInvoiceToMerge());
+        auditTrailService.saveAuditTrail("Patient Invoice", "merged Invoice" + mergeInvoice.getInvoiceNo() + " with " + mergeInvoice.getInvoiceToMerge());
         return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
     }
-    
-     @GetMapping("/invoices/search")
+
+    @GetMapping("/invoices/search")
     @PreAuthorize("hasAuthority('view_invoices')")
-    public ResponseEntity<?> getInvoices( 
+    public ResponseEntity<?> getInvoices(
             @RequestParam(value = "q", required = false) String query,
             @RequestParam(value = "status", required = false) InvoiceStatus status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size); 
+        Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<InvoiceData> list = service.searchInvoice(query,status, pageable)
+        Page<InvoiceData> list = service.searchInvoice(query, status, pageable)
                 .map(x -> x.toData());
 
         auditTrailService.saveAuditTrail("Patient Invoice", "searched invoice");

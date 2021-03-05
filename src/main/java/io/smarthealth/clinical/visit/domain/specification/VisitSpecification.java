@@ -135,7 +135,7 @@ public class VisitSpecification {
                 predicates.add(cb.equal(root.get("visitNumber"), visitNumber));
             }
 
-            if (visitNumber != null) {
+            if (patientNumber != null) {
                 predicates.add(cb.equal(root.get("patient").get("patientNumber"), patientNumber));
             }
             if (dateRange != null) {

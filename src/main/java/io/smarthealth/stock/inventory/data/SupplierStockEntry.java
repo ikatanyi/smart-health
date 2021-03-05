@@ -3,14 +3,15 @@ package io.smarthealth.stock.inventory.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.inventory.domain.enumeration.PurchaseType;
+import lombok.Data;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
-import lombok.Data;
 
 /**
  *

@@ -29,5 +29,6 @@ public enum GlobalConfigNum {
     Notifications,
     DefaultCurrency,
     DiscountMaxPercentage,
-    PatientDocuments;
+    PatientDocuments,
+    CheckPatientBillLimit;
 }

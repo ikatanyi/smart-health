@@ -1,9 +1,10 @@
 package io.smarthealth.stock.inventory.data;
 
 import io.smarthealth.stock.item.domain.Item;
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
 /**
  * Balance Transaction Line of a given {@link Item } . It holds the current

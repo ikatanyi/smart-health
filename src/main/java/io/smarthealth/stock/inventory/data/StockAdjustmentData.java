@@ -1,7 +1,8 @@
 package io.smarthealth.stock.inventory.data;
 
-import java.time.LocalDateTime;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * Captures the Inventory Variance quantity and reasons

@@ -5,7 +5,6 @@
  */
 package io.smarthealth.stock.purchase.domain;
 
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

@@ -1,13 +1,13 @@
 package io.smarthealth.stock.purchase.data;
 
-import io.smarthealth.stock.purchase.domain.PurchaseCreditNoteItem;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
 /**
  *

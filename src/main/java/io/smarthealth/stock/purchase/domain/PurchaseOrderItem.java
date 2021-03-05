@@ -3,10 +3,11 @@ package io.smarthealth.stock.purchase.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
-import java.math.BigDecimal;
-import javax.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
 
 /**
  *

@@ -1,11 +1,13 @@
 package io.smarthealth.accounting.billing.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
-import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.theatre.data.TheatreProvider;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -58,6 +60,9 @@ public class PatientBillItem extends Auditable {
     @Enumerated(EnumType.STRING)
     private BillStatus status;
 
+    @Enumerated(EnumType.STRING)// to represent a credit or a debit for easy balance man
+    private BillEntryType entryType;
+
     @Transient
     private Long medicId;
 
@@ -69,11 +74,14 @@ public class PatientBillItem extends Auditable {
     private String paymentReference;
     private String invoiceNumber;
 
+//    @Enumerated(EnumType.STRING)
+//    private TransactionType transactionType;
+
     @Transient
     List<TheatreProvider> theatreProviders;
     @Transient
     private Long storeId;
-    
+
     public BillItemData toData() {
         BillItemData data = new BillItemData();
         data.setId(this.getId());
@@ -118,6 +126,19 @@ public class PatientBillItem extends Auditable {
         data.setPaymentMethod(this.billPayMode);
         data.setFinalized(this.finalized);
         data.setInvoiceNumber(this.invoiceNumber);
+        if (this.entryType != null) {
+            data.setEntryType(this.entryType);
+        }
+        if(scheme!=null){
+            data.setSchemeId(scheme.getId());
+            data.setSchemeName(scheme.getSchemeName());
+        }
+        if(this.billPayMode!=null && billPayMode == PaymentMethod.Insurance){
+
+            data.setPaymentStatus(finalized ? "Finalized" : "Draft");
+        }else{
+            data.setPaymentStatus(status.name());
+        }
         return data;
     }
 

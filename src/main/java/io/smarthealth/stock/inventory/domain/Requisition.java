@@ -4,11 +4,12 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.inventory.domain.enumeration.RequisitionStatus;
 import io.smarthealth.stock.inventory.domain.enumeration.RequisitionType;
 import io.smarthealth.stock.stores.domain.Store;
+import lombok.Data;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
-import lombok.Data;
 
 /**
  *

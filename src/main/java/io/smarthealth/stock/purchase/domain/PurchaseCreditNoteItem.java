@@ -3,11 +3,12 @@ package io.smarthealth.stock.purchase.domain;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteItemData;
-import java.math.BigDecimal;
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.Data;
+import java.math.BigDecimal;
 
 /**
  *

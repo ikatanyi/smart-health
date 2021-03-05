@@ -9,17 +9,13 @@ package io.smarthealth.debtor.claim.writeOff.domain;
  */
 
 
-
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
 
 /**
  *

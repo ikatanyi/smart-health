@@ -4,9 +4,10 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
-import java.time.LocalDateTime;
-import javax.persistence.*;
 import lombok.Data;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * Captures the Inventory Variance quantity and reasons

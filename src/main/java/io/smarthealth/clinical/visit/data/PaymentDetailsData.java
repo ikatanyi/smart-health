@@ -57,6 +57,8 @@ public class PaymentDetailsData {
     
 
     public static PaymentDetailsData map(PaymentDetails e) {
+        if(e == null ) return null;
+
         PaymentDetailsData d = new PaymentDetailsData();
         d.setComments(e.getComments());
         d.setMemberName(e.getMemberName());

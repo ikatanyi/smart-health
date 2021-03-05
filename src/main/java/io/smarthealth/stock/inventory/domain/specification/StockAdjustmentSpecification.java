@@ -4,9 +4,10 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.inventory.domain.StockAdjustment;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
-import java.util.ArrayList;
-import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 /**
  *

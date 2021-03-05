@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import io.smarthealth.security.domain.AuditTrail;
 import io.smarthealth.security.domain.specification.AuditTrailSpecification;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -31,8 +32,8 @@ public class AuditTrailService {
     public AuditTrail createAuditTrail(AuditTrailData data){
         AuditTrail auditTrail  = data.map();
         return auditTrailRepository.save(auditTrail);
-    } 
-    
+    }
+
     public AuditTrail saveAuditTrail(String name, String description){
         AuditTrail auditTrail  = new AuditTrail();
         auditTrail.setName(name);

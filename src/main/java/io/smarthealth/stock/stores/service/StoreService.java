@@ -10,11 +10,15 @@ import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.domain.Store.Type;
 import io.smarthealth.stock.stores.domain.StoreRepository;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -94,11 +98,9 @@ public class StoreService {
         return storeRepository.save(toSave);
     }
 
-    public Page<Store> fetchAllStores(Boolean patientStore, Pageable page) {
-        if (patientStore != null) {
-            return storeRepository.findByPatientStore(patientStore, page);
-        }
-        return storeRepository.findAll(page);
+    public Page<Store> fetchAllStores(Type storeType, Boolean patientStore, Pageable page) {
+
+        return storeRepository.findAll(findStoreWith(patientStore,storeType), page);
     }
 
     public Optional<Store> getStore(Long id) {
@@ -126,5 +128,18 @@ public class StoreService {
 
     public IncomeExpenseData getStoreMetadata() {
         return accountService.getIncomeExpenseAccounts();
+    }
+
+    private static Specification<Store> findStoreWith(Boolean patientStore, Type storeType) {
+        return (root, query, builder) -> {
+            ArrayList<Predicate> predicateList = new ArrayList<>();
+            if (patientStore != null) {
+                predicateList.add(builder.equal(root.get("patientStore"), patientStore));
+            }
+            if (storeType!=null) {
+                predicateList.add(builder.equal(root.get("storeType"), storeType));
+            }
+            return builder.and(predicateList.toArray(new Predicate[predicateList.size()]));
+        };
     }
 }

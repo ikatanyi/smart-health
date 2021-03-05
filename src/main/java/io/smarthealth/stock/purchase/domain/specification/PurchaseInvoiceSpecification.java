@@ -3,9 +3,10 @@ package io.smarthealth.stock.purchase.domain.specification;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
-import java.util.ArrayList;
-import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 /**
  *

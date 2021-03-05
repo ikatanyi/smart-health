@@ -2,16 +2,17 @@ package io.smarthealth.debtor.claim.dispatch.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
-import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Data;
+
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 
 /**
  *

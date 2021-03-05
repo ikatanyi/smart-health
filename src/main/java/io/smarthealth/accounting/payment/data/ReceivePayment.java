@@ -42,7 +42,7 @@ public class ReceivePayment {
     private String patientNumber;
     private String receiptNo; 
     
-    private List<BilledItem> billItems = new ArrayList<>();
+    private List<BillReceiptedItem> billItems = new ArrayList<>();
 
     private List<ReceiptMethod> payment = new ArrayList<>();
 

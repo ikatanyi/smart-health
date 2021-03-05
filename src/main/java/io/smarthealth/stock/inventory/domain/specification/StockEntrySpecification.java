@@ -4,9 +4,10 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
-import java.util.ArrayList;
-import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 /**
  * Filters for searching the data and filtering for the user

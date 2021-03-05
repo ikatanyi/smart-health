@@ -5,8 +5,9 @@ import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
 import io.smarthealth.stock.item.data.Uoms;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.stores.data.StoreData;
-import java.util.List;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  *

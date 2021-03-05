@@ -204,4 +204,7 @@ public class BillingV2Controller {
 
         String billNumber;
     }
+    
+    //create rebate for the patient
+    
 }

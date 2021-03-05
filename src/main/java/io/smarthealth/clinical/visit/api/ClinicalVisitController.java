@@ -224,9 +224,10 @@ public class ClinicalVisitController {
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay
             //Modification - reusing copayment billing (kelsas)
-            if (config.isPresent() && config.get().getCoPayValue() > 0) {
-                billingService.createCopay(new CopayData(visit.getVisitNumber(), visitData.getPayment().getSchemeId()));
-            }
+            //TODO disable copay from being billed at start
+//            if (config.isPresent() && config.get().getCoPayValue() > 0) {
+//                billingService.createCopay(new CopayData(visit.getVisitNumber(), visitData.getPayment().getSchemeId()));
+//            }
 
         }
         //Push it to queue
@@ -488,7 +489,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         pagers.setCode("0");
         pagers.setMessage("Payment Mode");
         pagers.setContent(PaymentDetailsData.map(pde));
-        auditTrailService.saveAuditTrail("Visit", "Viewed a Patient payment mode for patient visit "+visit.getPatient().getFullName());
+        //auditTrailService.saveAuditTrail("Visit", "Viewed a Patient payment mode for patient visit "+visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 

@@ -26,7 +26,10 @@ public class ServicePointData {
     private SimpleAccountData incomeAccount;
     private SimpleAccountData expenseAccount;
     private SimpleAccountData inventoryAssetAccount;
-    private List<StoreData> stores = new ArrayList();
+
+    private Long storeId;
+    private String storeName;
+//    private List<StoreData> stores = new ArrayList();
 
     public ServicePointData() {
     }
@@ -48,13 +51,17 @@ public class ServicePointData {
         if (point.getInventoryAssetAccount() != null) {
             data.setInventoryAssetAccount(SimpleAccountData.map(point.getInventoryAssetAccount()));
         }
+        if(point.getStore()!=null){
+            data.setStoreId(point.getId());
+            data.setStoreName(point.getName());
+        }
         
-        data.setStores(
-                point.getStores()
-                        .stream()
-                        .map(StoreData::map)
-                        .collect(Collectors.toList())
-        );
+//        data.setStores(
+//                point.getStores()
+//                        .stream()
+//                        .map(StoreData::map)
+//                        .collect(Collectors.toList())
+//        );
 
         return data;
     }

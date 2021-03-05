@@ -24,5 +24,8 @@ public enum ItemCategory {
     Receipt,
     Opticals,
     Others,
-    Theatre
+    Theatre,
+    Rebate,
+    Discount,
+    Waiver
 }

@@ -2,15 +2,17 @@ package io.smarthealth.stock.inventory.domain;
 
 import io.smarthealth.stock.inventory.data.ExpiryStock;
 import io.smarthealth.stock.inventory.data.StockMovement;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -38,5 +40,7 @@ public interface StockEntryRepository extends JpaRepository<StockEntry, Long>, J
 
     @Query(value = "SELECT sum(s.quantity) FROM StockEntry s WHERE s.item =:item AND s.store =:store GROUP BY s.item ")
     Double sumQuantities(Item item, Store store);
+
+    List<StockEntry> findByMoveTypeAndReferenceNumber(MovementType type, String invoiceNo);
 
 }

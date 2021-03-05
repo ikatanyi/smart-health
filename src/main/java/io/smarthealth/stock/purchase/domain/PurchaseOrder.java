@@ -9,13 +9,14 @@ import io.smarthealth.stock.purchase.data.PurchaseOrderItemData;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.supplier.domain.Supplier;
+import lombok.Data;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.*;
-import lombok.Data;
 
 /**
  *

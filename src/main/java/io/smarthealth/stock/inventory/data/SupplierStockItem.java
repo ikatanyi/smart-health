@@ -1,7 +1,8 @@
 package io.smarthealth.stock.inventory.data;
 
-import java.time.LocalDate;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 /**
  *

@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.pharmacy.domain;
 
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -69,7 +70,6 @@ public class DispensedDrug extends Auditable implements Cloneable {
     private String deliveryNumber;
     private String billNumber;
 
-//    @Enumerated(EnumType.STRING)
     public DispensedDrugData toData() {
         DispensedDrugData data = new DispensedDrugData();
 

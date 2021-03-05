@@ -70,4 +70,9 @@ public class Visit extends Auditable {
     private DoctorClinicItems clinic;
     
     
+//    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL,
+//              fetch = FetchType.LAZY, optional = false)
+//    private PostDetails details;
+    @OneToOne(mappedBy = "visit", optional = false)
+    private PaymentDetails paymentDetails;
 }
