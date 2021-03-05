@@ -188,6 +188,7 @@ public class LabReportService {
         String labNumber = reportParam.getFirst("labNumber");
 //        Visit visit = visitService.findVisitEntityOrThrow("O000005");
         LabRegisterData labTests = labService.getLabRegisterByNumber(labNumber).toData(Boolean.TRUE);//tLabResultDataByVisit(visit);
+        System.out.println("Report Data "+labTests.toString());
         ReportData reportData = new ReportData();
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();

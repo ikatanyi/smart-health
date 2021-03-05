@@ -4,6 +4,7 @@ import io.smarthealth.clinical.laboratory.data.LabRegisterData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import io.smarthealth.organization.person.domain.WalkIn;
 import lombok.Data;
 
 /**
- *
  * @author Kelsas
  */
 @Entity
@@ -48,11 +50,15 @@ public class LabRegister extends Auditable {
 
     private String transactionId;
 
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_request_walking_id"))
+    private WalkIn walkIn;
+
     @Enumerated(EnumType.STRING)
     private LabTestStatus status;
 
     private Boolean voided = Boolean.FALSE;
- 
+
     @OneToMany(mappedBy = "labRegister", cascade = CascadeType.ALL)
     private List<LabRegisterTest> tests = new ArrayList<>();
 
@@ -72,7 +78,7 @@ public class LabRegister extends Auditable {
         data.setLabNumber(this.labNumber);
         data.setOrderNumber(this.orderNumber);
         data.setIsWalkin(this.isWalkin);
-        
+
         if (this.visit != null && !this.isWalkin) {
             data.setPatientName(this.visit.getPatient().getFullName());
             data.setVisitNumber(this.visit.getVisitNumber());
@@ -81,8 +87,8 @@ public class LabRegister extends Auditable {
             }
         } else {
 
-            data.setPatientName("");
-            data.setVisitNumber(this.patientNo);
+            data.setPatientName(this.walkIn!=null? this.walkIn.getFullName(): "");
+            data.setVisitNumber(this.walkIn!=null? this.walkIn.getWalkingIdentitificationNo():"");
         }
         data.setPatientNo(this.patientNo);
         data.setRequestDatetime(this.requestDatetime);

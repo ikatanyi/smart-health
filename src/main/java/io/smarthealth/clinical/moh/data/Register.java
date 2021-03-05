@@ -20,7 +20,7 @@ public interface Register {
 
     public String getResidence();
 
-    public LocalDate getDate();
+    public java.time.LocalDateTime getDate();
 
     public LocalDate getSeen();
 
