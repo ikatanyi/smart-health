@@ -52,10 +52,6 @@ public class EmployeeController {
     public @ResponseBody
     ResponseEntity<?> createEmployee(@RequestBody @Valid final EmployeeData employeeData) {
         if (employeeData.isCreateUserAccount()) {
-
-//              if (containsWhitespace(employeeData.getUsername())) {
-//            throw APIException.badRequest("Username should not have spaces!");
-//        }
             if (userRepository.existsByUsername(employeeData.getUsername())) {
                 return new ResponseEntity(new io.smarthealth.security.data.ApiResponse(false, "Username is already taken!"),
                         HttpStatus.BAD_REQUEST);
@@ -68,6 +64,9 @@ public class EmployeeController {
             if (employeeData.getRoles().length < 1) {
                 throw APIException.badRequest("Please assign a role to the user to be created", "");
             }
+            if(employeeData.getUsername()==null){
+                throw APIException.badRequest("Please provide username", "");
+            }
         }
 
         Department department = departmentService.fetchDepartmentByCode(employeeData.getDepartmentCode());
@@ -75,6 +74,7 @@ public class EmployeeController {
         Employee employee = employeeService.convertEmployeeDataToEntity(employeeData);
         employee.setDepartment(department);
         employee.setEmployeeCategory(employeeData.getEmployeeCategory());
+        employee.setUserName(employeeData.getUsername());
 
         PersonContact personContact = new PersonContact();
         personContact.setEmail(employeeData.getEmail());

@@ -33,4 +33,7 @@ public class Employee extends Person {
     private String specialization;
     private String licenseNo;
 
+    @Transient
+    private String userName;
+
 }

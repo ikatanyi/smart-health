@@ -79,7 +79,7 @@ public class PricelistService {
         priceList.setDefaultPrice(data.getDefaultPrice());
         priceList.setEffectiveDate(data.getEffectiveDate());
         priceList.setItem(item);
-        if (data.getDefaultPrice() != null && !data.getDefaultPrice()) {
+        if (data.getDefaultPrice() != null && data.getDefaultPrice()) {
             priceList.setSellingRate(data.getSellingRate());
         } else {
             priceList.setSellingRate(BigDecimal.ZERO);

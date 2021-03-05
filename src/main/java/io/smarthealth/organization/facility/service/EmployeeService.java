@@ -73,6 +73,7 @@ public class EmployeeService {
         if (employeeRepository.existsByStaffNumber(employee.getStaffNumber())) {
             throw APIException.conflict("Staff identified by number {0} already exists ", employee.getStaffNumber());
         }
+
         Employee savedEmployee = employeeRepository.save(employee);
 
         personContact.setPerson(employee);
@@ -88,7 +89,7 @@ public class EmployeeService {
             String password = PassayPassword.generatePassayPassword();
             User user = new User(
                     savedContact.getEmail()==null? savedContact.getTelephone(): savedContact.getEmail(),
-                    savedContact.getEmail()==null? savedContact.getTelephone(): savedContact.getEmail(),
+                    employee.getUserName()==null? savedContact.getTelephone(): employee.getUserName(),
                     password,
                     savedContact.getPerson().getGivenName().concat(" ").concat(savedContact.getPerson().getSurname())
             );
