@@ -440,6 +440,9 @@ public class PatientService {
             throw APIException.conflict("Duplicate Patient Number {0}", patientNumber);
         }
     }
+    public Optional<Patient> findPatientByPatientNumber(String patientNumber) {
+        return patientRepository.findByPatientNumber(patientNumber);
+    }
 
     public boolean patientExists(String patientNumber) {
         return patientRepository.existsByPatientNumber(patientNumber);

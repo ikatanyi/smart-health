@@ -6,11 +6,13 @@
 package io.smarthealth.infrastructure.utility.ivorydata;
 
 //import io.smarthealth.organization.person.domain.enumeration.Gender;
+
 import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
 import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,11 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author Simon.waweru
  */
 @RequiredArgsConstructor
@@ -335,8 +337,8 @@ public class IvoryHistoricalClinicalDataSindano {
                             pst.execute();
 
                         } catch (Exception e) {
-                            System.out.println("error " + e.getMessage());
-                            System.out.println("clinicalNotes " + diagnosis);
+                            System.err.println("error " + e.getMessage());
+                            System.err.println("clinicalNotes " + diagnosis);
                         }
 
                     }
