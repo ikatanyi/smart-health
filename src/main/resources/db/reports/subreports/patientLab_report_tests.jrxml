@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientLab_report_tests" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b3381605-b0c8-42fa-9eeb-f8ba94fce080">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="enteredBy" class="java.lang.String"/>
+	<parameter name="validatedBy" class="java.lang.String"/>
+	<field name="testName" class="java.lang.String"/>
+	<field name="entryDateTime" class="java.lang.Object"/>
+	<field name="enteredBy" class="java.lang.String"/>
+	<field name="specimen" class="java.lang.String"/>
+	<field name="labNumber" class="java.lang.String"/>
+	<field name="status" class="java.lang.Object"/>
+	<field name="labResults" class="java.util.List"/>
+	<field name="orderNumber" class="java.lang.String"/>
+	<field name="requestedBy" class="java.lang.String"/>
+	<field name="testCode" class="java.lang.String"/>
+	<field name="validated" class="java.lang.Boolean"/>
+	<field name="validatedBy" class="java.lang.String"/>
+	<field name="withRef" class="java.lang.Boolean"/>
+	<field name="discipline" class="java.lang.String"/>
+	<variable name="enteredBy" class="java.lang.String">
+		<variableExpression><![CDATA[$F{enteredBy}]]></variableExpression>
+	</variable>
+	<variable name="validatedBy" class="java.lang.String">
+		<variableExpression><![CDATA[$F{validatedBy}]]></variableExpression>
+	</variable>
+	<columnHeader>
+		<band height="6" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="86" splitType="Stretch">
+			<subreport isUsingCache="false">
+				<reportElement x="3" y="55" width="550" height="19" uuid="8c9b1bca-d151-4bd0-bb56-9338ebcbde18">
+					<printWhenExpression><![CDATA[$F{withRef}.equals(true)]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results_with_ref.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="3" y="55" width="550" height="20" uuid="fba2b4a8-80aa-4b96-aeaa-185b2175505f">
+					<printWhenExpression><![CDATA[$F{withRef}.equals( false )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results_without_ref.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement positionType="Float" x="377" y="14" width="72" height="14" uuid="e83091c0-858a-4e8a-a1fe-5bd1c97300d8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Reported :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="3" y="29" width="66" height="15" isRemoveLineWhenBlank="true" uuid="d367d4ed-94f0-4b99-9918-e1ce57b6cdc4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Specimen :]]></text>
+			</staticText>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="449" y="14" width="101" height="14" isRemoveLineWhenBlank="true" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="69" y="14" width="191" height="15" isRemoveLineWhenBlank="true" uuid="788c4112-84a4-41d8-9826-37c9db2fc205"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="69" y="29" width="191" height="15" isRemoveLineWhenBlank="true" uuid="7938b1ef-f429-40f4-b9ec-8ec5a854d8ce"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{specimen}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="377" y="28" width="72" height="15" uuid="5f173801-00c0-4e94-b3e0-3ad4714b843b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Status :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="449" y="28" width="101" height="15" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="1d282bd5-188f-434f-a792-b069b76410bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="3" y="14" width="66" height="15" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="1a8461b2-fa61-41cb-b26e-fee39503e7bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[TestName :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3" y="0" width="257" height="14" isRemoveLineWhenBlank="true" uuid="b9c4940d-f649-428e-9e32-8d7c0b599193"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="10" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{discipline}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="3" y="47" width="550" height="1" uuid="1500034b-0d7a-4462-ac23-ff5726d34036"/>
+				<graphicElement>
+					<pen lineWidth="0.1" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

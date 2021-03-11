@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InvoiceHeader" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="68057672-f025-4cec-beb2-685f6c441f52">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT facility_name, registration_number, f.tax_number, footer_msg, o.website AS organization_website, ad.country, ad.email, ad.line1, ad.line2, ad.postal_code, ad.town, c.email, c.full_name AS contact_person, c.mobile AS contact_mobile,c.telephone AS contact_telephone,c.email as contact_email, lo.`data` AS company_logo, lo.file_name,lo.file_type
+FROM facility f 
+JOIN org_organization o ON f.organization_id = o.id 
+LEFT JOIN org_address ado ON ado.organization_id = o.id
+LEFT JOIN addresses ad ON ad.id = ado.address_id
+LEFT JOIN org_contact co ON co.organization_id = o.id
+LEFT JOIN contacts c ON c.id = co.contact_id
+LEFT JOIN company_logo lo ON f.company_logo_id = lo.id]]>
+	</queryString>
+	
+	<queryString language="SQL">
+		<![CDATA[]]>
+	</queryString>
+	<field name="facility_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="facility_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="facility_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="facility"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="registration_number" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="registration_number"/>
+		<property name="com.jaspersoft.studio.field.label" value="registration_number"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="facility"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tax_number" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tax_number"/>
+		<property name="com.jaspersoft.studio.field.label" value="tax_number"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="facility"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="footer_msg" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="footer_msg"/>
+		<property name="com.jaspersoft.studio.field.label" value="footer_msg"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="facility"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="organization_website" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="website"/>
+		<property name="com.jaspersoft.studio.field.label" value="organization_website"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="org_organization"/>
+	</field>
+	<field name="country" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="country"/>
+		<property name="com.jaspersoft.studio.field.label" value="country"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="addresses"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="email"/>
+		<property name="com.jaspersoft.studio.field.label" value="email"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="addresses"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="line1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="line1"/>
+		<property name="com.jaspersoft.studio.field.label" value="line1"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="addresses"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="line2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="line2"/>
+		<property name="com.jaspersoft.studio.field.label" value="line2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="addresses"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="postal_code" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="postal_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="postal_code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="addresses"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="town" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="town"/>
+		<property name="com.jaspersoft.studio.field.label" value="town"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="addresses"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="COLUMN_12" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="email"/>
+		<property name="com.jaspersoft.studio.field.label" value="email"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contacts"/>
+	</field>
+	<field name="contact_person" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="full_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="contact_person"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contacts"/>
+	</field>
+	<field name="contact_mobile" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="mobile"/>
+		<property name="com.jaspersoft.studio.field.label" value="contact_mobile"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contacts"/>
+	</field>
+	<field name="contact_telephone" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="telephone"/>
+		<property name="com.jaspersoft.studio.field.label" value="contact_telephone"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contacts"/>
+	</field>
+	<field name="contact_email" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="email"/>
+		<property name="com.jaspersoft.studio.field.label" value="contact_email"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contacts"/>
+	</field>
+	<field name="company_logo" class="byte[]">
+		<property name="com.jaspersoft.studio.field.name" value="data"/>
+		<property name="com.jaspersoft.studio.field.label" value="company_logo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="company_logo"/>
+	</field>
+	<field name="file_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="file_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="file_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="company_logo"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="file_type" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="file_type"/>
+		<property name="com.jaspersoft.studio.field.label" value="file_type"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="company_logo"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="locale" class="java.lang.String">
+		<variableExpression><![CDATA[$F{line1} +", "+$F{line2}+"\n"+$F{country}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="150" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="337" y="1" width="219" height="18" forecolor="#000000" backcolor="#FFFFFF" uuid="602e7a90-f198-4021-a647-c3458048e3f5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INVOICE]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="2" y="21" width="552" height="1" uuid="feac0af7-122a-42b4-8573-75f298ddceb3"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+			<image>
+				<reportElement x="2" y="23" width="50" height="50" uuid="9c5be06f-53ce-4982-93ee-89394512b467"/>
+				<imageExpression><![CDATA[$F{company_logo}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="72" width="260" height="70" uuid="809a23bb-b29c-4a53-b5d4-1c71aa80787d"/>
+				<textFieldExpression><![CDATA[$F{facility_name}+"\n"
++$F{line1}+", "+$F{line2}+", "+$F{country}+"\n"
++$F{contact_telephone}+"\n"
++$F{contact_email}+"\n"
++$F{organization_website}+"\n"
++$F{tax_number}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="73" width="274" height="69" uuid="abc1d7ea-6af7-4a8d-8506-f5fb0b077538"/>
+				<textFieldExpression><![CDATA["Text Field"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="145" width="554" height="1" uuid="1d9e6e4f-9a83-49af-b24f-84ba94ab162f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PatientCard_address_subreport" pageWidth="275" pageHeight="802" columnWidth="275" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f29ad7ab-fb0a-44a7-9684-ff5b8797cdbf">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<field name="line1" class="java.lang.String"/>
+	<field name="line2" class="java.lang.String"/>
+	<field name="town" class="java.lang.String"/>
+	<field name="county" class="java.lang.String"/>
+	<field name="postalCode" class="java.lang.String"/>
+	<field name="country" class="java.lang.String"/>
+	<variable name="address" class="java.lang.String"/>
+	<detail>
+		<band height="46" splitType="Stretch">
+			<staticText>
+				<reportElement x="7" y="5" width="29" height="12" uuid="473aa03a-d624-42a6-8b8e-eedce3025f41"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[line1 :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="37" y="5" width="80" height="12" uuid="8eba9e4e-c0f1-49f1-a73b-77617424cbe3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{line1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="7" y="18" width="29" height="11" uuid="b3731d78-ce41-4670-aeea-513fcbbef4d5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[line2 :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="37" y="18" width="80" height="12" uuid="e1d026f3-e8ab-4a00-ab88-0f681c5adac5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{line2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="7" y="31" width="29" height="11" uuid="4da40830-e566-44ff-983c-2ff0d44c772f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Town :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="36" y="31" width="81" height="11" uuid="1b1e355f-044b-4117-9a53-57f261d088ca"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{town}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="127" y="5" width="47" height="12" uuid="d3fa899a-6705-4aa8-91fa-bcf886f073f2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[County :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="175" y="5" width="100" height="12" uuid="e18152f9-79cb-47ee-a701-55170c0046d1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{county}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="127" y="18" width="47" height="11" uuid="f7770901-07af-4e55-84e0-cdc229c72b53"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PostalCode :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="175" y="18" width="100" height="11" uuid="e86d0fb3-d1e7-42be-bdee-c190664b5365"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{postalCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="127" y="31" width="47" height="11" uuid="3875b488-a978-4053-89fd-4e6dd508aa4b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Country :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="175" y="31" width="100" height="11" uuid="47e5362f-173c-4b67-b412-fce7da55d9e4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{country}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

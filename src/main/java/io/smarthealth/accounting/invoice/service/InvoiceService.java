@@ -21,6 +21,9 @@ import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.MergeInvoice;
+import io.smarthealth.accounting.invoice.data.statement.InterimInvoice;
+import io.smarthealth.accounting.invoice.data.statement.InterimInvoiceItem;
+import io.smarthealth.accounting.invoice.data.statement.InvoiceStatement;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceItem;
@@ -660,5 +663,47 @@ public class InvoiceService {
 
         return invoiceRepository.save(invoice);
     }
-     
+
+   public InterimInvoice getInterimInvoiceStatement(String visitNumber){
+        Optional<Visit> optionalVisit = visitService.findVisit(visitNumber);
+
+        if(optionalVisit.isPresent()){
+            InterimInvoice invoice = new InterimInvoice();
+            Visit visit = optionalVisit.get();
+            if(visit.getPaymentDetails()!=null){
+                Payer payer = visit.getPaymentDetails().getPayer();
+                Scheme scheme = visit.getPaymentDetails().getScheme();
+                invoice.setPayerId(payer.getId());
+                invoice.setPayerName(payer.getPayerName());
+                invoice.setSchemeId(scheme.getId());
+                invoice.setSchemeName(scheme.getSchemeName());
+                invoice.setMemberName(visit.getPaymentDetails().getMemberName());
+                invoice.setMemberNumber(visit.getPaymentDetails().getPolicyNo());
+                invoice.setPaymentTerms(payer.getPaymentTerms()!=null ? payer.getPaymentTerms().getTermsName(): "Due Immediately");
+                invoice.setCreditDays(payer.getPaymentTerms()!=null ? payer.getPaymentTerms().getCreditDays() : 0);
+            }
+
+            invoice.setInvoiceNumber(visitNumber);
+            invoice.setVisitDate(visit.getStartDatetime());
+            invoice.setVisitType(visit.getVisitType());
+            invoice.setPatientNumber(visit.getPatient().getPatientNumber());
+            invoice.setPatientName(visit.getPatient().getFullName());
+            invoice.setItems(
+                    patientBillingService.getInterimBillItems(visitNumber).stream()
+                    .map(InterimInvoiceItem::of)
+                    .collect(Collectors.toList())
+            );
+            return invoice;
+        }
+        return new InterimInvoice();
+   }
+
+   public InvoiceStatement getInvoiceStatement(String invoiceNumber){
+        Optional<Invoice> optionalInvoice = invoiceRepository.findByNumber(invoiceNumber);
+        if(optionalInvoice.isPresent()){
+            return InvoiceStatement.of(optionalInvoice.get());
+        }
+        return new InvoiceStatement();
+   }
+
 }

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="balance_sheet" pageWidth="555" pageHeight="802" orientation="Landscape" columnWidth="515" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<style name="style1">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{level}==0]]></conditionExpression>
+			<style mode="Transparent" forecolor="#0000CC" fontSize="11" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{level}==1]]></conditionExpression>
+			<style fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+				<paragraph leftIndent="20"/>
+			</style>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{level}==2]]></conditionExpression>
+			<style fontSize="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+				<paragraph leftIndent="40"/>
+			</style>
+		</conditionalStyle>
+	</style>
+	<parameter name="from" class="java.util.Date"/>
+	<parameter name="to" class="java.util.Date"/>
+	<parameter name="HEADER_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Footer_Data" class="java.util.List"/>
+	<parameter name="asAt" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="type" class="java.lang.Object"/>
+	<field name="financialConditionEntries" class="java.util.List"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="subtotal" class="java.math.BigDecimal"/>
+	<title>
+		<band height="50">
+			<subreport>
+				<reportElement x="0" y="0" width="515" height="50" isRemoveLineWhenBlank="true" uuid="adf9c079-2ac8-4c21-bc2b-78ad1788d994"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="41" splitType="Stretch">
+			<staticText>
+				<reportElement x="1" y="3" width="513" height="13" uuid="58bcc108-d8ef-413f-a71e-ff80df5fbb56"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Balance Sheet]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="1" y="40" width="515" height="1" uuid="728cb34a-6e20-428b-8d86-b777b3e58b76"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement positionType="Float" x="0" y="0" width="515" height="1" uuid="033cce62-4b95-4455-9663-0721d5f050a7"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="1" y="26" width="82" height="12" uuid="0239d5ef-7cfa-457b-b820-22d3ba9623e6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Balance Sheet as at :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="82" y="26" width="118" height="12" uuid="0e4e0f86-3d8e-456a-9a89-11aecdebb2c8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{asAt}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="42" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="20" width="514" height="16" uuid="1ac6626d-5511-4e14-9e3e-369e5b40fc22"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{financialConditionEntries})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "balance_sheet_subreport.jasper"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement mode="Opaque" x="1" y="7" width="514" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="70544dc4-7d76-4ae5-bcfd-2c9ac38d695c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""+$F{type}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="76">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="514" height="12" forecolor="#333333" backcolor="#FFFFFF" uuid="9232f2be-eacf-49f9-8030-961bcd895bb8"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Common Financial Ratios]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="14" width="198" height="11" uuid="00eeeb52-3edc-4413-9ccf-9c254bd64703"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Debt Ratio(Total Liabilities/Toal Assets)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="25" width="198" height="11" uuid="120362bf-5f90-472a-9cce-04b0f3044b64"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Current Ratio(Current Assets/Current Liabilities)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="37" width="198" height="11" uuid="38ed012c-80a6-4926-9b93-ac845044b624"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Working Capital(Current Assets-Current Liabilities)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="49" width="199" height="11" uuid="f70d8048-a820-4425-be84-75cbc4552cbe"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Assets-to -Equity Ratio (Total Assets/Owner's Assets)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="61" width="199" height="11" uuid="ec97a0d7-a9d1-489d-b680-7a576059e47c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Debts-to -Equity Ratio (Total Liabilities/Owner's Assets)]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<lastPageFooter>
+		<band height="24">
+			<subreport>
+				<reportElement x="1" y="0" width="513" height="24" uuid="4716f064-e7c1-47ab-9bf8-f1d12c4e2a33"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</lastPageFooter>
+</jasperReport>

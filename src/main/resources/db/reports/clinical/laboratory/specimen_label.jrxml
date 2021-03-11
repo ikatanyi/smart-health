@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="specimen_label" pageWidth="430" pageHeight="120" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="426" leftMargin="2" rightMargin="2" topMargin="2" bottomMargin="2" uuid="2f814b8f-8694-40a1-9d18-81e03b0a4b32">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<parameter name="name" class="java.lang.String"/>
+	<parameter name="notes" class="java.lang.String"/>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<field name="specimen" class="java.lang.String"/>
+	<field name="patientName" class="java.lang.String"/>
+	<field name="testCode" class="java.lang.String"/>
+	<field name="patientNumber" class="java.lang.String"/>
+	<field name="DOB" class="java.lang.Object"/>
+	<field name="orderNumber" class="java.lang.String"/>
+	<field name="testName" class="java.lang.String"/>
+	<field name="collectionDateTime" class="java.lang.Object"/>
+	<field name="collectedBy" class="java.lang.String"/>
+	<field name="gender" class="java.lang.Object"/>
+	<detail>
+		<band height="116" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" x="4" y="54" width="54" height="10" uuid="15212590-44bd-4ab4-964b-e68cd2d08ac0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order Req.No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="4" y="67" width="54" height="10" uuid="bbcbd894-bdb9-452f-95d6-d8af276e2e7c">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pt (ID) Name :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="4" y="80" width="54" height="10" uuid="2cd6711f-e404-43c7-adb8-9baba0848d32">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pt DOB :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="175" y="79" width="38" height="10" uuid="b2e4ae3b-c921-45bb-8698-97a42ff3f0ef"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pt Gender :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="272" y="52" width="34" height="10" uuid="0fb74501-0b85-44fd-9db3-bb4e88a1ac34"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Coll.Date:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="272" y="63" width="34" height="10" uuid="402232f8-b0f5-4e0f-9303-b2a0c27a4ff6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Coll. By:]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="306" y="60" width="84" height="1" uuid="7ca60031-c13f-4f9e-9039-c8ed858297e0"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement positionType="Float" x="306" y="71" width="84" height="1" uuid="6a1763d2-b16c-48c4-9e64-f13e7a51f805"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement positionType="Float" x="4" y="93" width="85" height="10" isRemoveLineWhenBlank="true" uuid="4600b991-d6ac-40a9-9115-79a1456ef220"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{testCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="4" y="104" width="85" height="10" isRemoveLineWhenBlank="true" uuid="a1b4fe72-4a8a-4738-b226-801ab2977cb8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{specimen}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="214" y="79" width="44" height="10" isRemoveLineWhenBlank="true" uuid="e61434ab-5820-4ed4-9589-766bcf26598b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="61" y="80" width="114" height="10" isRemoveLineWhenBlank="true" uuid="e1beb6f8-d868-4403-a49d-08e2275ba36e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DOB}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="61" y="67" width="199" height="10" isRemoveLineWhenBlank="true" uuid="10efadb5-8c0b-4652-a020-56d2d20ae99b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{patientNumber}.equals( null )?"":$F{patientNumber})+"-"+$F{patientName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="61" y="54" width="199" height="10" uuid="3dcc1194-33cc-46aa-8b36-8f0279237e9c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{orderNumber}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="306" y="63" width="84" height="10" uuid="9f9abfee-1b98-45dc-8841-27124ac3636e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{collectedBy}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="306" y="52" width="114" height="10" uuid="73caccb1-f772-4036-b657-4e0b26df1b7c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{collectionDateTime}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="0" y="0" width="299" height="51" uuid="ab8875cb-db65-415a-a666-f67300548440"/>
+				<jr:EAN128 xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.4" checksumMode="check">
+					<jr:codeExpression><![CDATA["0200000000000123200017171231370001\u00F110GOOD"]]></jr:codeExpression>
+					<jr:patternExpression><![CDATA[$F{patientName}+"-"+$F{patientNumber}+"-"+$F{testCode}+"-"+$F{specimen}+"-"+$F{collectionDateTime}]]></jr:patternExpression>
+				</jr:EAN128>
+			</componentElement>
+		</band>
+	</detail>
+</jasperReport>

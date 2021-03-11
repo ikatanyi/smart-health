@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="header-banner-labels" pageWidth="160" pageHeight="140" columnWidth="160" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<parameter name="PIC_DIR" class="java.lang.Byte"/>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<field name="facilityName" class="java.lang.String"/>
+	<field name="facilityType" class="java.lang.String"/>
+	<field name="orgLegalName" class="java.lang.String"/>
+	<field name="orgName" class="java.lang.String"/>
+	<field name="orgWebsite" class="java.lang.String"/>
+	<field name="orgAddressCountry" class="java.lang.String"/>
+	<field name="orgAddressCounty" class="java.lang.String"/>
+	<field name="orgAddressLine1" class="java.lang.String"/>
+	<field name="orgAddressLine2" class="java.lang.String"/>
+	<field name="orgPostalCode" class="java.lang.String"/>
+	<field name="orgTown" class="java.lang.String"/>
+	<field name="orgType" class="java.lang.String"/>
+	<field name="contactEmail" class="java.lang.String"/>
+	<field name="contactFullName" class="java.lang.String"/>
+	<field name="contactMobile" class="java.lang.String"/>
+	<field name="salutation" class="java.lang.String"/>
+	<field name="telephone" class="java.lang.String"/>
+	<variable name="locale" class="java.lang.String">
+		<variableExpression><![CDATA[$F{orgAddressLine1}+","+$F{orgAddressLine2}+"\n"+$F{orgAddressCountry}+", "+$F{orgAddressCounty}]]></variableExpression>
+	</variable>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="81" y="2" width="78" height="5" isRemoveLineWhenBlank="true" uuid="e9865714-00b3-4db4-8af1-82492bcbde9f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{facilityName}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="81" y="7" width="78" height="5" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telephone}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="81" y="12" width="78" height="5" isRemoveLineWhenBlank="true" uuid="cc7cea67-13d9-4bf7-8722-8b2929716fb8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{locale}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="81" y="17" width="78" height="5" isRemoveLineWhenBlank="true" uuid="a99a1f49-aba5-4697-b3a9-955ed87a1fe7"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{contactEmail}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="81" y="22" width="78" height="5" isRemoveLineWhenBlank="true" uuid="62fb63a8-b796-4d59-9661-52d7659f3091"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
+			</textField>
+			<image isUsingCache="true" isLazy="true" onErrorType="Blank">
+				<reportElement x="0" y="1" width="64" height="25" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
+				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+</jasperReport>

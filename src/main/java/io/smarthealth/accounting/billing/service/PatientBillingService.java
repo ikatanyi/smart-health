@@ -408,7 +408,9 @@ public class PatientBillingService {
     public Page<PatientBillItem> getPatientBillItems(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType, Pageable pageable) {
         return billItemRepository.findAll(findPatientBillItemsWith(visitNumber, includeCanceled, paymentMethod, billEntryType), pageable);
     }
-
+    public List<PatientBillItem> getInterimBillItems(String visitNumber){
+        return billItemRepository.getByVisitNumberStatus(visitNumber);
+    }
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<PatientBillItem> voidPatientBillItem(String visitNumber, List<VoidBillItem> items) {
 
@@ -924,4 +926,5 @@ public class PatientBillingService {
         return billItemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill Item with Id {0} not found", id));
     }
+
 }

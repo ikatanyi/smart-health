@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TrialBalance" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4eea6b5f-7ba3-40f7-ac4e-537de38efec1">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<scriptlet name="RoundingHelper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
+	<parameter name="facilityName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="facilityType" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="asAt" class="java.lang.String"/>
+	<parameter name="Footer_Data" class="java.util.List"/>
+	<field name="type" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="parentLedgerIdentifier" class="java.lang.String"/>
+	<field name="totalValue" class="java.math.BigDecimal"/>
+	<field name="debitTotal" class="java.math.BigDecimal"/>
+	<field name="creditTotal" class="java.math.BigDecimal"/>
+	<field name="createdOn" class="java.lang.String"/>
+	<field name="createdBy" class="java.lang.String"/>
+	<field name="lastModifiedOn" class="java.lang.String"/>
+	<field name="lastModifiedBy" class="java.lang.String"/>
+	<variable name="ledgerName" class="java.lang.String">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<variable name="debitTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{type}.equals( "DEBIT" )?$F{totalValue}:0.0]]></variableExpression>
+	</variable>
+	<variable name="creditTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{type}.equals( "CREDIT" )?$F{totalValue}:0.0]]></variableExpression>
+	</variable>
+	<group name="total">
+		<groupExpression><![CDATA[$P{REPORT_MAX_COUNT}]]></groupExpression>
+		<groupFooter>
+			<band height="15">
+				<textField>
+					<reportElement x="305" y="0" width="73" height="14" uuid="5e4eb62e-9239-4df9-9ddd-63f93e9bfaf2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{debitTotal}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="438" y="0" width="100" height="14" uuid="c26afc6a-bf1f-40f1-b045-f1ef8720bb51"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{creditTotal}]]></textFieldExpression>
+				</textField>
+				<break type="Column">
+					<reportElement x="0" y="0" width="553" height="1" uuid="c42faf2f-6344-4b47-afed-8b19f5aeefb5"/>
+				</break>
+				<line>
+					<reportElement x="0" y="0" width="553" height="1" uuid="d0422ff8-016c-4fa1-aa0d-48e1235ece0c"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="32" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="30" isRemoveLineWhenBlank="true" uuid="e5cc4fb5-82b1-4127-8e31-84e95854f84f"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement positionType="Float" x="1" y="31" width="555" height="1" uuid="05b69e8a-d367-40af-b58d-607f87583a78"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="37" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="1" width="555" height="15" uuid="01e8add7-2b62-4ab2-8e69-a3890d21f2ea"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRIAL BALANCE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="20" width="82" height="12" uuid="8c5f8032-ba3b-4fb8-b8d2-ce5fa2cc7390"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Trial Balance as at :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="82" y="20" width="118" height="12" uuid="7b4fac27-667c-46b6-831f-1b5407df2f42"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{asAt}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="36" width="555" height="1" uuid="5096326c-abfb-4e6f-ad21-28952680d7c9"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement x="305" y="1" width="73" height="12" uuid="33c8ed2a-ee6f-4369-b69d-94205a0d6073"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Debit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="438" y="1" width="100" height="12" uuid="23ab9476-2f8f-4f6d-b372-9d9aeac97dfd"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Credit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="1" width="100" height="12" uuid="4897cda3-6234-4815-923d-ccc6638d5c0c"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ledger]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="13" width="554" height="1" uuid="a2488beb-2b6e-4f20-8734-52dddc5ae5f7"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField>
+				<reportElement x="2" y="0" width="198" height="12" uuid="8e3f00a2-f522-419f-8ca0-475994c34751"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="305" y="0" width="73" height="12" uuid="e56b93f7-482f-40f0-86b7-4f85c8122699">
+					<printWhenExpression><![CDATA[$F{type}.equals( "DEBIT" )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalValue}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="438" y="0" width="100" height="12" uuid="e86052f7-fa1a-4f5f-b524-cbff26e6b3d3">
+					<printWhenExpression><![CDATA[$F{type}.equals( "CREDIT" )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalValue}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="305" y="0" width="34" height="12" uuid="c1fc268e-1551-4509-910b-b319265bfd94">
+					<printWhenExpression><![CDATA[$F{type}.equals( "CREDIT" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="438" y="0" width="34" height="12" uuid="8d2ce446-0a71-413e-b242-8c0d96644316">
+					<printWhenExpression><![CDATA[$F{type}.equals( "DEBIT" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="12" width="553" height="1" uuid="cca1d5c7-ced8-4448-a596-ebe8666f4d18"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="17" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="17" uuid="54ddd9b9-35c1-431c-9241-a8336e3ce62e"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</columnFooter>
+</jasperReport>

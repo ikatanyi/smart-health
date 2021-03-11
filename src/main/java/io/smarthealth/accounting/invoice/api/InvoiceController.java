@@ -6,6 +6,7 @@ import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.MergeInvoice;
+import io.smarthealth.accounting.invoice.data.statement.InterimInvoice;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
@@ -45,7 +46,7 @@ public class InvoiceController {
 
     @PostMapping("/invoices")
     @PreAuthorize("hasAuthority('create_invoices')")
-    public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
+    public ResponseEntity<Pager<List<InvoiceData>>> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
 
         List<InvoiceData> trans = service.createInvoice(invoiceData).stream().map(x -> x.toData()).collect(Collectors.toList());
         auditTrailService.saveAuditTrail("Patient Invoice", "Created Patient invoice with invoiceNo " + trans.get(0).getNumber());
@@ -65,7 +66,7 @@ public class InvoiceController {
 
     @GetMapping("/invoices/{id}")
     @PreAuthorize("hasAuthority('view_invoices')")
-    public ResponseEntity<?> getInvoice(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<InvoiceData> getInvoice(@PathVariable(value = "id") Long id) {
         Invoice trans = service.getInvoiceByIdOrThrow(id);
         auditTrailService.saveAuditTrail("Patient Invoice", "Searched Invoice  identified by id " + id);
         return ResponseEntity.ok(trans.toData());
@@ -82,15 +83,15 @@ public class InvoiceController {
 
     @PostMapping("/invoices/{invoiceNumber}/add-items")
     @PreAuthorize("hasAuthority('create_invoices')")
-    public ResponseEntity<?> addInvoiceItem(@PathVariable(value = "invoiceNumber") String invoiceNumber, @Valid @RequestBody List<BillItemData> invoiceItems) {
+    public ResponseEntity<InvoiceData> addInvoiceItem(@PathVariable(value = "invoiceNumber") String invoiceNumber, @Valid @RequestBody List<BillItemData> invoiceItems) {
 
         Invoice invoice = service.addInvoiceItem(invoiceNumber, invoiceItems);
-        return ResponseEntity.ok(invoice);
+        return ResponseEntity.ok(invoice.toData());
     }
 
     @GetMapping("/invoices")
     @PreAuthorize("hasAuthority('view_invoices')")
-    public ResponseEntity<?> getInvoices(
+    public ResponseEntity<Pager<List<InvoiceData>>> getInvoices(
             @RequestParam(value = "payer", required = false) Long payer,
             @RequestParam(value = "scheme", required = false) Long scheme,
             @RequestParam(value = "number", required = false) String invoice,
@@ -194,4 +195,14 @@ public class InvoiceController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
+
+    @GetMapping("/invoices/{visitNumber}/interim-statement")
+    public ResponseEntity<InterimInvoice> getInterimStatement(@PathVariable(value = "visitNumber") String visitNumber){
+        return ResponseEntity.ok(service.getInterimInvoiceStatement(visitNumber));
+    }
+    @GetMapping("/invoices/{invoiceNumber}/invoice-statement")
+    public ResponseEntity<InterimInvoice> getInvoiceStatement(@PathVariable(value = "invoiceNumber") String invoiceNumber){
+        return ResponseEntity.ok(service.getInvoiceStatement(invoiceNumber));
+    }
+
 }

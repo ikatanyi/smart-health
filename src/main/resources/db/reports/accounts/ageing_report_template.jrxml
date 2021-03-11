@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_template" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="4aae1193-a82d-4555-b88f-e537201ac06a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Kent\\Documents\\NetBeansProjects\\csrim\\src\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Kent\\Documents\\NetBeansProjects\\csrim\\src\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CompanyName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Phone" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Address" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Email" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Web" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="State" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="City" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="invoiceNo" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="CustomerName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="customerId" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orderNo" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orderDate" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="serviceDate" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="dueDate" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="shipto" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="remarks" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="discount" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="shippingCost" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="VAT" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Total" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="payment_mode" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="date" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="from" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="to" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DueDays" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="min_days" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="max_days" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="insurance" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="hospitalId" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     CONCAT(dt_patientdetails.`Fname`," ",dt_patientdetails.`Lname`," ",dt_patientdetails.`surname`) AS patientName,
+     DATEDIFF(Now(),ac_debtors.`billing_date`) AS age,
+     ac_debtors.`id` AS id,
+     ac_debtors.`balance` AS balance,
+     ac_debtors.`billing_date` AS billing_date,
+     ac_debtors.`cheque_no` AS cheque_no,
+     ac_debtors.`debit` AS debit,
+     ac_debtors.`bill_code` AS bill_code,
+     ac_debtors.`credit` AS credit,
+     ac_debtors.`invoice_no` AS invoice_no,
+     ac_debtors.`patient_id` AS patient_id,
+     ac_debtors.`payer` AS insuranceCode,
+     ac_debtors.`scheme_code` AS schemeCode,
+     dt_insurances.`insurance_name` AS insuranceName,
+     dt_schemes.`scheme_name` AS schemeName,
+     dt_schemes.`copay` AS dt_schemes_copay,
+     dt_schemes.`discount` AS dt_schemes_discount
+FROM
+     `ac_debtors` ac_debtors LEFT JOIN `dt_patientdetails` dt_patientdetails ON ac_debtors.`patient_id` = dt_patientdetails.`patient_id`
+     LEFT JOIN  dt_insurances ON ac_debtors.`payer` = dt_insurances.`insurance_code`
+     LEFT JOIN `dt_schemes` dt_schemes ON ac_debtors.`scheme_code` = dt_schemes.`id`
+WHERE DATEDIFF(Now(),ac_debtors.`billing_date`)>$P{min_days} AND DATEDIFF(Now(),ac_debtors.`billing_date`)<=$P{max_days} AND   ac_debtors.`credit`=0 AND  ($P{insurance}="" OR dt_insurances.`insurance_code`=$P{insurance}) AND ac_debtors.write_off=false AND  ac_debtors.hospital_id=$P{hospitalId}
+GROUP BY
+     ac_debtors.`payer`,
+     ac_debtors.`invoice_no`]]>
+	</queryString>
+	<field name="patientName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="age" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="balance" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="billing_date" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cheque_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="debit" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="bill_code" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="credit" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="invoice_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="patient_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="insuranceCode" class="java.lang.String"/>
+	<field name="schemeCode" class="java.lang.Integer"/>
+	<field name="insuranceName" class="java.lang.String"/>
+	<field name="schemeName" class="java.lang.String"/>
+	<field name="dt_schemes_copay" class="java.lang.Double"/>
+	<field name="dt_schemes_discount" class="java.lang.Double"/>
+	<variable name="debit_1" class="java.lang.Double" resetType="Group" resetGroup="InsuranceCode" calculation="Sum">
+		<variableExpression><![CDATA[$F{debit}]]></variableExpression>
+	</variable>
+	<variable name="paid_1" class="java.lang.Double" resetType="Group" resetGroup="InsuranceCode" calculation="Sum">
+		<variableExpression><![CDATA[($F{debit}.equals( null )?0.0:$F{debit})-($F{balance}.equals( null )?0.0:$F{balance})]]></variableExpression>
+	</variable>
+	<variable name="balance_1" class="java.lang.Double" resetType="Group" resetGroup="InsuranceCode" calculation="Sum">
+		<variableExpression><![CDATA[$F{balance}]]></variableExpression>
+	</variable>
+	<group name="InsuranceCode">
+		<groupExpression><![CDATA[$F{insuranceCode}]]></groupExpression>
+		<groupHeader>
+			<band height="45">
+				<line>
+					<reportElement x="2" y="44" width="555" height="1" uuid="878723b7-48c7-4ba8-acf5-bdd80a9fa26b"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineColor="#6666FF"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="0" width="555" height="1" uuid="4303b33e-af1f-42c8-aae5-5195554a0762"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineColor="#6666FF"/>
+					</graphicElement>
+				</line>
+				<textField>
+					<reportElement x="2" y="25" width="115" height="20" forecolor="#CC3300" uuid="bea40742-afab-447b-b5ec-a18b44e9bf19"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{insuranceName}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="19">
+				<staticText>
+					<reportElement x="49" y="4" width="86" height="13" uuid="8faf028c-a4d3-469c-a85b-643104fb335e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL :]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="396" y="0" width="39" height="17" uuid="e33af53f-d2ef-40a1-b4a0-c0f2c3a49ad7"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{debit_1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="444" y="0" width="21" height="16" uuid="776523fd-bd19-4a0d-bba2-68cc6a4a87ee"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{paid_1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="473" y="0" width="34" height="17" uuid="2c86af37-d9c5-4419-bac1-1cda7722cec1"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{balance_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band height="802" splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="173" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="68" width="321" height="13" isRemoveLineWhenBlank="true" uuid="137701b9-10c9-4a7a-8c8e-a2fdf1a6014c"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CompanyName}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1" y="85" width="308" height="13" isRemoveLineWhenBlank="true" uuid="79e4950f-feb5-46a5-8a42-432686f2c267"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="101" width="294" height="13" isRemoveLineWhenBlank="true" uuid="b364c982-465a-4f80-94c1-325af8c18f78"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Phone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="49" y="117" width="146" height="13" isRemoveLineWhenBlank="true" uuid="48b9f450-5211-49cd-a3a3-949bdab25bb4"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{State}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="117" width="47" height="13" isRemoveLineWhenBlank="true" uuid="0a4e80b5-9914-482f-b463-f4fd48b0fc16"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{City}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="555" height="20" forecolor="#000000" backcolor="#9966FF" uuid="cfc4fb8d-4b3e-452b-a7fb-509a6b44a8de"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ageing Statement Report]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="22" width="555" height="1" uuid="c27f7329-e66b-4094-8818-0212ccceebb3"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#6666FF"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="0" y="147" width="62" height="14" uuid="e6fbb009-aa0e-4815-8c23-acfc05d92aa3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Days Overdue]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="62" y="147" width="55" height="14" uuid="009344f8-7bfa-44ad-9b95-26e8be0fdbfc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{min_days}.equals( 0 )?"Less Than 30 days":
+$P{min_days}.equals( 30 )?"Greater Than 30 days Less Than 60 days":
+$P{min_days}.equals( 60 )?"Greater Than 60 days Less Than 120 days":"Greater Than 120 days "]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="1" y="24" width="134" height="36" uuid="d5ad6f5c-28f5-4b72-abb2-80bbd188edc0"/>
+				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement x="22" y="10" width="51" height="20" uuid="f1b6dcfa-cc34-4060-8ef1-80f9cb078419"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bill Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="81" y="10" width="62" height="20" uuid="3c47b810-032e-422e-aa0e-f7468da952e8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Invoice No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="152" y="10" width="59" height="20" uuid="aeb4eccd-0f09-4f7c-87be-af89e2fc52e3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient FileNo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="396" y="13" width="39" height="17" uuid="ab3b0dc5-8360-4724-9ef6-712e6172ccf6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="13" width="21" height="16" uuid="8a0efb17-dd6d-47b2-b122-8568fb3bf864"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Paid]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="473" y="10" width="34" height="20" uuid="80798819-eee9-4ffa-a87d-e56b7c43d811"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Balance]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="516" y="10" width="39" height="20" uuid="42394528-0a25-4ef9-b9d7-0445d2af2205"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Days Old]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="10" width="19" height="20" uuid="38a33241-cd63-45d4-a42e-4d28ba4bb34e"/>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="10" width="82" height="19" isRemoveLineWhenBlank="true" uuid="b1849063-9257-4798-9603-1de3fe6457ee"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PatientName]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="309" y="10" width="78" height="20" uuid="4fa53ac1-38aa-4611-9c1b-3f94085c50e5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Scheme Name]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<line>
+				<reportElement x="1" y="16" width="554" height="1" uuid="c17c0a91-8192-418c-a3ac-63222159f084"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Dashed" lineColor="#6666FF"/>
+				</graphicElement>
+			</line>
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement x="22" y="1" width="51" height="16" uuid="8b506174-be2f-432e-9102-411f2a77f3dd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{billing_date}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="81" y="1" width="62" height="16" isRemoveLineWhenBlank="true" uuid="320c9f24-9920-425e-8807-dc6bec3a0d29"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{invoice_no}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="152" y="1" width="59" height="16" isRemoveLineWhenBlank="true" uuid="1e7ca125-5b8e-42e3-aed4-a128ac142d89"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patient_id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="396" y="1" width="39" height="16" isRemoveLineWhenBlank="true" uuid="e20d3247-d42c-4569-aa5c-478b4af06220"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{debit}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="1" width="21" height="16" uuid="3233ae8d-35f7-4e16-96ee-78ce5d306d0b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{debit}.equals( null )?0.0:$F{debit})-($F{balance}.equals( null )?0.0:$F{balance})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="473" y="1" width="34" height="16" uuid="2e50056d-5fd7-4c91-a130-d32fd8de56c9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="516" y="1" width="34" height="15" uuid="a1e9a217-3352-4a73-b3d3-5db185d1f1dc"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{age}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="0" width="19" height="16" uuid="6c3bb554-2479-4993-b401-7c73f68e32ec"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="220" y="0" width="82" height="16" isRemoveLineWhenBlank="true" uuid="5c6fe135-6980-4033-a657-7bd3f128025b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="309" y="0" width="78" height="16" isRemoveLineWhenBlank="true" uuid="ec45c629-06eb-49d9-818d-f363a24b421f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{schemeName}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="78" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="11" width="259" height="14" uuid="17f31811-0ef9-4546-b89f-1122b3500a8c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[If you have any questions about this Statement, please contact
+[Name, Phone #, E-mail]
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="11" width="143" height="14" uuid="e29a706a-6346-45c6-a5e6-5ed96d75aaf5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Make all checks payable to		]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="390" y="25" width="143" height="20" uuid="beb90d54-4781-4030-acc5-b0fbb9c92b85"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CompanyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="25" y="25" width="65" height="14" uuid="ec64deab-6d80-42b7-8925-4f1f8faba389"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Phone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="90" y="25" width="169" height="14" uuid="a208491d-c7f0-47a1-b762-8c7438647332"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Email}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="25" width="24" height="14" uuid="94f5baf5-cebd-433e-9d89-4c81fdfd5760"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tel:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

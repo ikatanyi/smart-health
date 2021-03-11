@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CompanyHeader" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b12d1b92-825d-464d-9823-16a68b4c1383">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="CompanyHeader-Adapter "/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="country" class="java.lang.String">
+		<fieldDescription><![CDATA[country]]></fieldDescription>
+	</field>
+	<field name="website" class="java.lang.String">
+		<fieldDescription><![CDATA[website]]></fieldDescription>
+	</field>
+	<field name="address" class="java.lang.String">
+		<fieldDescription><![CDATA[address]]></fieldDescription>
+	</field>
+	<field name="city" class="java.lang.String">
+		<fieldDescription><![CDATA[city]]></fieldDescription>
+	</field>
+	<field name="companyLogo" class="byte[]">
+		<fieldDescription><![CDATA[companyLogo]]></fieldDescription>
+	</field>
+	<field name="companyName" class="java.lang.String">
+		<fieldDescription><![CDATA[companyName]]></fieldDescription>
+	</field>
+	<field name="postalCode" class="java.lang.String">
+		<fieldDescription><![CDATA[postalCode]]></fieldDescription>
+	</field>
+	<field name="taxNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[taxNumber]]></fieldDescription>
+	</field>
+	<field name="phoneNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[phoneNumber]]></fieldDescription>
+	</field>
+	<field name="street" class="java.lang.String">
+		<fieldDescription><![CDATA[street]]></fieldDescription>
+	</field>
+	<field name="companyAddress" class="java.lang.String">
+		<fieldDescription><![CDATA[companyAddress]]></fieldDescription>
+	</field>
+	<field name="class" class="java.lang.Class">
+		<fieldDescription><![CDATA[class]]></fieldDescription>
+	</field>
+	<field name="email" class="java.lang.String">
+		<fieldDescription><![CDATA[email]]></fieldDescription>
+	</field>
+	<title>
+		<band height="85" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<image hAlign="Center">
+				<reportElement x="3" y="4" width="65" height="60" uuid="fd1f4852-a0c0-4a7a-a712-c44de1493e22"/>
+			</image>
+			<textField>
+				<reportElement x="95" y="0" width="210" height="25" uuid="26163209-aece-4a23-b938-38f71c8d8b09">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="19" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="95" y="25" width="205" height="15" uuid="fffc1397-51f3-4c34-80d5-483574c26938">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{address}+", "+$F{postalCode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="95" y="40" width="205" height="15" uuid="b4f43980-4cbf-42e2-95f9-a686578d57f4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{city}+", "+$F{street}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="95" y="55" width="205" height="15" uuid="cb4e2630-48d5-48b6-a1fd-b645ddca6777">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{phoneNumber}+", "+$F{email}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="95" y="70" width="205" height="15" uuid="aa257bbe-a914-4e4c-b4d7-04f2e2adfd37">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

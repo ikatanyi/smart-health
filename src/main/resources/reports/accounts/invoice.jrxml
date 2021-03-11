@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="4aae1193-a82d-4555-b88f-e537201ac06a">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="headerStyles" mode="Opaque" forecolor="#0000FF" backcolor="#FF0033"/>
 	<scriptlet name="Helper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+	<parameter name="SUBREPORT_DIR" class="java.math.BigDecimal" isForPrompting="false">
 		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
@@ -102,14 +103,14 @@
 				</textElement>
 				<text><![CDATA[Scheme :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="414" y="96" width="140" height="16" uuid="1eafd5cb-179e-4783-9fb9-933e46d441d7"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payer}.toUpperCase()]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="414" y="113" width="140" height="16" uuid="35b60930-d90e-4906-8708-e0d617ece117"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9"/>
@@ -137,28 +138,28 @@
 				</textElement>
 				<text><![CDATA[Member No :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" pattern="dd-MM-yyyy" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="414" y="38" width="140" height="13" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="414" y="24" width="140" height="13" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="414" y="66" width="140" height="13" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}.toUpperCase()]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="414" y="80" width="140" height="13" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
@@ -172,7 +173,7 @@
 				</textElement>
 				<text><![CDATA[Invoice No :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="414" y="52" width="140" height="13" uuid="65012583-6d90-42d6-9715-e8781619b3ed"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
@@ -212,7 +213,7 @@
 				</textElement>
 				<text><![CDATA[Discharge Date :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" pattern="yyyy-MM-dd" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="414" y="150" width="140" height="16" isRemoveLineWhenBlank="true" uuid="e5003b73-baac-45bd-a87e-f9b2397e4475">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
@@ -230,7 +231,7 @@
 				</textElement>
 				<text><![CDATA[Admission Date :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" pattern="yyyy-MM-dd" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="414" y="133" width="140" height="16" isRemoveLineWhenBlank="true" uuid="371a0fbe-10e9-41a6-ab98-e4061dba6590">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
@@ -357,7 +358,7 @@
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</rectangle>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="4" y="36" width="291" height="21" isRemoveLineWhenBlank="true" forecolor="#FF0033" uuid="59db33f4-6761-4fc2-aff8-67cb5167af94"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9"/>
