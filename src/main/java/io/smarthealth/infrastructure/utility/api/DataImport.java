@@ -5,6 +5,7 @@
  */
 package io.smarthealth.infrastructure.utility.api;
 
+import io.smarthealth.infrastructure.utility.bungomawest.BungomaWestHistoricalClinicalDataSindano;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,10 @@ public class DataImport {
     @Autowired
     VimakHistoricalClinicalData importService;
 
+    @Autowired
+    BungomaWestHistoricalClinicalDataSindano bungomaWestPastData;
+
+
     @PostMapping("/import/doctor-notes")
     public ResponseEntity<?> importData() {
         importService.insertDoctorNotes();
@@ -46,4 +51,13 @@ public class DataImport {
 
         return ResponseEntity.status(HttpStatus.CREATED).body("finished imports");
     }
+
+
+    @PostMapping("/process-data")
+    public ResponseEntity<?> processData() {
+        bungomaWestPastData.processData();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("finished processing past data");
+    }
+
 }
