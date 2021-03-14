@@ -18,7 +18,7 @@ public class InvoiceStatement extends InterimInvoice {
         InvoiceStatement invoiceStatement = new InvoiceStatement();
         invoiceStatement.setId(invoice.getId());
         invoiceStatement.setVisitNumber(invoice.getVisit().getVisitNumber());
-        invoiceStatement.setVisitType(invoice.getVisit().getVisitType());
+        invoiceStatement.setVisitType(invoice.getVisit().getVisitType()!=null ? invoice.getVisit().getVisitType().name() : "");
         invoiceStatement.setPayerId(invoice.getPayer().getId());
         invoiceStatement.setPayerName(invoice.getPayer().getPayerName());
         invoiceStatement.setSchemeId(invoice.getScheme().getId());

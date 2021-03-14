@@ -13,18 +13,31 @@ import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.accounting.invoice.data.RebateInvoice;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.report.domain.enumeration.ReportName;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
+
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import lombok.SneakyThrows;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -196,13 +209,25 @@ public class InvoiceController {
         return ResponseEntity.ok(pagers);
     }
 
-    @GetMapping("/invoices/{visitNumber}/interim-statement")
-    public ResponseEntity<InterimInvoice> getInterimStatement(@PathVariable(value = "visitNumber") String visitNumber){
-        return ResponseEntity.ok(service.getInterimInvoiceStatement(visitNumber));
-    }
     @GetMapping("/invoices/{invoiceNumber}/invoice-statement")
     public ResponseEntity<InterimInvoice> getInvoiceStatement(@PathVariable(value = "invoiceNumber") String invoiceNumber){
         return ResponseEntity.ok(service.getInvoiceStatement(invoiceNumber));
     }
-
+    @SneakyThrows
+    @GetMapping("/invoices/{invoiceNo}/report")
+    public void generateReport(HttpServletResponse response,
+                               @PathVariable String invoiceNo,
+                               @RequestParam(value = "type", required = false, defaultValue = "standard") String type,
+                               @RequestParam(value = "format", required = false, defaultValue = "PDF") ExportFormat format) throws FileNotFoundException, JRException {
+        JasperPrint print = service.generateInterimStatement(invoiceNo, type);
+        //this should be redefined to allow dynamic out
+        response.setHeader("Content-Disposition", String.format("attachment; filename=" +"SmartHealth_Interim_Invoice"+ invoiceNo + "." + format.name().toLowerCase()));
+        OutputStream out = response.getOutputStream();
+        switch (format){
+            case PDF:
+                JasperExportManager.exportReportToPdfStream(print, out);
+                break;
+            default:
+        }
+    }
 }

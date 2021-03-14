@@ -83,7 +83,6 @@ public class Invoice extends Auditable {
     private Boolean awaitingSmart = Boolean.FALSE;
     @Column(name = "is_capitation_invoice")
     private Boolean capitation = Boolean.FALSE;
-
     //@Column(name = "is_rebate")
     //private Boolean rebate = Boolean.FALSE;
     @Transient
@@ -132,6 +131,11 @@ public class Invoice extends Auditable {
             data.setVisitDate(this.visit.getStartDatetime().toLocalDate());
             data.setAge(ChronoUnit.DAYS.between(this.date, LocalDate.now()));
             data.setVisitType(this.getVisit().getVisitType().name());
+            if(this.visit.getPaymentDetails()!=null){
+                data.setAuthorizationCode(this.visit.getPaymentDetails().getAuthorizationCode());
+            }else{
+                data.setAuthorizationCode("-");
+            }
         }
 
         data.setIdNumber(this.idNumber);

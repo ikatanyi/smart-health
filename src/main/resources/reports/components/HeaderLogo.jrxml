@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="HeaderLogo" pageWidth="320" pageHeight="842" columnWidth="320" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0619f9f4-632f-4a02-b1ab-b7b05109405f">
+	<field name="country" class="java.lang.String"/>
+	<field name="website" class="java.lang.String"/>
+	<field name="address" class="java.lang.String"/>
+	<field name="city" class="java.lang.String"/>
+	<field name="companyLogo" class="byte[]"/>
+	<field name="companyName" class="java.lang.String"/>
+	<field name="postalCode" class="java.lang.String"/>
+	<field name="taxNumber" class="java.lang.String"/>
+	<field name="phoneNumber" class="java.lang.String"/>
+	<field name="street" class="java.lang.String"/>
+	<field name="companyAddress" class="java.lang.String"/>
+	<field name="email" class="java.lang.String"/>
+	<title>
+		<band height="85" splitType="Stretch">
+			<image>
+				<reportElement x="7" y="17" width="60" height="60" uuid="b5eb9880-4796-4b0e-9f2b-561bb4aaa53e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$F{companyLogo}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="95" y="0" width="210" height="25" uuid="da394491-874d-4fa9-8a2a-10318e5b0ec7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="19" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="95" y="70" width="205" height="15" uuid="abc71cf6-75a0-4fc6-a345-03cf8c4aacb4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{website}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="95" y="55" width="205" height="15" uuid="fc03f23b-00ee-4115-a680-f608f0a16e41">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{phoneNumber}+", "+$F{email}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="95" y="25" width="205" height="15" uuid="6390af46-9ed3-404a-8b5f-01b39398a178">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{address}+", "+$F{postalCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="95" y="40" width="205" height="15" uuid="0afa0bad-5841-417b-9e82-3167765439c8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{city}+", "+$F{street}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

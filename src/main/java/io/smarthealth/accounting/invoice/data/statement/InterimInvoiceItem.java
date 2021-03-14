@@ -6,9 +6,10 @@ import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class InterimInvoiceItem {
-
+    private LocalDate billingDate;
     private Long itemId;
     private String itemCode;
     private String itemName;
@@ -24,6 +25,7 @@ public class InterimInvoiceItem {
 
     public static InterimInvoiceItem of(PatientBillItem billItem){
         InterimInvoiceItem items = new InterimInvoiceItem();
+        items.setBillingDate(billItem.getBillingDate());
         items.setItemId(billItem.getItem().getId());
         items.setItemCode(billItem.getItem().getItemCode());
         items.setItemName(billItem.getItem().getItemName());
@@ -139,5 +141,13 @@ public class InterimInvoiceItem {
 
     public void setEntryType(BillEntryType entryType) {
         this.entryType = entryType;
+    }
+
+    public LocalDate getBillingDate() {
+        return billingDate;
+    }
+
+    public void setBillingDate(LocalDate billingDate) {
+        this.billingDate = billingDate;
     }
 }

@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -58,15 +60,17 @@ public class Organisation implements Serializable {
         this.setId(ids);
     }
 
-    @OneToMany(mappedBy = "organization")
+    @OneToMany(mappedBy = "organization", fetch = FetchType.EAGER)
     private Set<OrganizationBank> bankAccount;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(name = "org_address", joinColumns = {
         @JoinColumn(name = "organization_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "address_id", referencedColumnName = "id")})
     private List<Address> address = new ArrayList<>();
     @ManyToMany
+    @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(name = "org_contact", joinColumns = {
         @JoinColumn(name = "organization_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "contact_id", referencedColumnName = "id")})

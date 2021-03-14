@@ -42,6 +42,7 @@ public class InvoiceData {
     private BigDecimal tax;
     private BigDecimal balance;
     private String transactionNo;
+    private String authorizationCode;
     private String createdBy;
     @Enumerated(EnumType.STRING)
     private InvoiceStatus status;

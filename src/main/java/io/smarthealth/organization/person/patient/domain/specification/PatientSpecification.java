@@ -37,7 +37,8 @@ public class PatientSpecification {
                                 //cb.like(root.get("middleName"), likeExpression),
                                 //cb.like(root.get("surname"), likeExpression),
                                 cb.like(root.get("patientNumber"), likeExpression),
-                                cb.like(root.get("primaryContact"), likeExpression)
+                                cb.like(root.get("primaryContact"), likeExpression),
+                                cb.in(root.get("identifications")).value(likeExpression)
                         )
                 );
             }

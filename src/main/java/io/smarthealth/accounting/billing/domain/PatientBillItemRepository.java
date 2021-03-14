@@ -35,7 +35,11 @@ public interface PatientBillItemRepository extends JpaRepository<PatientBillItem
     @Query(value = "SELECT p FROM PatientBillItem p WHERE p.patientBill.visit.visitNumber=:visitNo")
     List<PatientBillItem> getByVisitNumber(@Param("visitNo") String visitNo);
 
-    @Query(value = "SELECT p FROM PatientBillItem p WHERE p.status <> 'Canceled' AND p.finalized = false AND p.patientBill.visit.visitNumber=:visitNo")
+    @Query(value = "SELECT p FROM PatientBillItem p WHERE p.status <> 'Canceled' AND p.finalized = false AND p.patientBill.visit.visitNumber=:visitNo group by p.servicePoint, p.id order by p.servicePoint, p.billingDate")
     List<PatientBillItem> getByVisitNumberStatus(@Param("visitNo") String visitNo);
+
+    @Query(value = "SELECT p FROM PatientBillItem p WHERE p.status <> 'Canceled' AND p.finalized = false AND p.patientBill.visit.visitNumber=:visitNo order by p.billingDate, p.id")
+    List<PatientBillItem> getByBillingDate(@Param("visitNo") String visitNo);
+
 
 }

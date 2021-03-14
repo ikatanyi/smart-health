@@ -408,8 +408,11 @@ public class PatientBillingService {
     public Page<PatientBillItem> getPatientBillItems(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType, Pageable pageable) {
         return billItemRepository.findAll(findPatientBillItemsWith(visitNumber, includeCanceled, paymentMethod, billEntryType), pageable);
     }
-    public List<PatientBillItem> getInterimBillItems(String visitNumber){
-        return billItemRepository.getByVisitNumberStatus(visitNumber);
+    public List<PatientBillItem> getInterimBillItems(String visitNumber, String type){
+        if(type.toLowerCase().equals("detailed")){
+            return billItemRepository.getByVisitNumberStatus(visitNumber);
+        }
+        return billItemRepository.getByBillingDate(visitNumber);
     }
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<PatientBillItem> voidPatientBillItem(String visitNumber, List<VoidBillItem> items) {

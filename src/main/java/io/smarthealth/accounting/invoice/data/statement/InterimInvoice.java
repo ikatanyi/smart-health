@@ -15,7 +15,7 @@ public class InterimInvoice {
     private Long id;
     private String visitNumber;
     private LocalDateTime visitDate;
-    private VisitEnum.VisitType visitType;
+    private String visitType;
     private Long payerId;
     private String payerName;
     private Long schemeId;
@@ -79,11 +79,11 @@ public class InterimInvoice {
         this.visitDate = visitDate;
     }
 
-    public VisitEnum.VisitType getVisitType() {
+    public String getVisitType() {
         return visitType;
     }
 
-    public void setVisitType(VisitEnum.VisitType visitType) {
+    public void setVisitType(String visitType) {
         this.visitType = visitType;
     }
 

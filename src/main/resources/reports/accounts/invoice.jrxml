@@ -6,7 +6,7 @@
 	<property name="ireport.y" value="0"/>
 	<style name="headerStyles" mode="Opaque" forecolor="#0000FF" backcolor="#FF0033"/>
 	<scriptlet name="Helper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
-	<parameter name="SUBREPORT_DIR" class="java.math.BigDecimal" isForPrompting="false">
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
@@ -50,6 +50,7 @@
 	<field name="status" class="java.lang.Object"/>
 	<field name="state" class="java.lang.String"/>
 	<field name="capitation" class="java.lang.Boolean"/>
+	<field name="authorizationCode" class="java.lang.String"/>
 	<variable name="Price_1" class="java.lang.Double" resetType="Column" calculation="Sum">
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
@@ -75,7 +76,7 @@
 		</band>
 	</background>
 	<title>
-		<band height="230">
+		<band height="192">
 			<line>
 				<reportElement positionType="Float" x="2" y="21" width="552" height="1" uuid="b384c05c-cf32-45c7-b4b4-32132cee5059"/>
 				<graphicElement>
@@ -205,7 +206,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="335" y="150" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="f4112b91-7a30-4a94-ad6d-ef9b01f85ce3">
+				<reportElement positionType="Float" mode="Transparent" x="335" y="163" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="f4112b91-7a30-4a94-ad6d-ef9b01f85ce3">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -214,7 +215,7 @@
 				<text><![CDATA[Discharge Date :]]></text>
 			</staticText>
 			<textField textAdjust="StretchHeight" pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="150" width="140" height="16" isRemoveLineWhenBlank="true" uuid="e5003b73-baac-45bd-a87e-f9b2397e4475">
+				<reportElement positionType="Float" x="414" y="163" width="140" height="16" isRemoveLineWhenBlank="true" uuid="e5003b73-baac-45bd-a87e-f9b2397e4475">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -223,7 +224,7 @@
 				<textFieldExpression><![CDATA[$P{dischargeDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="335" y="133" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="d2b76eb3-f1aa-48ed-bc54-c4d86193c3e4">
+				<reportElement positionType="Float" mode="Transparent" x="335" y="146" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="d2b76eb3-f1aa-48ed-bc54-c4d86193c3e4">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -232,7 +233,7 @@
 				<text><![CDATA[Admission Date :]]></text>
 			</staticText>
 			<textField textAdjust="StretchHeight" pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="133" width="140" height="16" isRemoveLineWhenBlank="true" uuid="371a0fbe-10e9-41a6-ab98-e4061dba6590">
+				<reportElement positionType="Float" x="414" y="146" width="140" height="16" isRemoveLineWhenBlank="true" uuid="371a0fbe-10e9-41a6-ab98-e4061dba6590">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -240,11 +241,30 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{admissionDate}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="335" y="130" width="78" height="16" uuid="235aa656-7936-43a0-be88-8a75bda6662e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Auth Code:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="414" y="130" width="140" height="16" uuid="18485d4d-9592-4ab7-acaa-1348bac2e5b1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{authorizationCode}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<detail>
 		<band height="11" splitType="Stretch">
-			<subreport>
+			<subreport isUsingCache="true">
 				<reportElement x="0" y="0" width="555" height="11" uuid="4fb7f8d0-65c0-4be1-86ff-bd6d8d263878"/>
 				<subreportParameter name="date">
 					<subreportParameterExpression><![CDATA[$F{visitDate}]]></subreportParameterExpression>

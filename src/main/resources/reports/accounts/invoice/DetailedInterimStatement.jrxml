@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterimStatement" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3eca96fa-56d0-456e-940c-3c337172be5d">
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\code\\smarthealth.io\\sh-backend\\src\\main\\resources\\reports\\components\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR2" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\code\\smarthealth.io\\sh-backend\\src\\main\\resources\\reports\\accounts\\invoice\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CompanyHeader" class="java.util.List"/>
+	<field name="patientName" class="java.lang.String">
+		<fieldDescription><![CDATA[patientName]]></fieldDescription>
+	</field>
+	<field name="notes" class="java.lang.String">
+		<fieldDescription><![CDATA[notes]]></fieldDescription>
+	</field>
+	<field name="creditDays" class="java.lang.Integer">
+		<fieldDescription><![CDATA[creditDays]]></fieldDescription>
+	</field>
+	<field name="netAmount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[netAmount]]></fieldDescription>
+	</field>
+	<field name="visitNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[visitNumber]]></fieldDescription>
+	</field>
+	<field name="payerId" class="java.lang.Long">
+		<fieldDescription><![CDATA[payerId]]></fieldDescription>
+	</field>
+	<field name="schemeName" class="java.lang.String">
+		<fieldDescription><![CDATA[schemeName]]></fieldDescription>
+	</field>
+	<field name="memberName" class="java.lang.String">
+		<fieldDescription><![CDATA[memberName]]></fieldDescription>
+	</field>
+	<field name="schemeId" class="java.lang.Long">
+		<fieldDescription><![CDATA[schemeId]]></fieldDescription>
+	</field>
+	<field name="debitAmount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[debitAmount]]></fieldDescription>
+	</field>
+	<field name="invoiceDate" class="java.time.LocalDate">
+		<fieldDescription><![CDATA[invoiceDate]]></fieldDescription>
+	</field>
+	<field name="invoiceDueDate" class="java.time.LocalDate">
+		<fieldDescription><![CDATA[invoiceDueDate]]></fieldDescription>
+	</field>
+	<field name="memberNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[memberNumber]]></fieldDescription>
+	</field>
+	<field name="invoiceNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[invoiceNumber]]></fieldDescription>
+	</field>
+	<field name="payerName" class="java.lang.String">
+		<fieldDescription><![CDATA[payerName]]></fieldDescription>
+	</field>
+	<field name="patientNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[patientNumber]]></fieldDescription>
+	</field>
+	<field name="visitDate" class="java.time.LocalDateTime">
+		<fieldDescription><![CDATA[visitDate]]></fieldDescription>
+	</field>
+	<field name="id" class="java.lang.Long">
+		<fieldDescription><![CDATA[id]]></fieldDescription>
+	</field>
+	<field name="creditAmount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[creditAmount]]></fieldDescription>
+	</field>
+	<field name="items" class="java.util.List">
+		<fieldDescription><![CDATA[items]]></fieldDescription>
+	</field>
+	<field name="paymentTerms" class="java.lang.String">
+		<fieldDescription><![CDATA[paymentTerms]]></fieldDescription>
+	</field>
+	<field name="visitType" class="java.lang.String">
+		<fieldDescription><![CDATA[visitType]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="155" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="380" y="30" width="65" height="20" uuid="88414e31-8d11-47d8-b08a-8998d5b070be"/>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Invoice Date:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="50" width="65" height="20" uuid="23da7809-6629-49b8-bade-bbf52945fb67"/>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Invoice #]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="0" width="380" height="85" uuid="f1a867d7-f3ef-47b3-b44e-454784d5fa6a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{CompanyHeader})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"HeaderLogo.jasper"]]></subreportExpression>
+			</subreport>
+			<textField pattern="MMMM d, yyyy">
+				<reportElement x="445" y="30" width="104" height="20" uuid="19e1f7f3-2bdd-4734-8ad8-8b0ba4839735"/>
+				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="445" y="50" width="104" height="20" uuid="7749f97b-af39-489d-ae0e-165b7069b3a3"/>
+				<textFieldExpression><![CDATA[$F{visitNumber}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="92" width="80" height="15" uuid="263bf09a-b695-4432-9418-2c669ec049df">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<text><![CDATA[Payer]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="107" width="80" height="15" uuid="daf2a363-46b0-44a9-8829-eb8263a24824">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<text><![CDATA[Scheme]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="122" width="80" height="15" uuid="06f52700-58b6-4c43-b30c-19df06a8e495">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<text><![CDATA[Member Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="137" width="80" height="15" uuid="6d627886-58de-4cc1-869e-c9b210a8a0b8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<text><![CDATA[Policy Number]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="92" width="80" height="15" uuid="293a2e6c-8885-4366-b9fe-cb8ace0e3714">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<text><![CDATA[Patient No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="107" width="80" height="15" uuid="61a93675-9c78-49aa-9c35-2ef7fe336c22">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<text><![CDATA[Patient Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="122" width="80" height="15" uuid="ee4e8c62-5a2c-4ac0-99bb-036a0486f697">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<text><![CDATA[Visit Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="137" width="80" height="15" uuid="c587dd6a-0eae-4670-88a4-c31358e345bc">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<text><![CDATA[Visit Type]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="360" y="107" width="120" height="15" uuid="53a43857-1d6c-4cca-a53d-8370b2421405">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="360" y="92" width="120" height="15" uuid="ddd2e40b-a3b0-424a-811e-ead3cc190f08"/>
+				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="360" y="137" width="120" height="15" uuid="21df47c3-89e8-4d2c-9b81-cdc1d9c3c6a4"/>
+				<textFieldExpression><![CDATA[$F{visitType}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="360" y="122" width="120" height="15" uuid="ae03b949-8eb3-4632-9e20-6b7d630be805"/>
+				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="88" width="556" height="1" uuid="33f895e2-bdbb-4954-b2ab-c90f40cbdc02">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+			</line>
+			<textField>
+				<reportElement x="80" y="137" width="120" height="15" uuid="432cb627-f725-4301-a207-33e68636e16a"/>
+				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="122" width="120" height="15" uuid="8b9f522e-cb72-4ce9-b66f-9b3969b7b5cd"/>
+				<textFieldExpression><![CDATA[$F{memberName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="107" width="120" height="15" uuid="a5a7bbf3-1fab-4f0a-89f1-9bca7496d250"/>
+				<textFieldExpression><![CDATA[$F{schemeName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="92" width="120" height="15" uuid="42af273f-5640-4168-b526-eef0e467bd6a"/>
+				<textFieldExpression><![CDATA[$F{payerName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="380" y="8" width="169" height="20" uuid="d9ec5e35-5898-4cac-a5b1-c18c38a84fd6"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Interim Invoice]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<subreport>
+				<reportElement x="0" y="0" width="556" height="15" uuid="3727a270-a025-4009-86f2-e293ffe5277b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{items})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR2}+"DetailedInterimLines.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="30" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="0" y="0" width="195" height="20" uuid="06fc6639-40ae-4715-aa99-4ae66982e86a"/>
+				<box padding="3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMM d, yyyy h:mm:ss a">
+				<reportElement x="335" y="0" width="220" height="20" uuid="6de0316c-b140-47c7-b7f6-a6c39c7f64fd"/>
+				<box padding="3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Printed on : "+new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
