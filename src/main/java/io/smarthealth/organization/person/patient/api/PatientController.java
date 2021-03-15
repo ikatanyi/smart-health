@@ -30,6 +30,7 @@ import io.smarthealth.organization.person.service.PersonService;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
@@ -39,10 +40,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
 import net.sf.jasperreports.engine.JRException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -52,11 +55,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
+
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- *
  * @author Kelsas
  */
 @RestController
@@ -130,18 +134,28 @@ public class PatientController {
             @RequestParam(value = "results", required = false) Integer size,
             @RequestParam(value = "term", required = false) final String term,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
+            @RequestParam(value = "searchCriterion", required = false) final Long searchCriterion,
             UriComponentsBuilder uriBuilder) {
         System.out.println("Size " + size);
         System.out.println("Page " + page);
         Pageable pageable = null;
         pageable = PaginationUtil.createPage(page, size, Sort.by("id").descending());
-//        if (page != null && size != null) {
-//            pageable = PageRequest.of(page, size, Sort.by("id").descending());
-//        } else {
-//           
-//        }
-        // pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<PatientData> pageResult = patientService.fetchAllPatients(term, dateRange, pageable).map(p -> patientService.convertToPatientData(p));
+
+        Page<PatientData> pageResult = null;
+        if (searchCriterion == null) {
+            pageResult = patientService.fetchAllPatients(term, dateRange, pageable).map(p -> patientService.convertToPatientData(p));
+        } else {
+            //find all identifiers
+            PatientIdentificationType pit = patientIdentificationTypeService.fetchIdType(searchCriterion);
+            Page<PatientIdentifier> piList = patientIdentifierService.fetchPatientIdentifiers(pit, term, pageable);
+            List<PatientData> pdList = new ArrayList<>();
+            for (PatientIdentifier pi : piList.getContent()) {
+                PatientData pd = patientService.convertToPatientData(pi.getPatient());
+                pdList.add(pd);
+            }
+            pageResult = new PageImpl<>(pdList, pageable, piList.getContent().size());
+        }
+
         Pager<List<PatientData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -162,7 +176,7 @@ public class PatientController {
     @PreAuthorize("hasAuthority('edit_patients')")
     public @ResponseBody
     ResponseEntity<PatientData> updatePatient(@PathVariable("patientNumber") final String patientNumber,
-            @RequestBody final PatientData patientData) {
+                                              @RequestBody final PatientData patientData) {
         final Patient patient;
         if (this.patientService.patientExists(patientNumber)) {
             patient = patientService.findPatientOrThrow(patientNumber);

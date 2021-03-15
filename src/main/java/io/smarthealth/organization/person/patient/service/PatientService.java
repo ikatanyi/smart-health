@@ -480,13 +480,13 @@ public class PatientService {
 
             final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patient);
 
-//            if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
-//                List<PersonIdentifierData> ids = new ArrayList<>();
-//                for (PatientIdentifier id : patientIdentifiers) {
-//                    ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
-//                }
-//                patientData.setIdentifiers(ids);
-//            }
+            if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
+                List<PersonIdentifierData> ids = new ArrayList<>();
+                for (PatientIdentifier id : patientIdentifiers) {
+                    ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
+                }
+                patientData.setIdentifiers(ids);
+            }
             //fetch portrait
             Optional<Portrait> portrait = portraitRepository.findByPerson(patient);
             if (portrait.isPresent()) {
