@@ -65,14 +65,17 @@
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="34" uuid="8badccb3-6b16-40a3-94f1-5bc66f2a8eba"/>
 				<parametersMapExpression><![CDATA[$P{SUBREPORT_DIR}]]></parametersMapExpression>
-				<subreportParameter name="Patient_Data">
-					<subreportParameterExpression><![CDATA[$P{Patient_Data}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				<subreportParameter name="PIC_DIR">
+					<subreportParameterExpression><![CDATA[$P{PIC_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="Patient_Data">
+					<subreportParameterExpression><![CDATA[$P{Patient_Data}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="Header_Data">
+					<subreportParameterExpression><![CDATA[$P{Header_Data}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="header-banner" pageWidth="515" pageHeight="802" columnWidth="515" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
@@ -7,10 +8,9 @@
 	<style name="bannerStyle" mode="Transparent">
 		<paragraph leftIndent="5"/>
 	</style>
-	<style name="headerStyle" mode="Transparent" backcolor="#FFFFFF" hAlign="Left" rotation="None" fontName="SansSerif" fontSize="10">
+	<style name="headerStyle" mode="Transparent" backcolor="#FFFFFF" hTextAlign="Left" hImageAlign="Left" rotation="None" fontName="SansSerif" fontSize="10">
 		<paragraph leftIndent="5"/>
 	</style>
-	<parameter name="PIC_DIR" class="java.lang.Byte"/>
 	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
 		<parameterDescription><![CDATA[]]></parameterDescription>
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
@@ -94,10 +94,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
 			</textField>
-			<image hAlign="Left" isUsingCache="true" isLazy="true" onErrorType="Blank">
-				<reportElement style="headerStyle" x="0" y="3" width="234" height="58" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
-				<imageExpression><![CDATA[$F{IMAGE}]]></imageExpression>
-			</image>
 			<subreport isUsingCache="false">
 				<reportElement x="329" y="60" width="184" height="79" isRemoveLineWhenBlank="true" uuid="a47b2fd5-4260-4202-9855-d0183ebebc73">
 					<printWhenExpression><![CDATA[$P{Patient_Data}!=null]]></printWhenExpression>
