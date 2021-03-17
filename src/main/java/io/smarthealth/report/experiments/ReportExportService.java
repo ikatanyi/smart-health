@@ -77,7 +77,7 @@ public class ReportExportService {
     }
 
     public void walkingRegister(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, FileNotFoundException, JRException, IOException {
-        String template = "/Patient/WalkingRegister.jrxml";
+        String template = "/patient/WalkIn.jrxml";
         String reportName = "Walking Report";
         Map<String, Object> params = new HashMap();
 

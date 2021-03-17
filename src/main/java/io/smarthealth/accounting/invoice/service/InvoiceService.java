@@ -21,6 +21,9 @@ import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.MergeInvoice;
+import io.smarthealth.accounting.invoice.data.statement.InterimInvoice;
+import io.smarthealth.accounting.invoice.data.statement.InterimInvoiceItem;
+import io.smarthealth.accounting.invoice.data.statement.InvoiceStatement;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceItem;
@@ -42,18 +45,23 @@ import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.organization.facility.domain.Facility;
+import io.smarthealth.report.data.CompanyHeader;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -63,6 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.invoice.data.RebateInvoice;
 import java.time.LocalDate;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.ResourceUtils;
 
 /**
  *
@@ -86,6 +95,7 @@ public class InvoiceService {
     private final PaymentDetailsService paymentDetailsService;
     private final PatientBillingService patientBillingService;
 //    private final TxnService txnService;
+    private final CompanyHeader companyHeader;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<Invoice> createInvoice(CreateInvoice invoiceData) {
@@ -660,5 +670,64 @@ public class InvoiceService {
 
         return invoiceRepository.save(invoice);
     }
-     
+
+   public InterimInvoice getInterimInvoiceStatement(String visitNumber, String type){
+        Optional<Visit> optionalVisit = visitService.findVisit(visitNumber);
+
+        if(optionalVisit.isPresent()){
+            InterimInvoice invoice = new InterimInvoice();
+            Visit visit = optionalVisit.get();
+            if(visit.getPaymentDetails()!=null){
+                Payer payer = visit.getPaymentDetails().getPayer();
+                Scheme scheme = visit.getPaymentDetails().getScheme();
+                invoice.setPayerId(payer.getId());
+                invoice.setPayerName(payer.getPayerName());
+                invoice.setSchemeId(scheme.getId());
+                invoice.setSchemeName(scheme.getSchemeName());
+                invoice.setMemberName(visit.getPaymentDetails().getMemberName());
+                invoice.setMemberNumber(visit.getPaymentDetails().getPolicyNo());
+                invoice.setPaymentTerms(payer.getPaymentTerms()!=null ? payer.getPaymentTerms().getTermsName(): "Due Immediately");
+                invoice.setCreditDays(payer.getPaymentTerms()!=null ? payer.getPaymentTerms().getCreditDays() : 0);
+            }
+
+            invoice.setInvoiceNumber(visitNumber);
+            invoice.setVisitDate(visit.getStartDatetime());
+            invoice.setVisitType(visit.getVisitType()!=null ? visit.getVisitType().name() : "");
+            invoice.setPatientNumber(visit.getPatient().getPatientNumber());
+            invoice.setPatientName(visit.getPatient().getFullName());
+            invoice.setItems(
+                    patientBillingService.getInterimBillItems(visitNumber, type).stream()
+                    .map(InterimInvoiceItem::of)
+                    .collect(Collectors.toList())
+            );
+            return invoice;
+        }
+        return new InterimInvoice();
+   }
+
+   public InvoiceStatement getInvoiceStatement(String invoiceNumber){
+        Optional<Invoice> optionalInvoice = invoiceRepository.findByNumber(invoiceNumber);
+        if(optionalInvoice.isPresent()){
+            return InvoiceStatement.of(optionalInvoice.get());
+        }
+        return new InvoiceStatement();
+   }
+
+   public JasperPrint generateInterimStatement(String visitNumber, String type) throws FileNotFoundException, JRException {
+        if(type == null ) type ="standard";
+       List<CompanyHeader> header = Arrays.asList(companyHeader);
+       List<InterimInvoice> invoices = Arrays.asList(getInterimInvoiceStatement(visitNumber, type));
+
+       type=  StringUtils.capitalize(type.toLowerCase());
+       String reportTemplate = String.format("classpath:reports/accounts/invoice/%sInterimStatement.jrxml", type);
+
+       File file = ResourceUtils.getFile(reportTemplate);
+       JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+       JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(invoices);
+       Map<String, Object> parameters = new HashMap<>();
+       parameters.put("CompanyHeader", header);
+       JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+       return jasperPrint;
+   }
+
 }

@@ -6,24 +6,38 @@ import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.MergeInvoice;
+import io.smarthealth.accounting.invoice.data.statement.InterimInvoice;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.accounting.invoice.data.RebateInvoice;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.report.domain.enumeration.ReportName;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
+
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import lombok.SneakyThrows;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -45,7 +59,7 @@ public class InvoiceController {
 
     @PostMapping("/invoices")
     @PreAuthorize("hasAuthority('create_invoices')")
-    public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
+    public ResponseEntity<Pager<List<InvoiceData>>> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
 
         List<InvoiceData> trans = service.createInvoice(invoiceData).stream().map(x -> x.toData()).collect(Collectors.toList());
         auditTrailService.saveAuditTrail("Patient Invoice", "Created Patient invoice with invoiceNo " + trans.get(0).getNumber());
@@ -65,7 +79,7 @@ public class InvoiceController {
 
     @GetMapping("/invoices/{id}")
     @PreAuthorize("hasAuthority('view_invoices')")
-    public ResponseEntity<?> getInvoice(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<InvoiceData> getInvoice(@PathVariable(value = "id") Long id) {
         Invoice trans = service.getInvoiceByIdOrThrow(id);
         auditTrailService.saveAuditTrail("Patient Invoice", "Searched Invoice  identified by id " + id);
         return ResponseEntity.ok(trans.toData());
@@ -82,15 +96,15 @@ public class InvoiceController {
 
     @PostMapping("/invoices/{invoiceNumber}/add-items")
     @PreAuthorize("hasAuthority('create_invoices')")
-    public ResponseEntity<?> addInvoiceItem(@PathVariable(value = "invoiceNumber") String invoiceNumber, @Valid @RequestBody List<BillItemData> invoiceItems) {
+    public ResponseEntity<InvoiceData> addInvoiceItem(@PathVariable(value = "invoiceNumber") String invoiceNumber, @Valid @RequestBody List<BillItemData> invoiceItems) {
 
         Invoice invoice = service.addInvoiceItem(invoiceNumber, invoiceItems);
-        return ResponseEntity.ok(invoice);
+        return ResponseEntity.ok(invoice.toData());
     }
 
     @GetMapping("/invoices")
     @PreAuthorize("hasAuthority('view_invoices')")
-    public ResponseEntity<?> getInvoices(
+    public ResponseEntity<Pager<List<InvoiceData>>> getInvoices(
             @RequestParam(value = "payer", required = false) Long payer,
             @RequestParam(value = "scheme", required = false) Long scheme,
             @RequestParam(value = "number", required = false) String invoice,
@@ -193,5 +207,27 @@ public class InvoiceController {
         details.setReportName("Invoices");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/invoices/{invoiceNumber}/invoice-statement")
+    public ResponseEntity<InterimInvoice> getInvoiceStatement(@PathVariable(value = "invoiceNumber") String invoiceNumber){
+        return ResponseEntity.ok(service.getInvoiceStatement(invoiceNumber));
+    }
+    @SneakyThrows
+    @GetMapping("/invoices/{invoiceNo}/report")
+    public void generateReport(HttpServletResponse response,
+                               @PathVariable String invoiceNo,
+                               @RequestParam(value = "type", required = false, defaultValue = "standard") String type,
+                               @RequestParam(value = "format", required = false, defaultValue = "PDF") ExportFormat format) throws FileNotFoundException, JRException {
+        JasperPrint print = service.generateInterimStatement(invoiceNo, type);
+        //this should be redefined to allow dynamic out
+        response.setHeader("Content-Disposition", String.format("attachment; filename=" +"SmartHealth_Interim_Invoice"+ invoiceNo + "." + format.name().toLowerCase()));
+        OutputStream out = response.getOutputStream();
+        switch (format){
+            case PDF:
+                JasperExportManager.exportReportToPdfStream(print, out);
+                break;
+            default:
+        }
     }
 }

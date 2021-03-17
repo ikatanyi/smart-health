@@ -96,6 +96,8 @@ public class PaymentDetails extends Auditable {
     @ManyToOne
     private Scheme excessAmountScheme;
 
+    private String authorizationCode;
+
     @Override
     public String toString() {
         return "[ runningLimit=" + runningLimit + ", limitAmount=" + limitAmount + "]";

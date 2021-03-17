@@ -2,6 +2,7 @@ package io.smarthealth.clinical.laboratory.service;
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.config.service.ConfigService;
@@ -592,6 +593,7 @@ public class LaboratoryService {
             billItem.setServicePointId(srvpoint.getId());
             billItem.setStatus(BillStatus.Draft);
             billItem.setBillPayMode(x.getPaymentMethod());
+            billItem.setEntryType(BillEntryType.Debit);
             //TODO enter the bills as array 
 //            billItem.setRequestReference(); //this is the one I need to know how to handle ot
             lineItems.add(billItem);
@@ -646,6 +648,7 @@ public class LaboratoryService {
         billItem.setServicePoint(srvpoint.getName());
         billItem.setServicePointId(srvpoint.getId());
         billItem.setStatus(BillStatus.Draft);
+        billItem.setEntryType(BillEntryType.Debit);
         billItem.setRequestReference(registeredTest.getId());
         return billItem;
     }

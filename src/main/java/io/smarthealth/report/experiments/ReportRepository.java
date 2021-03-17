@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
@@ -36,7 +37,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
 
 /**
- *
  * @author Kelsas
  */
 @Slf4j
@@ -50,7 +50,7 @@ public class ReportRepository {
     private final StorageService storageService;
     private final FacilityService facilityService;
 
-//    public ReportRepository(JdbcTemplate jdbcTemplate) {
+    //    public ReportRepository(JdbcTemplate jdbcTemplate) {
 //        this.jdbcTemplate = jdbcTemplate;
 //    }
     public JasperPrint generateJasperPrint(String template, Map<String, Object> parameters) throws SQLException, FileNotFoundException, JRException {
@@ -61,7 +61,7 @@ public class ReportRepository {
 
             Header headerData = Header.map(facility);
             Footer footerData = Footer.map(facility);
-            if (facility.getCompanyLogo()==null) {
+            if (facility.getCompanyLogo() == null) {
                 headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
                 parameters.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
             } else {
@@ -81,8 +81,15 @@ public class ReportRepository {
             End: Subreport base directory
              */
             Connection connection = jdbcTemplate.getDataSource().getConnection();
-            String  jrxml = resourceLoader.getResource(appProperties.getReportLoc() + template).getFile().getAbsolutePath();
-            JasperReport jasperReport = JasperCompileManager.compileReport(jrxml);
+
+//            String jrxml = resourceLoader.getResource(appProperties.getReportLoc() + template).getFile().getAbsolutePath();
+            InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc().concat(template)).getInputStream();
+
+
+//            InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
+
+//            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportInputStream);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
             return jasperPrint;
         } catch (SQLException | JRException | IOException exception) {
@@ -95,14 +102,15 @@ public class ReportRepository {
 
     public JasperPrint generateJasperPrint(String template, Map<String, Object> parameters, JRBeanCollectionDataSource dataSource) throws FileNotFoundException, JRException {
         try {
+            String jrxml = resourceLoader.getResource(appProperties.getReportLoc() + template).getFile().getAbsolutePath();
 
-            File file = ResourceUtils.getFile("classpath:reports:" + template);
+            File file = ResourceUtils.getFile(/*"classpath:reports:" + template*/jrxml);
             JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
             return jasperPrint;
 
-        } catch (FileNotFoundException | JRException exception) {
+        } catch (JRException | IOException exception) {
             log.error("Error {} ", exception.getMessage());
             return null;
         }

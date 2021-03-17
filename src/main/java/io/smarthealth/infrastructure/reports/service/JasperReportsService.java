@@ -336,7 +336,7 @@ public class JasperReportsService {
      *
      */
     @Transactional(readOnly = true)
-    private HashMap reportConfig(String patientNumber, String staffNumber, Long supplierId) throws JRException {
+    HashMap reportConfig(String patientNumber, String staffNumber, Long supplierId) throws JRException {
         List<PatientBanner> patientDataArray = new ArrayList();
         List<EmployeeBanner> employeeDataArray = new ArrayList();
         List<Header> header = new ArrayList();

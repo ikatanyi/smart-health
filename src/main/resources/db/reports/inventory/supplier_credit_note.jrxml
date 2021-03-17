@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="credit_note" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HEADER_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Employee_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Supplier_Data" class="java.util.List"/>
+	<parameter name="amountInWords" class="java.lang.String"/>
+	<parameter name="category" class="java.lang.String"/>
+	<parameter name="Payer_Data" class="java.util.List"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="creditNoteNumber" class="java.lang.String"/>
+	<field name="supplierId" class="java.lang.Long"/>
+	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="supplier" class="java.lang.String"/>
+	<field name="store" class="java.lang.String"/>
+	<field name="invoiceNumber" class="java.lang.String"/>
+	<field name="items" class="java.util.List"/>
+	<field name="creditDate" class="java.lang.Object"/>
+	<field name="transactionId" class="java.lang.String"/>
+	<field name="reason" class="java.lang.String"/>
+	<variable name="PatientCount" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<variable name="amount_1" class="java.math.BigDecimal" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="62" splitType="Stretch">
+			<subreport>
+				<reportElement x="2" y="0" width="293" height="54" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
+				<subreportParameter name="PIC_DIR">
+					<subreportParameterExpression><![CDATA[$P{PIC_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="405" y="3" width="150" height="26" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#FFFFFF" uuid="6c8e763a-74c0-43d0-b9da-7f9b63374b0c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VENDOR CREDITS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="405" y="30" width="78" height="14" forecolor="#000000" uuid="095ac6f1-d0c2-4c9f-abd1-4352b0524693"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CreditNote#]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="469" y="30" width="86" height="14" uuid="10e3334d-744e-4f07-898b-bfe8722f12b0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{creditNoteNumber}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="58">
+			<subreport>
+				<reportElement x="1" y="2" width="307" height="48" uuid="9f408f77-6458-4591-935a-77d74f77e4d6">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Supplier" )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Supplier_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "supplier_banner.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="2" y="2" width="306" height="48" uuid="5fe0f837-f4cd-4acc-b3d0-ebf331b3d270">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Doctor" )||$P{category}.equals( "pettycash" )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="2" y="3" width="306" height="47" uuid="4ca39bff-3bf3-4aa1-acea-331048756366">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Payer" )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Payer_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "payer-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="370" y="3" width="89" height="11" forecolor="#000000" uuid="d0412594-8251-4c56-942c-b296933195fa"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date    :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="461" y="3" width="94" height="11" uuid="bcf8e7ca-cd13-4ec3-bc8d-12e2e5962f7c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{creditDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="370" y="14" width="89" height="11" forecolor="#000000" uuid="72fc694f-7538-4b1d-bbd9-9ca80420a3bc"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reference Number      :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="461" y="14" width="94" height="10" uuid="6d9a8a2e-0912-453d-8191-2240e221a2bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{invoiceNumber}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="13" uuid="129efd39-48ad-4197-bab0-e0b93e9f4b45"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{items})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "supplier_credit_note_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="27">
+			<line>
+				<reportElement x="429" y="11" width="118" height="1" uuid="d3b94a23-54bd-40fe-a917-7a4ec07fed48"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="438" y="13" width="100" height="10" uuid="521fb2ec-c3b3-4a87-9954-a36409c5e17e"/>
+				<textElement>
+					<font fontName="SansSerif" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Authorised Signature]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="16">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="16" uuid="755673a1-46d8-4c45-a71f-be3d7f2737be"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageFooter>
+</jasperReport>

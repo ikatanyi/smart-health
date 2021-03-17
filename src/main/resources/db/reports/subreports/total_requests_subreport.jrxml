@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="total_requests_subreport" pageWidth="325" pageHeight="802" columnWidth="325" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="3c96e8ea-9627-43a4-88a8-8b7e30509762">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<field name="practitioner" class="java.lang.String"/>
+	<field name="testName" class="java.lang.String"/>
+	<field name="count" class="java.lang.Integer"/>
+	<field name="totalPrice" class="java.lang.Double"/>
+	<variable name="totalPrice_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{totalPrice}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="19" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="116" height="19" uuid="6bf93a6e-1f54-40f7-9e83-a6a94be42668"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Requests]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="149" y="0" width="103" height="20" forecolor="#FFFFFF" backcolor="#333333" uuid="2188144b-2276-49a6-a29f-95f4f51a8c41"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Count]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="14" y="0" width="135" height="20" forecolor="#FFFFFF" backcolor="#333333" uuid="d64fc2fc-b076-42a8-9793-8f69f599521b"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Practitioner]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="252" y="0" width="72" height="20" forecolor="#FFFFFF" backcolor="#333333" uuid="0ec525b5-105d-46ef-99df-5f321e70c137"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="14" height="20" forecolor="#FFFFFF" backcolor="#333333" uuid="edcaab11-adfe-4ddc-8206-7a4f59732dd1"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="252" y="0" width="72" height="11" uuid="c0cced03-83b3-47b1-ab0c-626cda0b8160"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+					<paragraph rightIndent="20"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalPrice}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="0" width="103" height="11" uuid="0b99a4df-f80e-4454-8914-b0655bc479bb"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{count}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="14" y="0" width="135" height="11" uuid="4073714d-ead8-4190-bc38-35a9330a3f7b"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{practitioner}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="14" height="11" uuid="bd3c11d9-af19-4148-8ab0-f4a462c86b5a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="14" splitType="Stretch">
+			<textField>
+				<reportElement x="252" y="0" width="72" height="14" uuid="59c2ce46-b191-410b-b939-0f22e8ad9a17"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="20"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalPrice_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="163" y="0" width="89" height="14" uuid="1e93beb2-4b10-4f70-aedf-55d11d230d07"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total :]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

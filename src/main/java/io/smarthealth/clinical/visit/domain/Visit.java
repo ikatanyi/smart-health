@@ -69,7 +69,7 @@ public class Visit extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_visit_clinic"))
     private DoctorClinicItems clinic;
     
-    
+    private String authorizationCode;
 //    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL,
 //              fetch = FetchType.LAZY, optional = false)
 //    private PostDetails details;

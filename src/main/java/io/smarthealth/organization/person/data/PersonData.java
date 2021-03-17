@@ -12,12 +12,15 @@ import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
+
+import io.smarthealth.organization.person.patient.data.PatientIdentifierData;
 import lombok.Data;
 
 /**
@@ -45,6 +48,7 @@ public class PersonData {
     private List<AddressDatas> address;
     private List<ContactData> contact;
     private List<PersonNextOfKinData> nok;
+    private List<PersonIdentifierData> identifiers = new ArrayList<>();
     private String fullName;
     private LocalDate createdOn;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)

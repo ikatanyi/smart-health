@@ -1,0 +1,881 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="182"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 3">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 4">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 5">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Footer_Data" class="java.util.List"/>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="Patient_Data" class="java.util.List"/>
+	<parameter name="Employee_Data" class="java.util.List"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="referralType" class="java.lang.String"/>
+	<field name="staffNumber" class="java.lang.String"/>
+	<field name="doctorName" class="java.lang.String"/>
+	<field name="doctorSpeciality" class="java.lang.String"/>
+	<field name="referralNotes" class="java.lang.String"/>
+	<field name="visitNo" class="java.lang.String"/>
+	<field name="includeVisitClinalNotes" class="java.lang.Boolean"/>
+	<field name="chiefComplaints" class="java.lang.String"/>
+	<field name="examinationNotes" class="java.lang.String"/>
+	<pageHeader>
+		<band height="69" splitType="Stretch">
+			<line>
+				<reportElement positionType="Float" x="1" y="31" width="570" height="1" forecolor="#CC3300" uuid="e798fa4d-52f1-4833-bbcf-472255c0e348"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="3" y="51" width="95" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Referral Form]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="1" y="68" width="570" height="1" forecolor="#CC3300" uuid="7e277ce6-dea7-4eae-833f-c62ef75773b2"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+			<subreport>
+				<reportElement x="-1" y="0" width="573" height="31" uuid="bcc512bb-37ca-4dad-bbdf-b131cc967f1c"/>
+				<subreportParameter name="PIC_DIR"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="57">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="289" height="56" uuid="723d9069-2550-4fab-889b-3030f26303b3"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement positionType="Float" x="-1" y="56" width="573" height="1" forecolor="#CC3300" uuid="5f46f972-c1e9-4a16-bea9-62717a522a18"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+			<subreport>
+				<reportElement x="290" y="0" width="282" height="57" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="89" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="9" width="200" height="14" forecolor="#000000" backcolor="#9999FF" uuid="5c144f53-547c-4a3c-8546-7ee1bac13bbb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Does The Patient have a pending diasability case]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="25" width="124" height="14" forecolor="#000000" backcolor="#9999FF" uuid="9b376977-a53a-412f-85f8-d3bd7697617a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[If Yes, what was it applied for?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="44" width="200" height="14" forecolor="#000000" backcolor="#9999FF" uuid="d35f819e-e91b-4d9b-a5e4-bda4f014e694"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Does the patient have health insurance of any kind?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="64" width="164" height="14" forecolor="#000000" backcolor="#9999FF" uuid="49fc7cb1-a82a-4743-b3e9-9124ba278105"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Is the patient receiving Medicaid?]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="118" y="36" width="439" height="1" forecolor="#CC3300" uuid="e7204bf5-bcce-4024-b112-221d880b9415"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+			<rectangle>
+				<reportElement x="212" y="11" width="10" height="11" uuid="a4fdfacc-6293-403d-ba48-c01b9db800cf"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="225" y="11" width="18" height="11" uuid="b61d4b2e-bded-4566-b647-b8c438d0382c"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Yes]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="279" y="11" width="10" height="11" uuid="0768bb07-d00b-4443-af51-6a148daab50b"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="292" y="11" width="18" height="11" uuid="aca3e973-68ff-473f-b3aa-35d972974428"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Yes]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="294" y="47" width="18" height="11" uuid="1efa1cf3-21e9-474d-9f68-ae8c97ecbf4c"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Yes]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="281" y="47" width="10" height="11" uuid="faab5f77-085e-4041-9c5f-cd4693271332"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="212" y="47" width="10" height="11" uuid="87c964d7-f172-49f9-b9f3-98cedfedcf24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="225" y="47" width="18" height="11" uuid="93190fbf-93c8-484e-ae9b-315621358dd0"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Yes]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="155" y="67" width="10" height="11" uuid="78f87109-ab1a-4636-a376-46e1aab43c8c"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="222" y="67" width="18" height="11" uuid="734b888e-3e3b-42e1-98b9-45691b095504"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Yes]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="168" y="67" width="18" height="11" uuid="ca89fab9-567d-4316-922f-eb73a8fb5045"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Yes]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="209" y="67" width="10" height="11" uuid="b1720fd0-9684-482f-8e69-37abf2bdcf54"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="266" y="67" width="10" height="11" uuid="6681c07a-8285-4332-9029-72a2c69a4051"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="354" y="67" width="18" height="11" uuid="dce59621-763a-4843-816e-5e4cefdef2df"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N/A]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="279" y="67" width="56" height="11" uuid="2290cc7d-f420-4067-9306-0034627c56e8"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Share of Cost]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="341" y="67" width="10" height="11" uuid="d411aefe-2a03-4c05-8f09-7ecb2459fb43"/>
+			</rectangle>
+		</band>
+		<band height="164" splitType="Stretch">
+			<line>
+				<reportElement positionType="Float" x="2" y="0" width="569" height="1" forecolor="#CC3300" uuid="78443940-e497-4600-8593-625c64c53113"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="21" y="24" width="144" height="11" uuid="965cec9f-e324-4222-8182-5a271adef8ad"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cardiology]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="8" y="24" width="10" height="11" uuid="4810015b-3b1e-4099-a375-d75ba618c437"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="10" y="5" width="547" height="17" uuid="5d39e6bd-f886-490c-9004-0a258eb3ce47"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[This patient is being referred  to see a Specialists (SELECT ONE ONLY):]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="21" y="37" width="144" height="11" uuid="4f146500-f768-4786-96d4-019544ece946"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cardiothoracic Surgery]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="8" y="37" width="10" height="11" uuid="02244d46-2eb9-43e5-abe4-85e5e542e253"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="21" y="51" width="144" height="11" uuid="178a03e0-2a2b-4e25-94f6-1f467b2bebe0"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dentistry]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="8" y="51" width="10" height="11" uuid="cc696c88-0588-4ff0-a887-defa4046f38c"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="21" y="78" width="144" height="11" uuid="27f24cf0-dede-4c1b-ba52-58acc8ccd611"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EMG Testing]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="8" y="78" width="10" height="11" uuid="4f9cd7a3-4f39-4d62-9d3e-be26f822c35c"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="21" y="64" width="144" height="11" uuid="44793b58-903f-4cf5-aab2-ecba7d885d82"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dermatology]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="8" y="64" width="10" height="11" uuid="a141e76e-25c2-49a2-9ff4-e5edc5fe355e"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="8" y="132" width="10" height="11" uuid="ea13f8fc-345d-42af-ac86-2c2f04278cbe"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="8" y="146" width="10" height="11" uuid="88776e23-075f-4e35-84e7-dc8a93739df2"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="21" y="132" width="144" height="11" uuid="4dd4a2a7-ccc5-4133-a1bb-ed5af02736b7"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gynecologic Oncology]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="21" y="92" width="144" height="11" uuid="df6af2dc-821c-414d-a39e-1ffe25f8fd09"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Endocrinology]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="21" y="119" width="144" height="11" uuid="d2230e19-828f-4094-9a96-c08ca404cf82"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[General Surgery]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="21" y="105" width="144" height="11" uuid="8f93a916-9e1a-48a4-9eda-2adc4eaf0aab"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gastroentrology]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="21" y="146" width="144" height="11" uuid="7e51604b-f70f-4e37-aae5-1da34220765f"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gynecology]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="8" y="105" width="10" height="11" uuid="a5ae289b-ac34-4b69-8ffc-36893b8f4df9"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="8" y="92" width="10" height="11" uuid="e2be3279-d74a-4723-b3a5-a44558e04074"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="8" y="119" width="10" height="11" uuid="be819ef5-338d-48f9-979b-855dedbebe00"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="206" y="119" width="10" height="11" uuid="29725b2a-e703-4620-92e5-df8f40fa0219"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="219" y="132" width="144" height="11" uuid="1c5e554e-c4f6-47a9-9f30-37dc16612647"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Physical Therapy & Rehab ]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="206" y="146" width="10" height="11" uuid="35ec0207-9113-418b-aa3d-f11a82ae32e1"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="219" y="105" width="144" height="11" uuid="8ff4a61e-1b77-415c-b72b-8e33ac7faf5a"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Otolaryngology (ENT) ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="64" width="144" height="11" uuid="ba7d711c-1f05-4862-a00c-2764a1ded004"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Neurosurgery ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="24" width="144" height="11" uuid="f179f085-6c0b-4931-ab05-07a468f65257"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Medical Oncology]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="206" y="92" width="10" height="11" uuid="f5cea53f-d5d5-45eb-8f79-5a0b13678647"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="206" y="105" width="10" height="11" uuid="a383f67a-ccca-413e-83a4-aee14d3d3ea0"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="219" y="92" width="144" height="11" uuid="d5351fde-cdb9-4b38-b27d-8f86c009a008"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Optometry]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="37" width="144" height="11" uuid="52c6bbee-8d2b-41b3-84c1-ecadebdc1ba6"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nephrology]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="206" y="37" width="10" height="11" uuid="ee65c012-4573-482e-8911-2ae84a8d05c3"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="206" y="64" width="10" height="11" uuid="367d56a6-57c4-4876-833b-65d8524f4757"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="206" y="78" width="10" height="11" uuid="2b6f5720-5b10-49cc-b28d-102320123bf9"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="219" y="146" width="144" height="11" uuid="87886fe7-b355-4dab-9717-d965fdbf036d"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Plastic/Reconstructive Surgery ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="51" width="144" height="11" uuid="df130e3c-4cd1-43c3-909c-6a39be802747"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Neurology]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="119" width="144" height="11" uuid="3ec84838-0bda-4a9a-9a3b-16ebf8d4cc55"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pain Management & Therapy]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="78" width="144" height="11" uuid="96eb9efc-51b1-4781-9837-a5ca5c0fbb60"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ophthalmology]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="206" y="24" width="10" height="11" uuid="68f91550-f16b-477f-9b97-706a26b5fd90"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="206" y="51" width="10" height="11" uuid="a74e76d5-25bf-4ad9-8a03-e50fb477769a"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="206" y="132" width="10" height="11" uuid="07540ccd-aaaa-4f40-9090-2287bd10d641"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="406" y="37" width="144" height="11" uuid="b55e1c65-309f-475a-9ccf-333632b0da46"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Radiation (Breast Health ONLY) ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="406" y="78" width="144" height="11" uuid="edc4a1ee-5c83-4f3b-b96a-ce33573b75ed"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Vascular Surgery ]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="393" y="78" width="10" height="11" uuid="1dea48ae-314c-4bfc-80e5-87aad066f143"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="393" y="64" width="10" height="11" uuid="a4af4a75-71d7-4e6c-9a3d-f1d3992d222d"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="393" y="51" width="10" height="11" uuid="7c9e84af-3392-4477-8e33-e31be3964416"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="406" y="51" width="144" height="11" uuid="81137bcb-da62-424c-b925-f9eea3307867"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Radiation Oncology ]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="393" y="24" width="10" height="11" uuid="fae4e6e2-4cd9-42fc-91dc-7233e3d8d004"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="393" y="92" width="10" height="11" uuid="fac72752-b717-496d-bc34-a8714d601ef2"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="406" y="24" width="144" height="11" uuid="374a829e-6cfd-4eae-b00c-6a0e34b04ef1"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pulmonology ]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="393" y="37" width="10" height="11" uuid="d631205d-4288-41db-b817-be7be4877a1e"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="406" y="92" width="165" height="11" uuid="20b69f41-381c-4755-8f64-9a4a6be6eefd"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Other (If it is not listed above, it may not be ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="406" y="64" width="144" height="11" uuid="281b0b95-9250-4314-b3ce-b88e2372193c"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Urology ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="393" y="103" width="178" height="11" uuid="f66791fe-69db-49d5-98e6-d73ed721eb2d"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[available; however, we may know of other ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="393" y="114" width="178" height="11" uuid="18d14816-63cc-41f5-9618-b1ee8f185e31"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[options/providers) ]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="394" y="143" width="178" height="1" forecolor="#CC3300" uuid="870e0d26-cbeb-4641-bdab-b52b9ad0cadf"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+		</band>
+		<band height="45" splitType="Stretch">
+			<line>
+				<reportElement positionType="Float" x="2" y="0" width="569" height="1" forecolor="#CC3300" uuid="4cce6c86-e7c4-442a-a9dd-2153e32c518b"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#666666"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="4" y="5" width="547" height="17" uuid="588dea80-0251-435d-ba5f-309b58403807"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reason - Must be significantly medically necessary and cannot be managed or treated by a primary care provider ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="5" y="24" width="544" height="12" uuid="a7e15061-3d17-4ab7-a8e0-e15ea4d3f2c4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{referralNotes}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="67" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{includeVisitClinalNotes}.equals( true )]]></printWhenExpression>
+			<line>
+				<reportElement positionType="Float" x="2" y="0" width="569" height="1" forecolor="#CC3300" uuid="73a0c025-a28f-4ccc-a8ba-6888808ae0a7"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#666666"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="3" y="1" width="150" height="14" forecolor="#000000" backcolor="#9999FF" uuid="23ad1106-8065-430e-98de-da2f964c1d65"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Symptoms]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="4" y="34" width="152" height="14" forecolor="#000000" backcolor="#9999FF" uuid="5642e2ce-5f8e-4226-8776-4bb00ab5ba91"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Examination Notes :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="4" y="49" width="553" height="11" uuid="e734a80d-3b79-4608-867e-a7242e6439d1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{examinationNotes}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="3" y="14" width="554" height="13" uuid="05b0a740-0f91-4c41-a628-87e8c1d06ea9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{chiefComplaints}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="66" splitType="Stretch">
+			<line>
+				<reportElement positionType="Float" x="1" y="0" width="569" height="1" forecolor="#CC3300" uuid="d4b761cd-ea15-4e71-bd02-50571babd0ea"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#666666"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="1" width="571" height="14" forecolor="#000000" backcolor="#9999FF" uuid="fef946c2-68aa-4404-b7c5-0a14d58de717"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[ALL REFERRALS MUST INCLUDE DOCUMENTATION OF THE NEED INCLUDING MEDICAL NOTES FROM AN OFFICE VISIT AS WELL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="1" y="13" width="571" height="14" forecolor="#000000" backcolor="#9999FF" uuid="eff67c51-e9fc-4ce3-a99e-a5b580ca2f76"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AS LABWORK AND/OR NECESSARY TESTING FOR DIAGNOSIS (MRI/XRAY/USN/ETC.)]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="0" y="46" width="243" height="1" forecolor="#CC3300" uuid="2a3e7cfe-4c69-41b7-a7fc-8f91dfd449c5"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement positionType="Float" x="341" y="47" width="229" height="1" forecolor="#CC3300" uuid="fa5a69ed-ac2b-4794-ad47-be464a7cc548"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="4" y="47" width="569" height="14" forecolor="#000000" backcolor="#9999FF" uuid="e2d16cd3-55a4-491c-a69e-082339066571"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Name of Referring Physician, ARNP or PA (Print)                                                                                               Signature of Referring Physician, ARNP or PA ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="4" y="34" width="255" height="12" uuid="6977f5c3-01e7-4567-9126-974e14a8c7aa"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{doctorName}+" "+$F{doctorSpeciality}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="75" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="1" y="0" width="572" height="70" uuid="06b78a30-b709-4b54-8c44-5847415e1d0c"/>
+				<rectangle>
+					<reportElement x="0" y="0" width="570" height="70" uuid="facfae62-7943-4288-9f73-4b319cb23049"/>
+					<graphicElement>
+						<pen lineWidth="0.25"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement positionType="Float" mode="Transparent" x="1" y="0" width="566" height="12" forecolor="#000000" backcolor="#9999FF" uuid="da6c3d88-e2c2-47c7-8e88-ca1739afe43a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PATIENT MUST SIGN THE FOLLOWING CONSENT AND RELEASE OR THE REFERRAL WILL NOT BE PROCESSED ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Transparent" x="0" y="28" width="571" height="14" forecolor="#000000" backcolor="#9999FF" uuid="c7b00165-149c-4694-9964-6b6c2b02cc04"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="false"/>
+					</textElement>
+					<text><![CDATA[the appropriate and pertinent privacy and confidentiality requirements. ]]></text>
+				</staticText>
+				<line>
+					<reportElement positionType="Float" x="1" y="45" width="569" height="1" forecolor="#CC3300" uuid="0db6e476-257f-4f8c-b5a8-ef9d246e8eac"/>
+					<graphicElement>
+						<pen lineWidth="0.25" lineStyle="Solid" lineColor="#666666"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement positionType="Float" x="0" y="12" width="569" height="1" forecolor="#CC3300" uuid="e036bbed-5e39-46a0-9063-5636df32b6a1"/>
+					<graphicElement>
+						<pen lineWidth="0.25" lineStyle="Solid" lineColor="#666666"/>
+					</graphicElement>
+				</line>
+			</frame>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="0" y="14" width="570" height="14" forecolor="#000000" backcolor="#9999FF" uuid="8d316967-3c49-45ff-99ac-7967bb135178"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[I hereby give my informed written consent for all of the partners, as defined below,  to access and review my patient files including]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="0" y="56" width="571" height="14" forecolor="#000000" backcolor="#9999FF" uuid="f7177252-1c2d-4337-a0f4-265b5bb7ade5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[  Signature:  __________________________________________________________ Date:  _______________________ ]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

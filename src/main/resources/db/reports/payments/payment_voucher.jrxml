@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="480" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="890"/>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HEADER_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Employee_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Supplier_Data" class="java.util.List"/>
+	<parameter name="amountInWords" class="java.lang.String"/>
+	<parameter name="category" class="java.lang.String"/>
+	<parameter name="PaymentData" class="java.util.List"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="payeeId" class="java.lang.Long"/>
+	<field name="payee" class="java.lang.String"/>
+	<field name="payeeType" class="java.lang.Object"/>
+	<field name="paymentDate" class="java.lang.Object"/>
+	<field name="voucherNo" class="java.lang.String"/>
+	<field name="paymentMethod" class="java.lang.String"/>
+	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="referenceNumber" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="transactionNo" class="java.lang.String"/>
+	<field name="currency" class="java.lang.String"/>
+	<variable name="PatientCount" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<variable name="amount_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+	</variable>
+	<background>
+		<band height="440" splitType="Stretch">
+			<elementGroup>
+				<rectangle>
+					<reportElement positionType="Float" x="2" y="232" width="553" height="159" uuid="63e193d5-7bbe-4c2a-a8d0-875e62be2939"/>
+					<graphicElement>
+						<pen lineWidth="0.25"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement positionType="Float" x="2" y="232" width="183" height="140" uuid="458b962a-9611-4cb9-a17c-3191d2044366"/>
+					<graphicElement>
+						<pen lineWidth="0.25"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement positionType="Float" x="372" y="232" width="183" height="159" uuid="d2bb9564-ed7b-4d84-96c4-96592302e432"/>
+					<graphicElement>
+						<pen lineWidth="0.25"/>
+					</graphicElement>
+				</rectangle>
+			</elementGroup>
+		</band>
+	</background>
+	<title>
+		<band height="55" splitType="Stretch">
+			<subreport>
+				<reportElement x="2" y="0" width="551" height="54" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
+				<subreportParameter name="PIC_DIR">
+					<subreportParameterExpression><![CDATA[$P{PIC_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement positionType="Float" x="-1" y="54" width="554" height="1" uuid="5d2fc52e-b224-419b-992e-58f23cb65a0b"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="22">
+			<staticText>
+				<reportElement x="470" y="5" width="83" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#FFFFFF" uuid="6c8e763a-74c0-43d0-b9da-7f9b63374b0c"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Voucher]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="1" y="21" width="554" height="1" uuid="45eb46fc-921e-40d5-812f-93da09fab059"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="64">
+			<subreport>
+				<reportElement x="1" y="2" width="307" height="48" uuid="9f408f77-6458-4591-935a-77d74f77e4d6">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Supplier" )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Supplier_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "supplier_banner.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="2" y="2" width="306" height="48" uuid="5fe0f837-f4cd-4acc-b3d0-ebf331b3d270">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Doctor" )||$P{category}.equals( "pettycash" )]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="payee">
+					<subreportParameterExpression><![CDATA[$F{payee}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="408" y="3" width="25" height="11" forecolor="#000000" uuid="095ac6f1-d0c2-4c9f-abd1-4352b0524693"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="408" y="14" width="25" height="11" forecolor="#000000" uuid="d0412594-8251-4c56-942c-b296933195fa"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="433" y="3" width="120" height="11" uuid="10e3334d-744e-4f07-898b-bfe8722f12b0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{voucherNo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="433" y="14" width="120" height="11" uuid="bcf8e7ca-cd13-4ec3-bc8d-12e2e5962f7c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paymentDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="408" y="25" width="25" height="11" forecolor="#000000" uuid="72fc694f-7538-4b1d-bbd9-9ca80420a3bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ref :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="408" y="36" width="25" height="11" forecolor="#000000" uuid="38b1b31d-2ece-4308-8cbf-3bd76903ef9b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mode :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="433" y="25" width="120" height="10" uuid="6d9a8a2e-0912-453d-8191-2240e221a2bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{referenceNumber}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="433" y="35" width="120" height="12" uuid="b1134dd8-d84c-4304-837e-28d6c142ecd2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paymentMethod}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="12" uuid="54e99b1e-9fa6-4102-80a1-2ada1552b1e9">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Doctor" )||$P{category}.equals( "Supplier" )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{PaymentData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "payment_voucher_subreport.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="14" uuid="f9c90bad-1d6a-4b5d-ac83-0e773438bbbe">
+					<printWhenExpression><![CDATA[$P{category}.equals( "PettyCash" )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{PaymentData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "payment_voucher_subreport_2.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="51">
+			<line>
+				<reportElement positionType="Float" x="185" y="-1" width="370" height="1" uuid="e8cda4a5-5619-46c8-8a9f-f6f8becd9839"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="422" y="34" width="118" height="1" uuid="d3b94a23-54bd-40fe-a917-7a4ec07fed48"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="431" y="36" width="100" height="10" uuid="521fb2ec-c3b3-4a87-9954-a36409c5e17e"/>
+				<textElement>
+					<font fontName="SansSerif" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Authorised Signature]]></text>
+			</staticText>
+			<line>
+				<reportElement x="289" y="34" width="118" height="1" uuid="476bd8c1-7be8-4a1c-a301-9363925ef379"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="297" y="36" width="100" height="10" uuid="ba10cfa6-b0a5-4d58-8d89-affac872fcb8"/>
+				<textElement>
+					<font fontName="SansSerif" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Acceptance Endorsement]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+				<reportElement x="16" y="3" width="354" height="11" uuid="353f591c-e31b-48b8-84c5-92b3d3be7671"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SUM OF "+$P{amountInWords}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="385" y="3" width="46" height="11" uuid="35d2aa55-fd00-47c0-85a1-64154d68d58c"/>
+				<textFieldExpression><![CDATA["Total"+$F{currency}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="431" y="3" width="44" height="11" uuid="d4e9c238-94d5-4d11-93f7-c03d95f275d1"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{amount_1}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="16">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="16" uuid="755673a1-46d8-4c45-a71f-be3d7f2737be"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageFooter>
+</jasperReport>

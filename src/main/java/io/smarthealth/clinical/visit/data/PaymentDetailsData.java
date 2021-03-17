@@ -54,7 +54,7 @@ public class PaymentDetailsData {
 
     private Boolean excessAmountEnabled;
     private String idNumber;
-    
+    private String authorizationCode;
 
     public static PaymentDetailsData map(PaymentDetails e) {
         if(e == null ) return null;
@@ -86,6 +86,7 @@ public class PaymentDetailsData {
         d.setRunningLimit(e.getRunningLimit());
         d.setLimitEnabled(e.getLimitEnabled());
         d.setIdNumber(e.getIdNo());
+        d.setAuthorizationCode(e.getAuthorizationCode());
         return d;
     }
 
@@ -97,6 +98,7 @@ public class PaymentDetailsData {
         e.setRelation(d.getRelation());
         e.setLimitAmount(d.getLimitAmount());
         e.setIdNo(d.getIdNumber());
+        e.setAuthorizationCode(d.getAuthorizationCode());
         return e;
     }
 }

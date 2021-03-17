@@ -12,14 +12,15 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "patient_identification")
+@Table( name = "patient_identification",
+        uniqueConstraints = { @UniqueConstraint( columnNames = { "patient_id", "a_value" } ) } )
 public class PatientIdentifier extends Identifiable {
 
     @ManyToOne
     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_pat_tag_patient_id"))
     private Patient patient;
 
-    @NotNull 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "a_type", foreignKey = @ForeignKey(name = "fk_pat_tag_type_id"))
     private PatientIdentificationType type;

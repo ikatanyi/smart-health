@@ -322,31 +322,31 @@ public class PatientService {
             );
             savedPatient.setAddresses(addresses);
         }
-//        //save patient identifier
-//        if (patient.getIdentifiers() != null) {
-//            // List<PatientIdentifier> patientIdentifiersList = new ArrayList<>();
-//            List<PatientIdentifier> values = patient.getIdentifiers()
-//                    .stream()
-//                    .map(identity -> {
-//                        if (identity.getIdType().equals("")) {
-//                            return null;
-//                        }
-//                        if (identity.getIdType().equals("-Select-")) {
-//                            return null;
-//                        }
-//                        final PatientIdentifier patientIdentifier = patientIdentifierService.convertIdentifierDataToEntity(identity) /*modelMapper.map(identity, PatientIdentifier.class)*/;
-//                        //patientIdentifiersList.add(patientIdentifier);
-//                        patientIdentifier.setPatient(savedPatient);
-//                        return patientIdentifier;
-//                    }).filter(Objects::nonNull)
-//                    .collect(Collectors.toList());
-//            patientIdentifierRepository.saveAll(values);
-//            /*
-//            if (!patientIdentifiersList.isEmpty()) {
-//                savedPatient.setIdentifications(patientIdentifiersList);
-//            }*/
-//
-//        }
+        //save patient identifier
+        if (patient.getIdentifiers() != null && !patient.getIdentifiers().isEmpty()) {
+            // List<PatientIdentifier> patientIdentifiersList = new ArrayList<>();
+            List<PatientIdentifier> values = patient.getIdentifiers()
+                    .stream()
+                    .map(identity -> {
+                        if (identity.getIdType().equals("")) {
+                            return null;
+                        }
+                        if (identity.getIdType().equals("-Select-")) {
+                            return null;
+                        }
+                        final PatientIdentifier patientIdentifier = patientIdentifierService.convertIdentifierDataToEntity(identity) /*modelMapper.map(identity, PatientIdentifier.class)*/;
+                        //patientIdentifiersList.add(patientIdentifier);
+                        patientIdentifier.setPatient(savedPatient);
+                        return patientIdentifier;
+                    }).filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            patientIdentifierRepository.saveAll(values);
+            /*
+            if (!patientIdentifiersList.isEmpty()) {
+                savedPatient.setIdentifications(patientIdentifiersList);
+            }*/
+
+        }
         if (patient.getVisitType() != null) {
             String visitid = sequenceNumberService.next(1L, Sequences.Visit.name());
             Visit visit = new Visit();
@@ -480,13 +480,13 @@ public class PatientService {
 
             final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patient);
 
-//            if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
-//                List<PersonIdentifierData> ids = new ArrayList<>();
-//                for (PatientIdentifier id : patientIdentifiers) {
-//                    ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
-//                }
-//                patientData.setIdentifiers(ids);
-//            }
+            if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
+                List<PersonIdentifierData> ids = new ArrayList<>();
+                for (PatientIdentifier id : patientIdentifiers) {
+                    ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
+                }
+                patientData.setIdentifiers(ids);
+            }
             //fetch portrait
             Optional<Portrait> portrait = portraitRepository.findByPerson(patient);
             if (portrait.isPresent()) {

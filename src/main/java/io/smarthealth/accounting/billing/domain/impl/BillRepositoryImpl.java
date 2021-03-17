@@ -5,6 +5,7 @@ import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.domain.BillRepository;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
@@ -87,6 +88,7 @@ public class BillRepositoryImpl implements BillRepository {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), false));
+        predicates.add(cb.equal(root.get("entryType"), BillEntryType.Debit));
 
         if (patientNumber != null) {
             predicates.add(cb.equal(root.get("patientBill").get("patient").get("patientNumber"), patientNumber));
@@ -190,6 +192,7 @@ public class BillRepositoryImpl implements BillRepository {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), true));
+        predicates.add(cb.equal(root.get("entryType"), BillEntryType.Debit));
 
         if (patientNumber != null) {
             predicates.add(cb.equal(root.get("patientBill").get("reference"), patientNumber));

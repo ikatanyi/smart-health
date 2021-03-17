@@ -56,11 +56,11 @@ public class ReportController {
             + "genInsuranceStatement=[payerId,schemeId,patientNo,invoiceNo,range,invoiceStatus]\n"
             + "Purchase_Order=[orderNo]")
     public ResponseEntity<?> generateReport(
-            @RequestParam(value = "reportName", required = true) ReportName reportName,
+            @RequestParam(value = "reportName", required = true) ReportName report,
             @RequestParam(required = false) MultiValueMap<String, String> queryParams,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
-        switch (reportName) {
+        switch (report) {
             case Trial_Balance:
                 reportService.getTrialBalance(queryParams, format, response);
                 break;
@@ -333,7 +333,7 @@ public class ReportController {
             default:
                 break;
         }
-        auditTrailService.saveAuditTrail("Reports", "Viewed report  "+reportName);
+        auditTrailService.saveAuditTrail("Reports", "Viewed report  "+report);
         return ResponseEntity.ok("success");
     }
 

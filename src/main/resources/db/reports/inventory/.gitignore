@@ -1,0 +1,12 @@
+/receive_order.jasper
+/ProductsPriceList.jasper
+/inventory_stock.jasper
+/inventory_expiry_statement.jasper
+/purchase_order_statement.jasper
+/item_statement.jasper
+/purchase_order.jasper
+/supplier_credit_note.jasper
+/inventory_stock_reorder.jasper
+/stock_adjustment_statement.jasper
+/stock_purchase.jasper
+/inventory_statement.jasper
