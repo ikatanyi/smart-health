@@ -8,6 +8,9 @@
 		<defaultValueExpression><![CDATA["D:\\code\\smarthealth.io\\sh-backend\\src\\main\\resources\\reports\\accounts\\invoice\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="CompanyHeader" class="java.util.List"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
 	<field name="patientName" class="java.lang.String">
 		<fieldDescription><![CDATA[patientName]]></fieldDescription>
 	</field>
@@ -74,6 +77,9 @@
 	<field name="visitType" class="java.lang.String">
 		<fieldDescription><![CDATA[visitType]]></fieldDescription>
 	</field>
+	<field name="creditItems" class="java.util.List">
+		<fieldDescription><![CDATA[creditItems]]></fieldDescription>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -112,6 +118,9 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<text><![CDATA[Payer]]></text>
 			</staticText>
 			<staticText>
@@ -119,6 +128,9 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<text><![CDATA[Scheme]]></text>
 			</staticText>
 			<staticText>
@@ -126,6 +138,9 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<text><![CDATA[Member Name]]></text>
 			</staticText>
 			<staticText>
@@ -133,6 +148,9 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<text><![CDATA[Policy Number]]></text>
 			</staticText>
 			<staticText>
@@ -140,6 +158,9 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<text><![CDATA[Patient No.]]></text>
 			</staticText>
 			<staticText>
@@ -147,6 +168,9 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<text><![CDATA[Patient Name]]></text>
 			</staticText>
 			<staticText>
@@ -154,12 +178,18 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<text><![CDATA[Visit Date]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="280" y="137" width="80" height="15" uuid="c587dd6a-0eae-4670-88a4-c31358e345bc">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<text><![CDATA[Visit Type]]></text>
 			</staticText>
 			<textField>
@@ -167,18 +197,30 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="360" y="92" width="120" height="15" uuid="ddd2e40b-a3b0-424a-811e-ead3cc190f08"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="360" y="137" width="120" height="15" uuid="21df47c3-89e8-4d2c-9b81-cdc1d9c3c6a4"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{visitType}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="360" y="122" width="120" height="15" uuid="ae03b949-8eb3-4632-9e20-6b7d630be805"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
 			<line>
@@ -189,18 +231,30 @@
 			</line>
 			<textField>
 				<reportElement x="80" y="137" width="120" height="15" uuid="432cb627-f725-4301-a207-33e68636e16a"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="80" y="122" width="120" height="15" uuid="8b9f522e-cb72-4ce9-b66f-9b3969b7b5cd"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{memberName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="80" y="107" width="120" height="15" uuid="a5a7bbf3-1fab-4f0a-89f1-9bca7496d250"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{schemeName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="80" y="92" width="120" height="15" uuid="42af273f-5640-4168-b526-eef0e467bd6a"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{payerName}]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -222,6 +276,16 @@
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{items})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR2}+"StandardInterimLines.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="16">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<subreport>
+				<reportElement x="0" y="0" width="556" height="15" uuid="5fc55ac8-78d7-4c82-847f-4c1638bd09fe">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{creditItems})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR2}+"StandardCreditLine.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
@@ -246,4 +310,40 @@
 			</textField>
 		</band>
 	</pageFooter>
+	<summary>
+		<band height="30">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<line>
+				<reportElement x="0" y="-1" width="552" height="1" uuid="595cb2f6-fa42-4502-b064-7d2c70978405">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+			</line>
+			<textField evaluationTime="Report" pattern="#,###.00">
+				<reportElement x="480" y="0" width="70" height="20" uuid="7d01c55e-620c-4235-ab16-894e97a858f7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{netAmount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="c15ba699-345f-47e7-a433-3ea210066062">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount Due]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="552" height="1" forecolor="#050505" uuid="be9b6df7-bacf-4f22-817e-95be65ca1bad">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+			</line>
+		</band>
+	</summary>
 </jasperReport>

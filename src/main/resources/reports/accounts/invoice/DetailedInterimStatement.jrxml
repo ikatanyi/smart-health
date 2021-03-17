@@ -74,6 +74,17 @@
 	<field name="visitType" class="java.lang.String">
 		<fieldDescription><![CDATA[visitType]]></fieldDescription>
 	</field>
+	<field name="creditItems" class="java.util.List">
+		<fieldDescription><![CDATA[creditItems]]></fieldDescription>
+	</field>
+	<field name="paymentMode" class="java.lang.String">
+		<fieldDescription><![CDATA[paymentMode]]></fieldDescription>
+	</field>
+	<variable name="invoiceDueAmount" class="java.math.BigDecimal" calculation="System">
+		<variableExpression><![CDATA[$F{debitAmount}.subtract($F{creditAmount} )]]></variableExpression>
+	</variable>
+	<variable name="creditAmount" class="java.math.BigDecimal"/>
+	<variable name="debitAmount" class="java.math.BigDecimal"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -103,7 +114,7 @@
 				<reportElement x="445" y="30" width="104" height="20" uuid="19e1f7f3-2bdd-4734-8ad8-8b0ba4839735"/>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
 				<reportElement x="445" y="50" width="104" height="20" uuid="7749f97b-af39-489d-ae0e-165b7069b3a3"/>
 				<textFieldExpression><![CDATA[$F{visitNumber}]]></textFieldExpression>
 			</textField>
@@ -111,6 +122,7 @@
 				<reportElement x="0" y="92" width="80" height="15" uuid="263bf09a-b695-4432-9418-2c669ec049df">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<printWhenExpression><![CDATA[new Boolean($F{paymentMode}.equalsIgnoreCase("Insurance"))]]></printWhenExpression>
 				</reportElement>
 				<text><![CDATA[Payer]]></text>
 			</staticText>
@@ -162,22 +174,22 @@
 				</reportElement>
 				<text><![CDATA[Visit Type]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="360" y="107" width="120" height="15" uuid="53a43857-1d6c-4cca-a53d-8370b2421405">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="360" y="92" width="120" height="15" uuid="ddd2e40b-a3b0-424a-811e-ead3cc190f08"/>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="360" y="137" width="120" height="15" uuid="21df47c3-89e8-4d2c-9b81-cdc1d9c3c6a4"/>
 				<textFieldExpression><![CDATA[$F{visitType}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="360" y="122" width="120" height="15" uuid="ae03b949-8eb3-4632-9e20-6b7d630be805"/>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
@@ -187,19 +199,19 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 			</line>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="80" y="137" width="120" height="15" uuid="432cb627-f725-4301-a207-33e68636e16a"/>
 				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="80" y="122" width="120" height="15" uuid="8b9f522e-cb72-4ce9-b66f-9b3969b7b5cd"/>
 				<textFieldExpression><![CDATA[$F{memberName}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="80" y="107" width="120" height="15" uuid="a5a7bbf3-1fab-4f0a-89f1-9bca7496d250"/>
 				<textFieldExpression><![CDATA[$F{schemeName}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="80" y="92" width="120" height="15" uuid="42af273f-5640-4168-b526-eef0e467bd6a"/>
 				<textFieldExpression><![CDATA[$F{payerName}]]></textFieldExpression>
 			</textField>
@@ -221,7 +233,19 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{items})]]></dataSourceExpression>
+				<returnValue subreportVariable="runningTotal" toVariable="debitAmount"/>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR2}+"DetailedInterimLines.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="15">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<subreport>
+				<reportElement x="0" y="0" width="556" height="15" uuid="c47c421d-d1da-4b88-8b20-01720d8c87d0">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{creditItems})]]></dataSourceExpression>
+				<returnValue subreportVariable="runningReceipTotal" toVariable="creditAmount"/>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR2}+"BillSummary.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
@@ -246,4 +270,40 @@
 			</textField>
 		</band>
 	</pageFooter>
+	<summary>
+		<band height="33">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<line>
+				<reportElement x="0" y="-1" width="552" height="1" uuid="4e350f72-c122-4a94-8b58-87fbf9f48652">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+			</line>
+			<textField evaluationTime="Report" pattern="#,###.00">
+				<reportElement x="480" y="0" width="70" height="20" uuid="aa3573d1-0bad-4259-a68f-575355e1190f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{netAmount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="da97f4dd-5e4e-4c9a-bc27-ca6665c3b0b1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount Due]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="552" height="1" forecolor="#050505" uuid="fdcd04cf-bf2f-4dae-86cd-fb49bda18246">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+			</line>
+		</band>
+	</summary>
 </jasperReport>

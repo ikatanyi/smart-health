@@ -117,10 +117,11 @@
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="1" width="552" height="1" uuid="f0fa2eb7-b998-447f-80dc-1f8216f03286">
+				<reportElement x="0" y="0" width="552" height="1" uuid="f0fa2eb7-b998-447f-80dc-1f8216f03286">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
@@ -191,9 +192,10 @@
 		<band height="30">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<line>
-				<reportElement x="0" y="-1" width="552" height="1" uuid="515522a8-5316-4f53-8621-341dfac07fa9">
+				<reportElement x="0" y="0" width="552" height="1" uuid="515522a8-5316-4f53-8621-341dfac07fa9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 			</line>
 			<textField pattern="#,###.00">

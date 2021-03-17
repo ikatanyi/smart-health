@@ -30,23 +30,24 @@ public class InterimInvoice {
     private String notes;
     private String paymentTerms;
     private Integer creditDays;
+    private String paymentMode;
     private BigDecimal debitAmount;
     private BigDecimal creditAmount;
     private BigDecimal netAmount;
 
     private List<InterimInvoiceItem> items = new ArrayList<>();
+    private List<InterimInvoiceItem> creditItems = new ArrayList<>();
+
 
     public BigDecimal getDebitAmount(){
         return items.stream()
-                .filter(e -> e.getEntryType() == BillEntryType.Debit)
                 .map(InterimInvoiceItem::getAmount)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
     }
 
     public BigDecimal getCreditAmount(){
-        return items.stream()
-                .filter(e -> e.getEntryType() == BillEntryType.Credit)
+        return creditItems.stream()
                 .map(InterimInvoiceItem::getAmount)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
@@ -199,23 +200,27 @@ public class InterimInvoice {
         this.creditDays = creditDays;
     }
 
-    public void setDebitAmount(BigDecimal debitAmount) {
-        this.debitAmount = debitAmount;
-    }
-
-    public void setCreditAmount(BigDecimal creditAmount) {
-        this.creditAmount = creditAmount;
-    }
-
-    public void setNetAmount(BigDecimal netAmount) {
-        this.netAmount = netAmount;
-    }
-
     public List<InterimInvoiceItem> getItems() {
         return items;
     }
 
     public void setItems(List<InterimInvoiceItem> items) {
         this.items = items;
+    }
+
+    public List<InterimInvoiceItem> getCreditItems() {
+        return creditItems;
+    }
+
+    public void setCreditItems(List<InterimInvoiceItem> creditItems) {
+        this.creditItems = creditItems;
+    }
+
+    public String getPaymentMode() {
+        return paymentMode;
+    }
+
+    public void setPaymentMode(String paymentMode) {
+        this.paymentMode = paymentMode;
     }
 }

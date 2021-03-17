@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
 
 /**
  *

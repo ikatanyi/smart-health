@@ -3,6 +3,7 @@ package io.smarthealth.accounting.invoice.data.statement;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.invoice.domain.InvoiceItem;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -22,13 +23,19 @@ public class InterimInvoiceItem {
     private String servicePoint;
     private Long servicePointId;
     private BillEntryType entryType;
+    private String itemCategory;
 
     public static InterimInvoiceItem of(PatientBillItem billItem){
         InterimInvoiceItem items = new InterimInvoiceItem();
         items.setBillingDate(billItem.getBillingDate());
         items.setItemId(billItem.getItem().getId());
         items.setItemCode(billItem.getItem().getItemCode());
-        items.setItemName(billItem.getItem().getItemName());
+        if(billItem.getItem().getCategory() == ItemCategory.Receipt){
+            items.setItemName("Receipt No. "+billItem.getPaymentReference());
+        }else {
+            items.setItemName(billItem.getItem().getItemName());
+        }
+        items.setItemCategory(billItem.getItem().getCategory().name());
         items.setQuantity(billItem.getQuantity());
         items.setPrice(BigDecimal.valueOf(billItem.getPrice()));
         items.setAmount(BigDecimal.valueOf(billItem.getAmount()));
@@ -149,5 +156,13 @@ public class InterimInvoiceItem {
 
     public void setBillingDate(LocalDate billingDate) {
         this.billingDate = billingDate;
+    }
+
+    public String getItemCategory() {
+        return itemCategory;
+    }
+
+    public void setItemCategory(String itemCategory) {
+        this.itemCategory = itemCategory;
     }
 }

@@ -4,6 +4,9 @@
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="400"/>
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="586"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
 	<field name="entryType" class="io.smarthealth.accounting.billing.domain.enumeration.BillEntryType">
 		<fieldDescription><![CDATA[entryType]]></fieldDescription>
 	</field>
@@ -41,6 +44,9 @@
 		<fieldDescription><![CDATA[servicePoint]]></fieldDescription>
 	</field>
 	<field name="billingDate" class="java.time.LocalDate"/>
+	<field name="itemCategory" class="java.lang.String">
+		<fieldDescription><![CDATA[itemCategory]]></fieldDescription>
+	</field>
 	<variable name="RunningSumColumn" class="java.math.BigDecimal" resetType="Group" resetGroup="ServicePointGroup" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
 	</variable>
@@ -78,7 +84,7 @@
 				<staticText>
 					<reportElement x="340" y="0" width="70" height="15" uuid="fc781395-5800-43c4-9aeb-87125a334918"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle"/>
-					<text><![CDATA[Total]]></text>
+					<text><![CDATA[Gross]]></text>
 				</staticText>
 			</band>
 		</groupFooter>

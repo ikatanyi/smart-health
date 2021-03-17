@@ -15,6 +15,8 @@ import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.*;
+
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import lombok.Data;
 
 /**
@@ -109,7 +111,11 @@ public class PatientBillItem extends Auditable {
         if (this.item != null) {
             data.setItemId(this.item.getId());
             data.setItemCode(this.item.getItemCode());
-            data.setItem(this.item.getItemName());
+            if(this.item.getCategory() == ItemCategory.Receipt){
+                data.setItem("Receipt No. "+this.getPaymentReference());
+            }else {
+                data.setItem(this.item.getItemName());
+            }
             data.setItemCategory(this.item.getCategory());
         }
         data.setServicePoint(this.servicePoint);

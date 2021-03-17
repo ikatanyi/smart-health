@@ -13,6 +13,7 @@ import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.billing.service.PatientBillingService;
@@ -677,6 +678,7 @@ public class InvoiceService {
         if(optionalVisit.isPresent()){
             InterimInvoice invoice = new InterimInvoice();
             Visit visit = optionalVisit.get();
+            invoice.setPaymentMode(visit.getPaymentMethod().name());
             if(visit.getPaymentDetails()!=null){
                 Payer payer = visit.getPaymentDetails().getPayer();
                 Scheme scheme = visit.getPaymentDetails().getScheme();
@@ -697,8 +699,16 @@ public class InvoiceService {
             invoice.setPatientName(visit.getPatient().getFullName());
             invoice.setItems(
                     patientBillingService.getInterimBillItems(visitNumber, type).stream()
+                            .filter(x -> x.getEntryType() == BillEntryType.Debit)
                     .map(InterimInvoiceItem::of)
                     .collect(Collectors.toList())
+            );
+
+            invoice.setCreditItems(
+                    patientBillingService.getInterimBillItems(visitNumber, type).stream()
+                            .filter(x -> x.getEntryType() == BillEntryType.Credit)
+                            .map(InterimInvoiceItem::of)
+                            .collect(Collectors.toList())
             );
             return invoice;
         }
@@ -718,6 +728,7 @@ public class InvoiceService {
        List<CompanyHeader> header = Arrays.asList(companyHeader);
        List<InterimInvoice> invoices = Arrays.asList(getInterimInvoiceStatement(visitNumber, type));
 
+       System.err.println("Invoice Net Amount: "+invoices.get(0).getNetAmount());
        type=  StringUtils.capitalize(type.toLowerCase());
        String reportTemplate = String.format("classpath:reports/accounts/invoice/%sInterimStatement.jrxml", type);
 
