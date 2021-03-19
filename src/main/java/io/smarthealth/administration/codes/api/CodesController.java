@@ -58,13 +58,15 @@ public class CodesController {
 
     @GetMapping("/codes")
     @PreAuthorize("hasAuthority('view_codes')")
-    public ResponseEntity<?> getAllCodes(  @RequestParam(value = "type", required = false) Code type) {
-        List<CodeValueData> lists = service.getCodeValues(type)
+    public ResponseEntity<?> getAllCodes(
+            @RequestParam(value = "type", required = false) Code type,
+            @RequestParam(value = "value", required = false) String value
+            ) {
+        List<CodeValueData> lists = service.getCodeValuesAndValueLike(type, value)
                 .stream().map(x ->{
                     auditTrailService.saveAuditTrail("Administration", "Viewed code "+x.getCodeValue());
                     return x.toData();
-                })
-                .collect(Collectors.toList());
+                }).collect(Collectors.toList());
 
         return ResponseEntity.ok(lists);
     }

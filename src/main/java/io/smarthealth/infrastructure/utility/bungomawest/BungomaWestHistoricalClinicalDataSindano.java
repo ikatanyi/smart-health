@@ -92,9 +92,9 @@ public class BungomaWestHistoricalClinicalDataSindano {
 
         try {
             for (PatientData da : patients) {
-                System.out.println("Start insert member number");
-                insertMemberNumber(da, conn);
-                System.out.println("End insert member number");
+                System.out.println("Start insert updateIdNumbers");
+                updateIdNumbers(da, conn);
+                System.out.println("End insert updateIdNumbers");
                /*
                 System.out.println("START fetch patient visit ");
                 List<Visit> v = fetchPatientVisitData(da, conn);
@@ -139,6 +139,18 @@ public class BungomaWestHistoricalClinicalDataSindano {
             pst = conn.prepareStatement(memBerNumber);
             pst.execute();
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateIdNumbers(PatientData da, Connection conn) {
+//        System.out.println("");
+        try {
+            String idNumber = "UPDATE smarthealth.person SET national_id_number = '"+da.getIdNumber()+"' " +
+                    "WHERE id= (SELECT id FROM smarthealth.patient WHERE patient_number = '" + da.getCurrentPatientNo() + "')";
+            pst = conn.prepareStatement(idNumber);
+            pst.execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
