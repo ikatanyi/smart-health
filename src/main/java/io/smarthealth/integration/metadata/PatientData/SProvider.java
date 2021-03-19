@@ -16,6 +16,7 @@ import lombok.Data;
 @Data
 @JacksonXmlRootElement(localName = "Provider")
 public class SProvider {
+
     @JsonProperty("Role")
     private String role = "SP";
     @JsonProperty("Practice_Number")
