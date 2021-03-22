@@ -9,6 +9,7 @@ import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public class DoctorRequestSpecification {
         super();
     }
 
-    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, String groupBy, Boolean activeVisit, final String term, final DateRange range) {
+    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, String groupBy, Boolean activeVisit, final String term, PaymentMethod paymentMethod, final DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
@@ -51,6 +52,10 @@ public class DoctorRequestSpecification {
 
             if (visitNumber != null) {
                 predicates.add(cb.equal(root.get("visit").get("visitNumber"), visitNumber));
+            }
+
+            if (paymentMethod != null) {
+                predicates.add(cb.equal(root.get("visit").get("paymentMethod"), paymentMethod));
             }
 
             if (patientNumber != null) {

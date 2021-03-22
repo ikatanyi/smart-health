@@ -3,15 +3,13 @@ package io.smarthealth.clinical.record.api;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.smarthealth.clinical.record.data.*;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
-import io.smarthealth.clinical.record.data.DoctorRequestItem;
-import io.smarthealth.clinical.record.data.HistoricalDoctorRequestsData;
-import io.smarthealth.clinical.record.data.WaitingRequestsData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -47,7 +45,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import io.smarthealth.clinical.record.data.OrdersRequest;
+
 import java.time.LocalDateTime;
 
 /**
@@ -293,25 +291,28 @@ public class DoctorRequestController {
 //        final DateRange range = DateRange.fromIsoString(dateRange);
         Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", Pageable.unpaged(), activeVisit, term, range);
         /* Queue directly sent-  */
-
-        ServicePointType pointType ;
-        switch (requestType) {
-            case Radiology:
-                pointType = ServicePointType.Radiology;
-                break;
-            case Pharmacy:
-                pointType = ServicePointType.Pharmacy;
-                break;
-            case Laboratory:
-                pointType = ServicePointType.Laboratory;
-                break;
-            case Procedure:
-                pointType = ServicePointType.Procedure;
-                break;
-            default:
-                pointType = null;
-                break;
+        
+        ServicePointType pointType = null;
+        if(requestType!=null) {
+            switch (requestType) {
+                case Radiology:
+                    pointType = ServicePointType.Radiology;
+                    break;
+                case Pharmacy:
+                    pointType = ServicePointType.Pharmacy;
+                    break;
+                case Laboratory:
+                    pointType = ServicePointType.Laboratory;
+                    break;
+                case Procedure:
+                    pointType = ServicePointType.Procedure;
+                    break;
+                default:
+                    pointType = null;
+                    break;
+            }
         }
+        
         List<Visit> directVisits = new ArrayList<>();
         if(pointType !=null){
             //Find service point by request type (point type) - assuming there is only one service point of each type
@@ -433,6 +434,7 @@ int count = waitingRequests.size();
             @RequestParam(value = "patientNumber", required = false) final String patientNumber,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false) final FullFillerStatusType fulfillerStatus,
+            @RequestParam(value = "paymentMethod", required = false) PaymentMethod paymentMethod,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
@@ -441,9 +443,26 @@ int count = waitingRequests.size();
 
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Page<OrdersRequest> list = requestService.getDoctorOrderRequests(visitNumber, patientNumber, requestType, fulfillerStatus, range, pageable)
+        Page<OrdersRequest> list = requestService.getDoctorOrderRequests(visitNumber, patientNumber, requestType, fulfillerStatus,paymentMethod, range,  pageable)
                 .map(OrdersRequest::of); 
         auditTrailService.saveAuditTrail("Consultation", "Viewed all patient requests ");
         return ResponseEntity.ok((Pager<OrdersRequest>) PaginationUtil.toPager(list, "Doctors Requests"));
     }
+
+    @GetMapping("/doctor-request/list-summary")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
+    public ResponseEntity<  Pager<VisitOrderDTO>> getDoctorsOrderSummary(
+            @RequestParam(value = "requestType", required = false) final RequestType requestType,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+        Pageable pageable = PaginationUtil.createPage(page, size);
+
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        Page<VisitOrderDTO> list = requestService.getDoctorOrderSummary(requestType, range, pageable);
+        return ResponseEntity.ok((Pager<VisitOrderDTO>) PaginationUtil.toPager(list, "Doctors Requests Summary"));
+    }
+
 }

@@ -44,7 +44,7 @@ public class EmployeeBanner {
             employee.setPhoneNumber(data.getContact().get(0).getMobile());
         }
         employee.setFullName(data.getFullName());
-        employee.setGender(data.getGender().name());
+        employee.setGender(data.getGender()!=null ? data.getGender().name() : "");
         employee.setStatus(data.getStatus());
         return employee;
     }

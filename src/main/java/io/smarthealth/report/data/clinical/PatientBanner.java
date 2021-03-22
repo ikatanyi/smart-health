@@ -48,7 +48,7 @@ public class PatientBanner {
         }
 
         patient.setFullName(data.getFullName());
-        patient.setGender(data.getGender().name());
+        patient.setGender(data.getGender()!=null ? data.getGender().name(): "");
         patient.setPatientNumber(data.getPatientNumber());
         patient.setStatus(data.getStatus());
         return patient;

@@ -10,17 +10,15 @@ import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
-import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.smarthealth.clinical.record.data.*;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
-import io.smarthealth.clinical.record.data.DoctorRequestItem;
-import io.smarthealth.clinical.record.data.PrescriptionData;
-import io.smarthealth.clinical.record.data.WaitingRequestsData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateConverter;
@@ -114,33 +112,43 @@ public class DoctorRequestService implements DateConverter {
     }
 
     public Page<DoctorRequest> fetchAllPastDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable) {
-        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, null, null, null);
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, null, null, null, null);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
     }
 
     public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable, Boolean activeVisit, final String term, DateRange range) {
-        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, activeVisit, term, range);
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, activeVisit, term,null, range);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
     }
 
-    public Page<DoctorRequest> getDoctorOrderRequests(String visitNumber, String patientNumber, RequestType requestType, FullFillerStatusType fulfillerStatus, DateRange range, Pageable pageable) {
-        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, null, null, null, range);
+    public Page<DoctorRequest> getDoctorOrderRequests(String visitNumber, String patientNumber, RequestType requestType, FullFillerStatusType fulfillerStatus, PaymentMethod paymentMethod, DateRange range, Pageable pageable) {
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, null, null, null, paymentMethod, range);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
     }
-
+    public Page<VisitOrderDTO> getDoctorOrderSummary(RequestType requestType, DateRange range, Pageable pageable){
+        if(requestType!=null && range!=null){
+            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(),requestType,pageable);
+        }else if(requestType!=null && range == null){
+            return doctorRequestRepository.findDoctorCashRequests(requestType,pageable);
+        }else if(range!=null && requestType == null){
+            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(),pageable);
+        }else {
+            return doctorRequestRepository.findDoctorCashRequests(pageable);
+        }
+    }
 //    public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final RequestType requestType, Pageable pageable) {
 //        
 //        return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
 //    }
 //    
     public List<DoctorRequest> fetchServiceRequests(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType, final Visit visit) {
-        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visit.getVisitNumber(), patient.getPatientNumber(), requestType, fullfillerStatus, null, null, null, null);
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visit.getVisitNumber(), patient.getPatientNumber(), requestType, fullfillerStatus, null, null, null, null, null);
         Pageable wholePage = Pageable.unpaged();
         return doctorRequestRepository.findAll(spec, wholePage).getContent();
     }

@@ -1,11 +1,15 @@
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.smarthealth.clinical.record.data.VisitOrderDTO;
 import io.smarthealth.clinical.visit.domain.ResultsRepository;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.Item;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +34,18 @@ public interface DoctorsRequestRepository extends JpaRepository<DoctorRequest, L
 
 //    @Query("select d FROM DoctorRequest d WHERE d.patient=:patient AND  d.fulfillerStatus=:fulfillerStatus AND requestType=:requestType")
 //    List<DoctorRequest> findServiceRequestsByPatient(@Param("patient") final Patient patient, @Param("fulfillerStatus") final FullFillerStatusType fulfillerStatus, @Param("requestType") final RequestType requestType);
-    @Query("select d FROM DoctorRequest d WHERE d.visit=:visit AND  d.fulfillerStatus=:fulfillerStatus AND requestType=:requestType")
+    @Query("select d FROM DoctorRequest d WHERE d.visit=:visit AND  d.fulfillerStatus=:fulfillerStatus AND d.requestType =:requestType")
     List<DoctorRequest> findServiceRequestsByVisit(@Param("visit") final Visit visit, @Param("fulfillerStatus") final FullFillerStatusType fulfillerStatus, @Param("requestType") final RequestType requestType);
 
+    @Query("SELECT new io.smarthealth.clinical.record.data.VisitOrderDTO(d.visit.visitNumber, d.visit.startDatetime, d.patient.patientNumber, d.patient.fullName, d.requestType, COUNT (d.item)) FROM DoctorRequest d WHERE d.visit.paymentMethod = 'Cash' AND d.fulfillerStatus = 'Unfulfilled' AND d.visit.visitType='Outpatient' group by d.visit.visitNumber, d.requestType order by d.visit.startDatetime ")
+    Page<VisitOrderDTO> findDoctorCashRequests(Pageable pageable);
+
+    @Query("SELECT new io.smarthealth.clinical.record.data.VisitOrderDTO(d.visit.visitNumber, d.visit.startDatetime, d.patient.patientNumber, d.patient.fullName, d.requestType, COUNT (d.item)) FROM DoctorRequest d WHERE d.visit.paymentMethod = 'Cash' AND d.fulfillerStatus = 'Unfulfilled' AND d.visit.visitType='Outpatient' AND d.requestType= :requestType group by d.visit.visitNumber, d.requestType order by d.visit.startDatetime ")
+    Page<VisitOrderDTO> findDoctorCashRequests(RequestType requestType, Pageable pageable);
+
+    @Query("SELECT new io.smarthealth.clinical.record.data.VisitOrderDTO(d.visit.visitNumber, d.visit.startDatetime, d.patient.patientNumber, d.patient.fullName, d.requestType, COUNT (d.item)) FROM DoctorRequest d WHERE d.visit.paymentMethod = 'Cash' AND d.fulfillerStatus = 'Unfulfilled' AND d.visit.visitType='Outpatient' AND (d.visit.startDatetime BETWEEN :startDate AND :endDate) group by d.visit.visitNumber, d.requestType order by d.visit.startDatetime ")
+    Page<VisitOrderDTO> findDoctorCashRequests(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    @Query("SELECT new io.smarthealth.clinical.record.data.VisitOrderDTO(d.visit.visitNumber, d.visit.startDatetime, d.patient.patientNumber, d.patient.fullName, d.requestType, COUNT (d.item)) FROM DoctorRequest d WHERE d.visit.paymentMethod = 'Cash' AND d.fulfillerStatus = 'Unfulfilled' AND d.visit.visitType='Outpatient' AND (d.visit.startDatetime BETWEEN :startDate AND :endDate) AND d.requestType= :requestType group by d.visit.visitNumber, d.requestType order by d.visit.startDatetime ")
+    Page<VisitOrderDTO> findDoctorCashRequests(LocalDateTime startDate, LocalDateTime endDate, RequestType requestType, Pageable pageable);
 }
