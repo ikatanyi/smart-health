@@ -7,5 +7,7 @@ public interface CodeValueRepository extends JpaRepository<CodeValue, Long> {
 
     List<CodeValue> findByCode(Code code);
 
+    List<CodeValue> findByCodeAndCodeValueContainingIgnoreCase(Code code, String codeValue);
+
     List<CodeValue> findByCodeAndIsActive(Code code, boolean active);
 }

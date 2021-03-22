@@ -65,7 +65,7 @@ public class BungomaWestHistoricalClinicalDataSindano {
             System.out.println("START Patients Fetch ");
             conn = connector.ConnectToPastDB();
             String fetchPatientData = "select firstName, middleName, lastName, patientEmail, patientPhone,patientIDNumber, " +
-                    "patientIPOPNumber, patientDateOfirth,datePosted,id from tbl_registered_patients";
+                    "patientIPOPNumber, patientDateOfirth,datePosted,id,insuranceMemberNumber from tbl_registered_patients";
             pst = conn.prepareStatement(fetchPatientData);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -78,7 +78,8 @@ public class BungomaWestHistoricalClinicalDataSindano {
                 data.setVFname(rs.getString("firstName"));
                 data.setVLname(rs.getString("lastName"));
                 data.setVMname(rs.getString("middleName"));
-
+                data.setCardNumber(rs.getString("insuranceMemberNumber"));
+                data.setIdNumber(rs.getString("patientIDNumber"));
                 patients.add(data);
             }
 
@@ -91,6 +92,10 @@ public class BungomaWestHistoricalClinicalDataSindano {
 
         try {
             for (PatientData da : patients) {
+                System.out.println("Start insert updateIdNumbers");
+                updateIdNumbers(da, conn);
+                System.out.println("End insert updateIdNumbers");
+               /*
                 System.out.println("START fetch patient visit ");
                 List<Visit> v = fetchPatientVisitData(da, conn);
 
@@ -105,10 +110,47 @@ public class BungomaWestHistoricalClinicalDataSindano {
                     System.out.println("DOne Inserting all prescriptions for visit "+vs.getVisitNumber());
                     insertDiagnosis(vs, conn);
                     System.out.println("DOne Inserting all diagnosis for visit "+vs.getVisitNumber());
-                }
+                }*/
+
+
             }
 
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void insertMemberNumber(PatientData da, Connection conn) {
+//        System.out.println("");
+        try {
+
+            String idNumber = "INSERT INTO smarthealth.patient_identification (a_value, patient_id, a_type) " +
+                    "VALUES ('" + da.getIdNumber() + "'," +
+                    " (SELECT id FROM smarthealth.patient WHERE patient_number = '" + da.getCurrentPatientNo() + "'), " +
+                    "'2')";
+            pst = conn.prepareStatement(idNumber);
+            pst.execute();
+
+            String memBerNumber = "INSERT INTO smarthealth.patient_identification (a_value, patient_id, a_type) " +
+                    "VALUES ('" + da.getCardNumber() + "'," +
+                    " (SELECT id FROM smarthealth.patient WHERE patient_number = '" + da.getCurrentPatientNo() + "'), " +
+                    "'1')";
+            pst = conn.prepareStatement(memBerNumber);
+            pst.execute();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateIdNumbers(PatientData da, Connection conn) {
+//        System.out.println("");
+        try {
+            String idNumber = "UPDATE smarthealth.person SET national_id_number = '"+da.getIdNumber()+"' " +
+                    "WHERE id= (SELECT id FROM smarthealth.patient WHERE patient_number = '" + da.getCurrentPatientNo() + "')";
+            pst = conn.prepareStatement(idNumber);
+            pst.execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -127,9 +169,9 @@ public class BungomaWestHistoricalClinicalDataSindano {
                 String diagnosis = "INSERT INTO smarthealth.patient_diagnosis (created_by, created_on, last_modified_by, " +
                         "last_modified_on, version, voided, certainty,date_recorded, code, description, diagnosis_order, notes, " +
                         "patient_id, visit_id) VALUES ('system', NOW(), 'system', NOW(), '0', b'0', NULL, " +
-                        "'" + rs.getDate("diagnosisTimeStamp") + "', '"+rs.getString("diagnosisICDCode")+"', " +
-                        "'" + rs.getString("diagnosisName")+ "', 'Primary', '" + rs.getString("diagnosisImpression").replace("'", "''") + "', " +
-                        "(SELECT id FROM smarthealth.patient WHERE patient_number = '" + vs.getPatient().getPatientNumber()+ "'), " +
+                        "'" + rs.getDate("diagnosisTimeStamp") + "', '" + rs.getString("diagnosisICDCode") + "', " +
+                        "'" + rs.getString("diagnosisName") + "', 'Primary', '" + rs.getString("diagnosisImpression").replace("'", "''") + "', " +
+                        "(SELECT id FROM smarthealth.patient WHERE patient_number = '" + vs.getPatient().getPatientNumber() + "'), " +
                         "(SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + vs.getVisitNumber() + "' ))";
 
                 System.out.println("Diagnosis " + diagnosis);
@@ -207,8 +249,8 @@ public class BungomaWestHistoricalClinicalDataSindano {
             rs = pst2.executeQuery();
             while (rs.next()) {
                 //check if visit exists
-                if(visitService.findVisit(rs.getString("VisitId")).isPresent()){
-                    System.err.println("Visit Identified by "+rs.getString("VisitId")+" exists ");
+                if (visitService.findVisit(rs.getString("VisitId")).isPresent()) {
+                    System.err.println("Visit Identified by " + rs.getString("VisitId") + " exists ");
                     continue;
                 }
                 //Create new patient visit

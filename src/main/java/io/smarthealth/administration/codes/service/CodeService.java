@@ -47,6 +47,16 @@ public class CodeService {
         return repository.findByCode(code);
     }
 
+    public List<CodeValue> getCodeValuesAndValueLike(Code code, String value) {
+        if (code == null) {
+            return repository.findAll();
+        }
+        if(value==null){
+            return  repository.findByCode(code);
+        }
+        return repository.findByCodeAndCodeValueContainingIgnoreCase(code, value);
+    }
+
     public List<CodeValue> getCodeValues(Code code, boolean active) {
         return repository.findByCodeAndIsActive(code, active);
     }

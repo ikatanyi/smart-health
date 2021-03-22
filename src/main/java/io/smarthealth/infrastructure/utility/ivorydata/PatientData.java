@@ -29,4 +29,10 @@ public class PatientData {
     private String currentPatientNo;
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    /*
+    For Bungoma add identifiers
+     */
+    private String idNumber, cardNumber;
+
 }

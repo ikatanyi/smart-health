@@ -15,5 +15,6 @@ public enum Code {
     LabUnits,
     InventoryAdjustmentReason,
     CurfewNote,
-    MedicalNote
+    MedicalNote,
+    Residence
 }
