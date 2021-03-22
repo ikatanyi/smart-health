@@ -5,6 +5,8 @@ import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -13,7 +15,8 @@ import javax.persistence.*;
  * @author Kelsas
  */
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "st_stores")
 public class Store extends Identifiable {
 

@@ -2,7 +2,15 @@ package io.smarthealth.integration.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smarthealth.accounting.invoice.domain.Invoice;
+import io.smarthealth.accounting.invoice.service.InvoiceService;
+import io.smarthealth.accounting.payment.domain.Copayment;
+import io.smarthealth.accounting.payment.service.CopaymentService;
+import io.smarthealth.clinical.record.domain.PatientDiagnosis;
+import io.smarthealth.clinical.record.service.DiagnosisService;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.integration.data.ClaimFileData;
+import io.smarthealth.integration.data.ServiceData;
 import io.smarthealth.integration.metadata.CardData.*;
 import io.smarthealth.integration.metadata.PatientData.Claim;
 import io.smarthealth.integration.metadata.PatientData.Root;
@@ -17,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.springframework.boot.actuate.trace.http.HttpTrace;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 
 import org.springframework.stereotype.Service;

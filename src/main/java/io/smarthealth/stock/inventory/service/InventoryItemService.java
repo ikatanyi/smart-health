@@ -222,6 +222,7 @@ public class InventoryItemService {
 
     @Transactional
     public void uploadInventoryItems(List<InventoryStockData> itemData) {
+        log.info("START: Upload Inventory items");
         List<InventoryItem> items = new ArrayList<>();
         List<StockEntry> stockEntry = new ArrayList<>();
         int i = 0;
@@ -265,17 +266,21 @@ public class InventoryItemService {
         inventoryItemRepository.saveAll(items);
 
         List<StockEntry> savedStockEntries = stockEntryRepository.saveAll(stockEntry);
+        log.info("END: Upload Inventory items");
 
+        log.info("START: Journal effects");
         Map<Store, Double> map = savedStockEntries
                 .stream()
                 .collect(Collectors.groupingBy(StockEntry::getStore,
-                        Collectors.summingDouble(x -> (x.getAmount().doubleValue()))
+                        Collectors.summingDouble(x -> (x.getQuantity()*x.getPrice().doubleValue()))
                 )
                 );
 
         map.forEach((k, v) -> {
-//            journalService.save(toJournal(k, LocalDate.now(), trdId, BigDecimal.valueOf(v))); 
+            journalService.save(toJournal(k, LocalDate.now(), trdId, BigDecimal.valueOf(v)));
         });
+
+        log.info("END: Journal effects");
 
     }
 

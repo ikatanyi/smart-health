@@ -14,13 +14,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author Kelsas
  */
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "service_points")
 public class ServicePoint extends Identifiable {
 

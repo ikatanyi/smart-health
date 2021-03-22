@@ -283,7 +283,7 @@ public class ExcelToPojoUtils {
                 throw APIException.internalError("Info:  {0} ", e.getMessage());
             }
         }
-        results.forEach(c -> System.out.println("polll... "+c.toString()));
+//        results.forEach(c -> System.out.println("polll... "+c.toString()));
 
         return results;
     }
