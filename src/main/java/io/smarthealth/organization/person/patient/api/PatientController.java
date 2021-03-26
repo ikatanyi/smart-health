@@ -194,6 +194,7 @@ public class PatientController {
             patient.setTitle(patientData.getTitle());
             patient.setDateOfBirth(patientData.getDateOfBirth());
             patient.setPrimaryContact(patientData.getPrimaryContact());
+            patient.setResidence(patientData.getResidence());
 
             this.patientService.updatePatient(patientNumber, patient);
             auditTrailService.saveAuditTrail("Patient", "Edited  details for patient " + patient.getFullName());

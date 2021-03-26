@@ -13,10 +13,12 @@ import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.security.domain.UserRepository;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +32,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- *
  * @author Simon.waweru
  */
 @Api
@@ -64,7 +65,7 @@ public class EmployeeController {
             if (employeeData.getRoles().length < 1) {
                 throw APIException.badRequest("Please assign a role to the user to be created", "");
             }
-            if(employeeData.getUsername()==null){
+            if (employeeData.getUsername() == null) {
                 throw APIException.badRequest("Please provide username", "");
             }
         }
@@ -95,7 +96,6 @@ public class EmployeeController {
     @GetMapping("/employee")
     @PreAuthorize("hasAuthority('view_employee')")
     public ResponseEntity<List<EmployeeData>> fetchAllEmployees(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        System.out.println("Motoooo");
         Page<EmployeeData> page = employeeService.fetchAllEmployees(queryParams, Pageable.unpaged()).map(p -> employeeService.convertEmployeeEntityToEmployeeData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -124,7 +124,7 @@ public class EmployeeController {
             @RequestParam MultiValueMap<String,
                     String> queryParams,
             UriComponentsBuilder uriBuilder
-            ) {
+    ) {
         List<Employee> employeeList = employeeService.findEmployeeByCategory(queryParams, category, Pageable.unpaged());
         List<EmployeeData> employeeDataList = new ArrayList<>();
 
