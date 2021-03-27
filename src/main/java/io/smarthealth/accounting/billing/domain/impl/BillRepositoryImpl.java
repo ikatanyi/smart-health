@@ -53,7 +53,8 @@ public class BillRepositoryImpl implements BillRepository {
                 root.get("patientBill").get("patient").get("fullName"),
                 cb.sum(root.get("amount")).as(BigDecimal.class),
                 cb.sum(root.get("balance")).as(BigDecimal.class),
-                root.get("patientBill").get("paymentMode"),
+//                root.get("patientBill").get("paymentMode"),
+                root.get("patientBill").get("visit").get("paymentMethod"),
                 root.get("patientBill").get("walkinFlag"),
                 //                root.get("scheme").get("schemeName"),
                 root.get("patientBill").get("visit").get("visitType")

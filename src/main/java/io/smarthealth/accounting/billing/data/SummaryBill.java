@@ -2,15 +2,17 @@ package io.smarthealth.accounting.billing.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- *
  * @author Kelsas
  */
 @Data
@@ -39,6 +41,30 @@ public class SummaryBill {
         this.paymentMethod = paymentMethod;
         this.isWalkin = isWalkin;
         this.visitType = VisitType.Outpatient;
+    }
+
+    public SummaryBill(LocalDate date, String visitNumber, String patientNumber, String patientName, BigDecimal amount, BigDecimal balance, PaymentMethod paymentMethod, Boolean isWalkin) {
+        this.date = date;
+        this.visitNumber = visitNumber;
+        this.patientNumber = patientNumber;
+        this.patientName = patientName;
+        this.amount = amount;
+        this.balance = balance;
+        this.paymentMethod = paymentMethod.name();
+        this.isWalkin = isWalkin;
+        this.visitType = VisitType.Outpatient;
+    }
+
+    public SummaryBill(LocalDate date, String visitNumber, String patientNumber, String patientName, BigDecimal amount, BigDecimal balance, PaymentMethod paymentMethod, Boolean isWalkin, VisitType visitType) {
+        this.date = date;
+        this.visitNumber = visitNumber;
+        this.patientNumber = patientNumber;
+        this.patientName = patientName;
+        this.amount = amount;
+        this.balance = balance;
+        this.paymentMethod = paymentMethod.name();
+        this.isWalkin = isWalkin;
+        this.visitType = visitType;
     }
 
 }
