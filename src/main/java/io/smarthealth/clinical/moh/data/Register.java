@@ -24,6 +24,8 @@ public interface Register {
 
     public LocalDate getSeen();
 
-    public String getCreatedBy();    
+    public String getCreatedBy();
+
+    public String getPrimaryContact();
     
 }

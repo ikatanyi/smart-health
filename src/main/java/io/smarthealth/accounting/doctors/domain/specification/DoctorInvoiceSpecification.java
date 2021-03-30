@@ -2,6 +2,7 @@ package io.smarthealth.accounting.doctors.domain.specification;
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.accounting.doctors.data.DoctorInvoiceStatus;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class DoctorInvoiceSpecification {
         super();
     }
 
-    public static Specification<DoctorInvoice> createSpecification(Long doctorId, String serviceItem, Boolean paid, String paymentMode, String patientNo, String invoiceNumber, String transactionId, DateRange range) {
+    public static Specification<DoctorInvoice> createSpecification(Long doctorId, String serviceItem, Boolean paid, String paymentMode, String patientNo, String invoiceNumber, String transactionId, DateRange range, DoctorInvoiceStatus invoiceStatus) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (doctorId != null) {
@@ -59,6 +60,11 @@ public class DoctorInvoiceSpecification {
                 predicates.add(
                         cb.between(root.get("invoiceDate"), range.getStartDate(), range.getEndDate())
                 );
+            }
+
+            if(invoiceStatus!=null){
+
+                predicates.add(cb.equal(root.get("invoiceStatus"), invoiceStatus));
             }
  
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
