@@ -47,3 +47,4 @@ build/
 /.gitlab-ci.yml
 /.gradle/
 /io.smarthealth.organization.person.domain.Person/
+/src/main/java/io/smarthealth/algoexpert/

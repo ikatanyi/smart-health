@@ -56,6 +56,8 @@ public class PatientProcedureTest extends Identifiable {
     @Transient
     private PaymentMethod paymentMethod;
 
+    private boolean billed;
+
     public PatientProcedureTestData toData() {
         PatientProcedureTestData entity = new PatientProcedureTestData();
         entity.setResults(this.getResult());
@@ -86,6 +88,8 @@ public class PatientProcedureTest extends Identifiable {
         if (this.getRequest() != null) {
             entity.setRequestId(this.getRequest().getRequestedBy().getId());
         }
+
+        entity.setRequestBilled(this.isBilled());
         return entity;
     }
 

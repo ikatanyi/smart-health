@@ -21,19 +21,14 @@ import io.smarthealth.notification.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
+import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.security.service.UserService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -46,10 +41,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
- *
  * @author Kennedy.Imbenzi
  */
 @RestController
@@ -73,7 +71,7 @@ public class DoctorRequestController {
     private final UserService userService;
 
     private final NotificationEventPublisher notificationEventPublisher;
-    
+
     private final AuditTrailService auditTrailService;
 
     private final ServicePointService servicePointService;
@@ -98,12 +96,12 @@ public class DoctorRequestController {
             //validate if already requested
             List<DoctorRequest> docRequest = requestService.fetchRequestByVisitAndItem(visit, item);
             if (docRequest.size() > 0) {
-                for (DoctorRequest dr: docRequest) {
+                for (DoctorRequest dr : docRequest) {
                     if (dr.getFulfillerStatus().equals(FullFillerStatusType.Unfulfilled)) {
                         throw APIException.conflict("{0} has already been requested ", item.getItemName());
                     }
                 }
-                
+
             }
             doctorRequest.setItem(item);
             doctorRequest.setItemCostRate(item.getCostRate() != null ? item.getCostRate().doubleValue() : 0);
@@ -124,8 +122,8 @@ public class DoctorRequestController {
         }
 
         List<DoctorRequest> docReqs = requestService.createRequest(docRequests);
-        for(DoctorRequest req:docReqs){
-            auditTrailService.saveAuditTrail("Consultation", "created a request for "+req.getItem().getItemName()+" for patient "+req.getPatient().getFullName());
+        for (DoctorRequest req : docReqs) {
+            auditTrailService.saveAuditTrail("Consultation", "created a request for " + req.getItem().getItemName() + " for patient " + req.getPatient().getFullName());
         }
 
         notificationEventPublisher.publishDocRequestEvent(requestType);
@@ -146,12 +144,12 @@ public class DoctorRequestController {
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
         Optional<DoctorRequestData> specimens = requestService.getDocRequestDataById(id);
         if (specimens != null) {
-            auditTrailService.saveAuditTrail("Consultation", "created a request for "+specimens.get().getItemName()+" for patient "+specimens.get().getPatientData().getFullName());
+            auditTrailService.saveAuditTrail("Consultation", "created a request for " + specimens.get().getItemName() + " for patient " + specimens.get().getPatientData().getFullName());
             return ResponseEntity.ok(specimens);
         } else {
             throw APIException.notFound("Request Number {0} not found.", id);
         }
-        
+
     }
 
     @DeleteMapping("/doctor-request/{id}")
@@ -164,7 +162,7 @@ public class DoctorRequestController {
                 throw APIException.badRequest("You cannot remove a fulfilled request", "");
             }
             requestService.deleteDocRequest(docRequest.get());
-            auditTrailService.saveAuditTrail("Consultation", "Deleted a request identified by id "+id);
+            auditTrailService.saveAuditTrail("Consultation", "Deleted a request identified by id " + id);
             return ResponseEntity.ok("Successfully deleted");
         } else {
             throw APIException.notFound("Request Number {0} not found.", id);
@@ -177,8 +175,8 @@ public class DoctorRequestController {
             @PathVariable("visitNo") final String visitNo,
             @PathVariable(value = "pageNo", required = false) final Integer pageNo,
             @PathVariable(value = "pageSize", required = false) final Integer pageSize
-            ) {
-        Pageable pageable = PaginationUtil.createPage(pageNo,pageSize);
+    ) {
+        Pageable pageable = PaginationUtil.createPage(pageNo, pageSize);
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         Page<DoctorRequest> page = requestService.findAllRequestsByVisit(visit, pageable);
 
@@ -198,7 +196,7 @@ public class DoctorRequestController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-        auditTrailService.saveAuditTrail("Consultation", "Viewed requests identified by visitNo "+visitNo);
+        auditTrailService.saveAuditTrail("Consultation", "Viewed requests identified by visitNo " + visitNo);
         return ResponseEntity.ok(pagers);
     }
 
@@ -269,7 +267,7 @@ public class DoctorRequestController {
         details.setTotalPage(waitingPage.getPageCount());
         details.setReportName("History Doctor Requests");
         pagers.setPageDetails(details);
-        auditTrailService.saveAuditTrail("Consultation", "Viewed past requests for patient "+patient.getFullName());
+        auditTrailService.saveAuditTrail("Consultation", "Viewed past requests for patient " + patient.getFullName());
         return ResponseEntity.ok(pagers);
     }
 
@@ -291,9 +289,9 @@ public class DoctorRequestController {
 //        final DateRange range = DateRange.fromIsoString(dateRange);
         Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", Pageable.unpaged(), activeVisit, term, range);
         /* Queue directly sent-  */
-        
+
         ServicePointType pointType = null;
-        if(requestType!=null) {
+        if (requestType != null) {
             switch (requestType) {
                 case Radiology:
                     pointType = ServicePointType.Radiology;
@@ -312,14 +310,14 @@ public class DoctorRequestController {
                     break;
             }
         }
-        
+
         List<Visit> directVisits = new ArrayList<>();
-        if(pointType !=null){
+        if (pointType != null) {
             //Find service point by request type (point type) - assuming there is only one service point of each type
             ServicePoint servicePoint = servicePointService.getServicePointByType(pointType);
-           directVisits =    visitService.visitByServicePointAndServedAtServicePoint(servicePoint, false);
+            directVisits = visitService.visitByServicePointAndServedAtServicePoint(servicePoint, false);
         }
-        
+
         /* End of queue directly sent */
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
@@ -339,8 +337,8 @@ public class DoctorRequestController {
             waitingRequest.setItem(requestItems);
             waitingRequests.add(waitingRequest);
         }
-int count = waitingRequests.size();
-        for(Visit v: directVisits){
+        int count = waitingRequests.size();
+        for (Visit v : directVisits) {
             count++;
             WaitingRequestsData waitingRequest = new WaitingRequestsData();
             waitingRequest.setPatientData(patientService.convertToPatientData(v.getPatient()));
@@ -354,12 +352,12 @@ int count = waitingRequests.size();
             waitingRequest.setItem(new ArrayList<>());
             waitingRequests.add(waitingRequest);
         }
-        System.out.println("Page"+page);
-        System.out.println("size"+size);
-        if(page !=null){
-            page = page -1;
+        System.out.println("Page" + page);
+        System.out.println("size" + size);
+        if (page != null) {
+            page = page - 1;
         }
-        Page<WaitingRequestsData> list = ListToPage.map(waitingRequests,page , size);
+        Page<WaitingRequestsData> list = ListToPage.map(waitingRequests, page, size);
 
         PagedListHolder waitingPage = new PagedListHolder(waitingRequests);
         waitingPage.setPageSize(pageable.getPageSize()); // number of items per page
@@ -408,7 +406,7 @@ int count = waitingRequests.size();
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-        auditTrailService.saveAuditTrail("Consultation", "Viewed all patient requests for visitNo "+visitNo);
+        auditTrailService.saveAuditTrail("Consultation", "Viewed all patient requests for visitNo " + visitNo);
         return ResponseEntity.ok(pagers);
     }
 
@@ -416,20 +414,20 @@ int count = waitingRequests.size();
     @PreAuthorize("hasAuthority('edit_dispense')")
     public ResponseEntity<?> voidDocRequest(@PathVariable(value = "requestId") Long id) {
         Boolean status = requestService.voidRequest(id);
-        auditTrailService.saveAuditTrail("Consultation", "Deleted patient request for identified by id "+id);
+        auditTrailService.saveAuditTrail("Consultation", "Deleted patient request for identified by id " + id);
         return ResponseEntity.ok(status);
     }
 
     @DeleteMapping("/doc-request/{id}")
     @PreAuthorize("hasAuthority('delete_doctorrequest')")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
-        auditTrailService.saveAuditTrail("Consultation", "Deleted patient request for identified by id "+id);
+        auditTrailService.saveAuditTrail("Consultation", "Deleted patient request for identified by id " + id);
         return requestService.deleteById(id);
     }
 
     @GetMapping("/doctor-request/list")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
-    public ResponseEntity<  Pager<OrdersRequest>> getDoctorsOrders(
+    public ResponseEntity<Pager<OrdersRequest>> getDoctorsOrders(
             @RequestParam(value = "visitNumber", required = false) final String visitNumber,
             @RequestParam(value = "patientNumber", required = false) final String patientNumber,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
@@ -443,15 +441,15 @@ int count = waitingRequests.size();
 
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Page<OrdersRequest> list = requestService.getDoctorOrderRequests(visitNumber, patientNumber, requestType, fulfillerStatus,paymentMethod, range,  pageable)
-                .map(OrdersRequest::of); 
+        Page<OrdersRequest> list = requestService.getDoctorOrderRequests(visitNumber, patientNumber, requestType, fulfillerStatus, paymentMethod, range, pageable)
+                .map(OrdersRequest::of);
         auditTrailService.saveAuditTrail("Consultation", "Viewed all patient requests ");
         return ResponseEntity.ok((Pager<OrdersRequest>) PaginationUtil.toPager(list, "Doctors Requests"));
     }
 
-    @GetMapping("/doctor-request/list-summary")
+    @GetMapping("/doctor-request/cash-request-summary")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
-    public ResponseEntity<  Pager<VisitOrderDTO>> getDoctorsOrderSummary(
+    public ResponseEntity<Pager<VisitOrderDTO>> getDoctorsCashRequestSummary(
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
@@ -463,6 +461,13 @@ int count = waitingRequests.size();
 
         Page<VisitOrderDTO> list = requestService.getDoctorOrderSummary(requestType, range, pageable);
         return ResponseEntity.ok((Pager<VisitOrderDTO>) PaginationUtil.toPager(list, "Doctors Requests Summary"));
+    }
+
+    @GetMapping("/doctor-request/cash-request-summary/{visitNumber}/items")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
+    public ResponseEntity<List<VisitOrderItemDTO>> getDoctorsCashRequestItems(@PathVariable("visitNumber") final String visitNumber) {
+        List<VisitOrderItemDTO> list = requestService.getDoctorOrderSummaryItems(visitNumber);
+        return ResponseEntity.ok(list);
     }
 
 }

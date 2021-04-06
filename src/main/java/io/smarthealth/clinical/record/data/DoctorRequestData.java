@@ -83,6 +83,9 @@ public class DoctorRequestData {
 
     @ApiModelProperty(required = false, hidden = true)
 
+    private boolean paid;
+    private boolean billed;
+
     public static DoctorRequest map(DoctorRequestData doctorRequestData) {
         DoctorRequest doctorRequest = new DoctorRequest();
         doctorRequest.setNotes(doctorRequestData.getNotes());
@@ -93,6 +96,8 @@ public class DoctorRequestData {
         doctorRequest.setDrug(doctorRequestData.getDrug());
         doctorRequest.setUrgency(doctorRequestData.getUrgency().name());
         doctorRequest.setRequestType(doctorRequestData.requestType);
+        doctorRequest.setBilled(false);
+        doctorRequest.setPaid(false);
 
         return doctorRequest;
     }
@@ -145,6 +150,9 @@ public class DoctorRequestData {
             doctorRequestData.getPatientData().setPatientNumber(doctorRequest.getPatient().getPatientNumber());
             doctorRequestData.getPatientData().setFullName(doctorRequest.getPatient().getFullName());
         }
+
+        doctorRequestData.setBilled(doctorRequest.isBilled());
+        doctorRequestData.setPaid(doctorRequest.isPaid());
 
         return doctorRequestData;
     }

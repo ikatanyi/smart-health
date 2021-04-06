@@ -27,6 +27,7 @@ import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.pricelist.domain.PriceListRepository;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -78,9 +79,11 @@ public class ReceiptingService {
     private final PatientBillingService patientBillingService;
     private final ReceivePaymenttRepository receivePaymenttRepository;
     private final PriceListRepository priceListRepository;
+    private final DoctorsRequestRepository doctorsRequestRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
+
         Receipt receipt = new Receipt();
         receipt.setPrepayment(Boolean.FALSE);
         receipt.setAmount(data.getAmount());
@@ -164,6 +167,8 @@ public class ReceiptingService {
                 break;
             default:
         }
+
+        updateDoctorRequests(billedItems);
 
         return savedReceipt;
     }
@@ -545,5 +550,10 @@ public class ReceiptingService {
         }
 
         return savedReceipt;
+    }
+    public void updateDoctorRequests(List<PatientBillItem> billedItems){
+        billedItems.stream()
+                .filter(x -> x.getRequestReference()!=null)
+                .forEach(req -> doctorsRequestRepository.updateBilledAndPaidDoctorRequest(req.getRequestReference()));
     }
 }

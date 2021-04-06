@@ -172,10 +172,15 @@ public class ProcedureService {
                 pte.setStatus(ProcedureTestState.Scheduled);
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
-                if (patientProcRegData.getPaymentMode().equals("Cash") && visit != null && visit.getVisitType() == VisitEnum.VisitType.Outpatient) {
-                    pte.setPaid(Boolean.FALSE);
-                } else{
-                    pte.setPaid(Boolean.TRUE);
+
+                if(id.isPaid()){
+                    pte.setPaid(true);
+                }else {
+                    if (patientProcRegData.getPaymentMode().equals("Cash") && visit != null && visit.getVisitType() == VisitEnum.VisitType.Outpatient) {
+                        pte.setPaid(Boolean.FALSE);
+                    } else {
+                        pte.setPaid(Boolean.TRUE);
+                    }
                 }
                 pte.setProcedureTest(item);
                 pte.setPaymentMethod(id.getPaymentMethod());
@@ -191,6 +196,7 @@ public class ProcedureService {
                         request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
                     }
                 }
+                pte.setBilled(id.isRequestBilled());
 
                 patientProcTest.add(pte);
 
@@ -236,6 +242,7 @@ public class ProcedureService {
         patientbill.setBillNumber(bill_no);
         List<PatientBillItem> lineItems = data.getPatientProcedureTest()
                 .stream()
+                .filter(x -> !x.isBilled())
                 .map(lineData -> {
                     PatientBillItem billItem = new PatientBillItem();
                     Item item = itemService.findByItemCodeOrThrow(lineData.getProcedureTest().getItemCode());

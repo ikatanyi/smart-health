@@ -9,11 +9,7 @@ import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.clinical.laboratory.data.LabRegisterData;
-import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
-import io.smarthealth.clinical.laboratory.data.LabResultData;
-import io.smarthealth.clinical.laboratory.data.PatientResults;
-import io.smarthealth.clinical.laboratory.data.StatusRequest;
+import io.smarthealth.clinical.laboratory.data.*;
 import io.smarthealth.clinical.laboratory.domain.*;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.domain.specification.LabRegisterSpecification;
@@ -389,7 +385,11 @@ public class LaboratoryService {
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
         test.setPaymentMethod(data.getPaymentMethod());
-        test.setPaid(paymentMode.equals("Cash") && visitType.equals(VisitEnum.VisitType.Outpatient)? Boolean.FALSE : Boolean.TRUE);
+        if(data.getPaid()){
+            test.setPaid(true);
+        }else {
+            test.setPaid(paymentMode.equals("Cash") && visitType.equals(VisitEnum.VisitType.Outpatient) ? Boolean.FALSE : Boolean.TRUE);
+        }
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
         test.setRequestId(data.getRequestId());
@@ -397,6 +397,7 @@ public class LaboratoryService {
         test.setStatus(data.getStatus());
         test.setIsPanel(labTest.getIsPanel());
         test.setReferenceNo(data.getReferenceNo());
+        test.setBilled(data.isRequestBilled());
 
         test.setStatus(LabTestStatus.AwaitingSpecimen);
         return test;
@@ -543,32 +544,8 @@ public class LaboratoryService {
         ArrayList<LabTest> parentLabTest = new ArrayList<>();
         List<PatientBillItem> lineItems = data.getTests()
                 .stream()
+                .filter(x -> !x.isBilled())
                 .map(lineData -> toPatientBill(lineData, srvpoint, data.getTransactionId(), method, parentLabTest)
-                        //                {
-                        //                    PatientBillItem billItem = new PatientBillItem();
-                        ////                    Item item = billingService.getItemByBy(lineData.getTestId());
-                        //                    Item item = lineData.getLabTest().getService();
-                        //
-                        //                    billItem.setBillingDate(LocalDate.now());
-                        //                    billItem.setTransactionId(data.getTransactionId());
-                        //                    billItem.setServicePointId(srvpoint.getId());
-                        //                    billItem.setServicePoint(srvpoint.getName());
-                        //                    billItem.setItem(item);
-                        ////                    billItem.setPrice(lineData.getTestPrice().doubleValue());
-                        //                    billItem.setPrice(lineData.getPrice().doubleValue());
-                        //                    billItem.setQuantity(1d);
-                        ////                    billItem.setAmount(lineData.getTestPrice().doubleValue());
-                        //                    billItem.setAmount(lineData.getPrice().doubleValue());
-                        //                    billItem.setDiscount(0.00);
-                        //                    billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
-                        ////                    billItem.setBalance(lineData.getTestPrice().doubleValue());
-                        //                    billItem.setBalance(lineData.getPrice().doubleValue());
-                        //                    billItem.setServicePoint(srvpoint.getName());
-                        //                    billItem.setServicePointId(srvpoint.getId());
-                        //                    billItem.setStatus(BillStatus.Draft);
-                        //                    billItem.setRequestReference(lineData.getId());
-                        //                    return billItem;
-                        //                }
                 )
                 .filter(z -> z != null)
                 .collect(Collectors.toList());
@@ -719,5 +696,25 @@ public class LaboratoryService {
                         }
                     }
                 });
+    }
+
+    public List<LabResult> validateResults(List<ValidateResultData> data) {
+       List<LabResult> results= data.stream()
+                .map(r -> {
+                    Optional<LabResult> optionalLabResult = labResultRepository.findById(r.getId());
+                    if(optionalLabResult.isPresent()) {
+                        LabResult result = optionalLabResult.get();
+                        result.setResultValue(r.getResultValue());
+                        result.setComments(r.getComments());
+                        result.setValidated(r.getValidated());
+                        result.setRejected(r.getRejected());
+                        result.setValidatedBy(r.getValidateBy());
+                        return result;
+                    }
+                    return null;
+                })
+               .filter(x -> x!=null)
+                .collect(Collectors.toList());
+       return labResultRepository.saveAll(results);
     }
 }

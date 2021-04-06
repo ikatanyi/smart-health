@@ -142,20 +142,17 @@ public class DoctorRequestService implements DateConverter {
             return doctorRequestRepository.findDoctorCashRequests(pageable);
         }
     }
-//    public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final RequestType requestType, Pageable pageable) {
-//        
-//        return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
-//    }
-//    
+
+    public List<VisitOrderItemDTO> getDoctorOrderSummaryItems(String visitNumber){
+        return doctorRequestRepository.findDoctorCashRequestsItems(visitNumber);
+    }
+
     public List<DoctorRequest> fetchServiceRequests(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType, final Visit visit) {
         Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visit.getVisitNumber(), patient.getPatientNumber(), requestType, fullfillerStatus, null, null, null, null, null);
         Pageable wholePage = Pageable.unpaged();
         return doctorRequestRepository.findAll(spec, wholePage).getContent();
     }
 
-//    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType) {
-//        return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
-//    }
     public List<DoctorRequest> fetchServiceRequestsByVisit(final Visit visit, final FullFillerStatusType fullfillerStatus, final RequestType requestType) {
         return doctorRequestRepository.findServiceRequestsByVisit(visit, fullfillerStatus, requestType);
     }
@@ -245,6 +242,8 @@ public class DoctorRequestService implements DateConverter {
         requestItem.setOrderDate(d.getOrderDate());
         requestItem.setRequestedByName(d.getRequestedBy().getUsername());
         requestItem.setStatus(d.getFulfillerStatus().name());
+        requestItem.setBilled(d.isBilled());
+        requestItem.setPaid(d.isPaid());
 
         return requestItem;
     }

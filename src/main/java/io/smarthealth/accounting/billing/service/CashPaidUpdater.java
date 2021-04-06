@@ -1,7 +1,10 @@
 package io.smarthealth.accounting.billing.service;
 
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
+import io.smarthealth.clinical.laboratory.domain.LabTest;
+import io.smarthealth.clinical.laboratory.domain.LabTestRepository;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
 import io.smarthealth.clinical.procedure.domain.ProcedureTestRepository;
 import io.smarthealth.clinical.radiology.domain.PatientScanTestRepository;

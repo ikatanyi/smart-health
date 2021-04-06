@@ -141,14 +141,17 @@ public class RadiologyService {
                 pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
-                pte.setPaid(Boolean.FALSE);
-                if (patientScanReg.getPaymentMode().equals("Cash")) {
-                    if (visit != null &&
-                            visit.getVisitType() == VisitEnum.VisitType.Outpatient) {
-                        pte.setPaid(Boolean.FALSE);
-                    }
-                } else {
+                if(id.isPaid()) {
                     pte.setPaid(Boolean.TRUE);
+                }else {
+                    if (patientScanReg.getPaymentMode().equals("Cash")) {
+                        if (visit != null &&
+                                visit.getVisitType() == VisitEnum.VisitType.Outpatient) {
+                            pte.setPaid(Boolean.FALSE);
+                        }
+                    } else {
+                        pte.setPaid(Boolean.TRUE);
+                    }
                 }
                 pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));
                 pte.setPaymentMethod(id.getPaymentMethod());
@@ -208,6 +211,7 @@ public class RadiologyService {
         patientbill.setBillNumber(bill_no);
         List<PatientBillItem> lineItems = data.getPatientScanTest()
                 .stream()
+                .filter(x -> !x.isBilled())
                 .map(lineData -> {
                     PatientBillItem billItem = new PatientBillItem();
                     Item item = itemService.findByItemCodeOrThrow(lineData.getRadiologyTest().getItem().getItemCode());

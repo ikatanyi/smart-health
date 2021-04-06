@@ -8,14 +8,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringExclude;
 
@@ -77,6 +71,8 @@ public class LabRegisterTest extends Identifiable {
     private String attachment;
 
     private String testName;
+
+    private boolean billed;
 
     public LabRegisterTestData toData(Boolean expand) {
         LabRegisterTestData data = new LabRegisterTestData();
@@ -151,6 +147,7 @@ public class LabRegisterTest extends Identifiable {
                             .collect(Collectors.toList())
             );
         }
+        data.setRequestBilled(this.isBilled());
 
         return data;
 

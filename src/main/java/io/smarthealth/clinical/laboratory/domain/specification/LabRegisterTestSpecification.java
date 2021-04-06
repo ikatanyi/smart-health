@@ -39,11 +39,8 @@ public class LabRegisterTestSpecification {
             }
             
               if (range != null) {
-                   System.out.println("date ranger .. "+range.getStartDateTime()+ " end : "+range.getEndDateTime());
-                predicates.add(
-                      
-                        cb.between(root.get("entryDateTime"), range.getStartDateTime(), range.getEndDateTime())
-                );
+//                   System.out.println("date ranger .. "+range.getStartDateTime()+ " end : "+range.getEndDateTime());
+                predicates.add(cb.between(root.get("entryDateTime"), range.getStartDateTime(), range.getEndDateTime()));
             }
             if (search != null) {
                 final String likeExpression = "%" + search + "%";

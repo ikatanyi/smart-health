@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -26,6 +27,7 @@ public interface PriceBookRepository extends JpaRepository<PriceBook, Long>, Jpa
     @Query(name = "pricelistEntity.searchPriceListByItem", nativeQuery = true)
     List<PriceListDTO> searchPriceListByItem(@Param("item") String item);
 
+    @Transactional
     @Modifying
     @Query(value = "INSERT  into price_book_item (amount, price_book_id, item_id) select :amount, :price, :item ", nativeQuery = true)
     int addPriceBookItem(@Param("amount") BigDecimal amount, @Param("price") Long priceId, @Param("item") Long itemId);

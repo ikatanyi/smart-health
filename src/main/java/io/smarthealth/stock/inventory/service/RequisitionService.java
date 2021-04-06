@@ -9,6 +9,7 @@ import io.smarthealth.stock.inventory.domain.Requisition;
 import io.smarthealth.stock.inventory.domain.RequisitionItem;
 import io.smarthealth.stock.inventory.domain.RequisitionRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.RequisitionStatus;
+import io.smarthealth.stock.inventory.domain.specification.RequisitionSpecification;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.stores.domain.Store;
@@ -17,8 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -84,13 +87,9 @@ public class RequisitionService {
                 .orElseThrow(() -> APIException.notFound("Requisition with Id {0} not found", id));
     }
 
-    public Page<Requisition> getRequisitions(String status, Pageable page) {
-        RequisitionStatus state = null;
-        if (EnumUtils.isValidEnum(RequisitionStatus.class, status)) {
-            state = RequisitionStatus.valueOf(status);
-            return requisitionRepository.findByStatus(state, page);
-        }
-        return requisitionRepository.findAll(page);
+    public Page<Requisition> getRequisitions(List<RequisitionStatus> status, Pageable page) {
+        Specification<Requisition> spec = RequisitionSpecification.createSpecification(status);
+        return requisitionRepository.findAll(spec,page);
     }
 
     public Requisition saveRequisition(Requisition r) {

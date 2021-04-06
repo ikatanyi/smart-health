@@ -67,21 +67,6 @@ public class LabRegisterController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
-//    @PostMapping("/labs/register/batch")
-//    public ResponseEntity<?> createLabRequest(@Valid @RequestBody List<LabRequestData> data) {
-//
-//        List<LabRequestData> item = service.createLabRequest(data)
-//                .stream()
-//                .map(x -> x.toData())
-//                .collect(Collectors.toList());
-//
-//        Pager< List<LabRequestData>> pagers = new Pager();
-//        pagers.setCode("0");
-//        pagers.setMessage("Doctor Items Created.");
-//        pagers.setContent(item);
-//
-//        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
-//    }
     @GetMapping("/labs/register/{labNo}")
     @PreAuthorize("hasAuthority('view_labregister')")
     public ResponseEntity<?> getLabRequest(@PathVariable(value = "labNo") String labNo, @RequestParam(value = "expand", required = false) Boolean expand) {
