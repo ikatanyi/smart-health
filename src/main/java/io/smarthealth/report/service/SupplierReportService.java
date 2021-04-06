@@ -8,6 +8,7 @@ package io.smarthealth.report.service;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.data.DoctorInvoiceData;
+import io.smarthealth.accounting.doctors.data.DoctorInvoiceStatus;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -114,10 +115,11 @@ public class SupplierReportService {
         String paymentMode = reportParam.getFirst("paymentMode"); 
         String patientNo = reportParam.getFirst("patientNo"); 
         String invoiceNumber = reportParam.getFirst("invoiceNumber"); 
-        String transactionId = reportParam.getFirst("transactionId"); 
+        String transactionId = reportParam.getFirst("transactionId");
+        DoctorInvoiceStatus invoiceStatus = reportParam.getFirst("invoiceStatus")!=null ?DoctorInvoiceStatus.valueOf(reportParam.getFirst("invoiceStatus")): null;
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));        
         
-         List<DoctorInvoiceData> doctorInvoiceData = doctorInvoiceService.getDoctorInvoices(doctorId, serviceItem, paid, paymentMode, patientNo, invoiceNumber, transactionId, range, Pageable.unpaged())
+         List<DoctorInvoiceData> doctorInvoiceData = doctorInvoiceService.getDoctorInvoices(doctorId, serviceItem, paid, paymentMode, patientNo, invoiceNumber, transactionId, range,invoiceStatus , Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((invoice) ->{ 

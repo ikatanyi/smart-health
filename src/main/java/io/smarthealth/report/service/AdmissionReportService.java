@@ -318,7 +318,7 @@ public class AdmissionReportService {
 
         reportData.setData(careTeamData);
         reportData.setFormat(format);
-        reportData.setTemplate("/Admission/care-team");
+        reportData.setTemplate("/admission/care-team");
         reportData.setReportName("care-team-list");
         reportService.generateReport(reportData, response);
     }

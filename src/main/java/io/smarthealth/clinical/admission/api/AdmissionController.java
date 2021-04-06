@@ -10,6 +10,8 @@ import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.domain.Bed;
 import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.clinical.admission.service.BedService;
+import io.smarthealth.clinical.queue.domain.PatientQueue;
+import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -47,7 +49,8 @@ public class AdmissionController {
 
     private final AdmissionService admissionService;
     private final BedService bedService;
-    private final AuditTrailService auditTrailService; 
+    private final AuditTrailService auditTrailService;
+    private final PatientQueueService patientQueueService;
 
     @PostMapping("/admission")
 //    @PreAuthorize("hasAuthority('create_admission')")
@@ -136,6 +139,14 @@ public class AdmissionController {
             throw APIException.badRequest("You cannot checkout a patient who has not been discharged!");
         }
         a.setStatus(Status.CheckOut);
+
+        //mark active visit status on queue as false
+        List<PatientQueue> pq = patientQueueService.fetchQueueByVisit(a);
+        for(PatientQueue q: pq){
+            q.setStatus(false);
+            patientQueueService.createPatientQueue(q);
+        }
+
         auditTrailService.saveAuditTrail("Admission", "Checkedout patient  "+a.getPatient().getFullName());
         admissionService.saveAdmission(a);
 

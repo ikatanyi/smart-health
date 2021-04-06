@@ -2,6 +2,7 @@ package io.smarthealth.accounting.doctors.domain;
 
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.data.DoctorInvoiceData;
+import io.smarthealth.accounting.doctors.data.DoctorInvoiceStatus;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -57,6 +58,8 @@ public class DoctorInvoice extends Auditable {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     private String transactionId;
+    @Enumerated(EnumType.STRING)
+    private DoctorInvoiceStatus invoiceStatus = DoctorInvoiceStatus.Pending ;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_doctor_invoice_visit_id"))

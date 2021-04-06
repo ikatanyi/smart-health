@@ -8,6 +8,9 @@ import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
+import io.smarthealth.accounting.doctors.data.AdjustmentType;
+import io.smarthealth.accounting.doctors.data.DoctorInvoiceStatus;
+import io.smarthealth.accounting.doctors.data.ExpenseAdjustmentData;
 import io.smarthealth.infrastructure.exception.APIException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,13 +34,14 @@ import io.smarthealth.accounting.doctors.domain.DoctorItemRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.stock.item.domain.Item;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
+
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author Kelsas
  */
 @Service
@@ -53,9 +57,8 @@ public class DoctorInvoiceService {
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final VisitRepository visitRepository;
     private final ItemService itemService;
-    
 
- 
+
 //    private final VisitService visitService;
 
     public DoctorInvoice createDoctorInvoice(DoctorInvoiceData data) {
@@ -73,6 +76,7 @@ public class DoctorInvoiceService {
         invoice.setInvoiceDate(data.getInvoiceDate());
         invoice.setInvoiceNumber(data.getInvoiceNumber());
         invoice.setPaid(Boolean.FALSE);
+        invoice.setInvoiceStatus(DoctorInvoiceStatus.Pending);
         invoice.setPatient(patient);
         invoice.setPaymentMode(data.getPaymentMode());
         invoice.setServiceItem(serviceItem);
@@ -110,12 +114,13 @@ public class DoctorInvoiceService {
         //TODO: Adjust journals
         return savedInvoice;
     }
-   @Transactional
-    public void removeDoctorInvoice(DoctorInvoice doctorInvoice) { 
+
+    @Transactional
+    public void removeDoctorInvoice(DoctorInvoice doctorInvoice) {
         repository.delete(doctorInvoice);
         //Adjust journals
         reverseJournal(doctorInvoice);
-        
+
     }
 
     public DoctorInvoice updateDoctorInvoice(Long id, DoctorInvoiceData data) {
@@ -127,6 +132,9 @@ public class DoctorInvoiceService {
         toUpdateItem.setDoctor(doctor);
         toUpdateItem.setInvoiceDate(data.getInvoiceDate());
         toUpdateItem.setPaid(data.getPaid());
+        if(!data.getPaid()){
+            toUpdateItem.setInvoiceStatus(DoctorInvoiceStatus.Pending);
+        }
         toUpdateItem.setPaymentMode(data.getPaymentMode());
 
         return save(toUpdateItem);
@@ -149,8 +157,8 @@ public class DoctorInvoiceService {
         createDoctorInvoice(data);
     }
 
-    public Page<DoctorInvoice> getDoctorInvoices(Long doctorId, String serviceItem, Boolean paid, String paymentMode, String patientNo, String invoiceNumber, String transactionId, DateRange range, Pageable page) {
-        Specification<DoctorInvoice> spec = DoctorInvoiceSpecification.createSpecification(doctorId, serviceItem, paid, paymentMode, patientNo, invoiceNumber, transactionId, range);
+    public Page<DoctorInvoice> getDoctorInvoices(Long doctorId, String serviceItem, Boolean paid, String paymentMode, String patientNo, String invoiceNumber, String transactionId, DateRange range, DoctorInvoiceStatus invoiceStatus, Pageable page) {
+        Specification<DoctorInvoice> spec = DoctorInvoiceSpecification.createSpecification(doctorId, serviceItem, paid, paymentMode, patientNo, invoiceNumber, transactionId, range,  invoiceStatus);
         return repository.findAll(spec, page);
     }
 
@@ -185,8 +193,8 @@ public class DoctorInvoiceService {
         String narration = "Doctor " + invoice.getDoctor().getFullName() + " invoicing for patient " + invoice.getPatient().getPatientNumber() + " Bill Number: " + invoice.getInvoiceNumber();
         JournalEntry toSave = new JournalEntry(invoice.getInvoiceDate(), narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(debitAccount.get().getAccount(), narration, amount, BigDecimal.ZERO),
-                    new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, amount)
+                        new JournalEntryItem(debitAccount.get().getAccount(), narration, amount, BigDecimal.ZERO),
+                        new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, amount)
 //                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
 //                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
                 }
@@ -213,8 +221,8 @@ public class DoctorInvoiceService {
         String narration = "Doctor " + invoice.getDoctor().getFullName() + " deletion for visit " + invoice.getVisit().getVisitNumber() + " Bill Number: " + invoice.getInvoiceNumber();
         JournalEntry toSave = new JournalEntry(invoice.getInvoiceDate(), narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(debitAccount.get().getAccount(), narration, amount, BigDecimal.ZERO),
-                    new JournalEntryItem(crAccount.get().getAccount(), narration, BigDecimal.ZERO, amount)
+                        new JournalEntryItem(debitAccount.get().getAccount(), narration, amount, BigDecimal.ZERO),
+                        new JournalEntryItem(crAccount.get().getAccount(), narration, BigDecimal.ZERO, amount)
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionId());
@@ -236,9 +244,9 @@ public class DoctorInvoiceService {
     }
 
     public Employee getDoctorByStaffNumber(String staffNo) {
-        return employeeService.findEmployeeByStaffNumber(staffNo).orElseThrow(()-> APIException.notFound("Employee identified by staff number {0} not found", staffNo));
+        return employeeService.findEmployeeByStaffNumber(staffNo).orElseThrow(() -> APIException.notFound("Employee identified by staff number {0} not found", staffNo));
     }
-    
+
     public DoctorInvoice saveDoctorInvoice(DoctorInvoiceData data) {
 
         String trnId = sequenceNumberService.next(1L, Sequences.Transactions.name());
@@ -258,11 +266,13 @@ public class DoctorInvoiceService {
         invoice.setInvoiceDate(data.getInvoiceDate());
         invoice.setInvoiceNumber(data.getInvoiceNumber());
         invoice.setPaid(Boolean.FALSE);
+        invoice.setInvoiceStatus(DoctorInvoiceStatus.Pending);
         invoice.setPatient(patient);
         invoice.setPaymentMode(data.getPaymentMode());
         invoice.setServiceItem(serviceItem);
         invoice.setTransactionId(trnId);
         invoice.setTransactionType(DoctorInvoice.TransactionType.Credit);
+
         if (data.getVisitNumber() != null) {
             Visit visit = this.findVisitEntityOrThrow(data.getVisitNumber());
             invoice.setVisit(visit);
@@ -272,6 +282,67 @@ public class DoctorInvoiceService {
         DoctorInvoice savedInvoice = save(invoice);
 //        journalService.save(toJournal(savedInvoice));
         return savedInvoice;
+    }
+
+
+    public DoctorInvoice adjustDoctorExpense(Long id, ExpenseAdjustmentData data) {
+
+        DoctorInvoice toUpdateItem = getDoctorInvoice(id);
+        if (data.getAdjustmentType().equals(AdjustmentType.WriteOff)) {
+            toUpdateItem.setInvoiceStatus(DoctorInvoiceStatus.WrittenOff);
+            toUpdateItem.setAmount(BigDecimal.ZERO);
+            toUpdateItem.setBalance(BigDecimal.ZERO);
+            journalService.save(expenseAdjustmentJournal(toUpdateItem, data));
+        } else {
+            //already_paidamount = toUpdateItemAmount-toUpdateItemBalance
+            //newbalance = newinvoiceamount - already_paidamount
+            //newbalance = newinvoiceamount - (toUpdateItemAmount-toUpdateItemBalance)
+            toUpdateItem.setBalance(data.getAmount().subtract(toUpdateItem.getAmount().subtract(toUpdateItem.getBalance())));
+            toUpdateItem.setAmount(data.getAmount());
+
+            journalService.save(expenseAdjustmentJournal(toUpdateItem, data));
+        }
+        return save(toUpdateItem);
+    }
+
+    public JournalEntry expenseAdjustmentJournal(DoctorInvoice invoice, ExpenseAdjustmentData data) {
+        Optional<FinancialActivityAccount> expenseAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Cost_Of_Consultancy);
+        if (!expenseAccount.isPresent()) {
+            throw APIException.badRequest("Cost of Consultancy Account is Not Mapped");
+        }
+
+        Optional<FinancialActivityAccount> liabilityAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Doctors_Fee);
+        if (!liabilityAccount.isPresent()) {
+            throw APIException.badRequest("Doctors Ledger Account is Not Mapped");
+        }
+
+        BigDecimal amount = invoice.getAmount();
+        String narration = "Doctor " + invoice.getDoctor().getFullName() + " adjustment " + invoice.getPatient().getPatientNumber() + " Bill Number: " + invoice.getInvoiceNumber();
+        JournalEntry toSave = null;
+
+        if (data.getAdjustmentType().equals(AdjustmentType.WriteOff) || data.getAmount().compareTo(invoice.getAmount()) < 1) {
+
+            toSave = new JournalEntry(invoice.getInvoiceDate(), narration,
+                    new JournalEntryItem[]{
+                            new JournalEntryItem(expenseAccount.get().getAccount(), narration, BigDecimal.ZERO, data.getAdjustmentType().equals(AdjustmentType.WriteOff) ? invoice.getAmount() : (invoice.getAmount().subtract(data.getAmount()))),
+                            new JournalEntryItem(liabilityAccount.get().getAccount(), narration, data.getAdjustmentType().equals(AdjustmentType.WriteOff) ? invoice.getAmount() : (invoice.getAmount().subtract(data.getAmount())), BigDecimal.ZERO)
+                    }
+            );
+
+
+        } else {
+            toSave = new JournalEntry(invoice.getInvoiceDate(), narration,
+                    new JournalEntryItem[]{
+                            new JournalEntryItem(expenseAccount.get().getAccount(), narration, data.getAmount().subtract(invoice.getAmount()), BigDecimal.ZERO),
+                            new JournalEntryItem(liabilityAccount.get().getAccount(), narration, BigDecimal.ZERO, data.getAmount().subtract(invoice.getAmount()))
+                    }
+            );
+        }
+
+        toSave.setTransactionNo(invoice.getTransactionId());
+        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
     }
 
 }

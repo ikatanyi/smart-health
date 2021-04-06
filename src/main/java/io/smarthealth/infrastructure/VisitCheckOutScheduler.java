@@ -1,5 +1,7 @@
 package io.smarthealth.infrastructure;
 
+import io.smarthealth.clinical.queue.domain.PatientQueue;
+import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -21,6 +23,9 @@ public class VisitCheckOutScheduler {
     @Autowired
     VisitService visitService;
 
+    @Autowired
+    PatientQueueService patientQueueService;
+
     /*
     Ukitaka kukumbuka 
     
@@ -34,6 +39,13 @@ public class VisitCheckOutScheduler {
             v.setStatus(VisitEnum.Status.CheckOut);
             v.setStopDatetime(LocalDateTime.now());
             visitService.createAVisit(v);
+
+            //mark active visit status on queue as false
+            List<PatientQueue> pq = patientQueueService.fetchQueueByVisit(v);
+            for(PatientQueue q: pq){
+              q.setStatus(false);
+              patientQueueService.createPatientQueue(q);
+            }
         }
         log.info("checkoutAllActiveVisitsPast24Hours Job ended");
     }

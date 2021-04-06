@@ -10,6 +10,7 @@ import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
+import io.smarthealth.accounting.doctors.data.DoctorInvoiceStatus;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoiceRepository;
 import io.smarthealth.accounting.payment.data.BillToPay;
@@ -180,6 +181,9 @@ public class MakePaymentService {
             boolean paid = newBal.doubleValue() <= 0;
             inv.setBalance(newBal);
             inv.setPaid(paid);
+            if(paid){
+                inv.setInvoiceStatus(DoctorInvoiceStatus.Paid);
+            }
             DoctorInvoice saved = doctorInvoiceRepository.save(inv);
             return new DoctorsPayment(pay, saved, bill.getAmountPaid(), bill.getTaxAmount());
         }

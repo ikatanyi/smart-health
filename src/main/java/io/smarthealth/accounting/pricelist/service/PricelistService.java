@@ -199,6 +199,7 @@ public class PricelistService {
     }
 
     public PriceList fetchPriceListByItemCategory(final ItemCategory category) {
+        System.out.println("Category "+category.name());
         return repository.getPriceListByItemCategory(category).orElseThrow(() -> APIException.notFound("Pricelist not found ", ""));
     }
 
