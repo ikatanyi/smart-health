@@ -131,6 +131,7 @@ public class InventoryService {
             Optional<Requisition> requisition = requisitionService.findByRequsitionNumber(stockData.getReferenceNumber());
             if (requisition.isPresent()) {
                 Requisition r = requisition.get();
+                 //TODO fix the non updating of requistion items
                 r.setStatus(RequisitionStatus.Processed);
                 requisitionService.saveRequisition(r);
             }

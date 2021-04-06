@@ -43,7 +43,9 @@ public class LabResult extends Auditable {
     private String enteredBy;
     private String validatedBy;
     private Boolean resultRead;
-   
+    private Boolean validated;
+    private Boolean rejected;
+
     public LabResultData toData() {
         LabResultData data = new LabResultData();
         data.setAnalyte(this.analyte);
@@ -80,6 +82,8 @@ public class LabResult extends Auditable {
             data.setVisitDate(this.labRegisterTest.getLabRegister().getRequestDatetime().toLocalDate());
         }
         data.setUnits(this.units);
+        data.setValidated(this.validated);
+        data.setRejected(this.rejected);
 
         return data;
     }

@@ -86,4 +86,5 @@ public class LabRegisterTestData {
     private Double totalInsurance = 0.0;
     @ApiModelProperty(required = false, hidden = true)
     private Boolean isWalkin;
+    private boolean requestBilled;
 }

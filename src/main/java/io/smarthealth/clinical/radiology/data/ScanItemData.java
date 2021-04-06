@@ -23,4 +23,6 @@ public class ScanItemData {
     private Double itemPrice;
     private Double quantity; 
     private PaymentMethod paymentMethod;
+    private boolean requestBilled;
+    private boolean paid;
 }

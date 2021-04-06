@@ -92,6 +92,8 @@ public class PatientScanTestData {
     private String  paymentMode;
     
     private PaymentMethod paymentMethod;
+
+    private boolean requestBilled;
     
     public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();
@@ -101,6 +103,7 @@ public class PatientScanTestData {
         entity.setEntryDateTime(this.getEntryDateTime());
         entity.setComments(this.getComments());
         entity.setPaid(this.getPaid());
+        entity.setBilled(this.isRequestBilled());
         return entity;
     }
 }

@@ -1,11 +1,13 @@
 package io.smarthealth.stock.inventory.api;
 
+import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.stock.inventory.data.RequisitionData;
 import io.smarthealth.stock.inventory.domain.Requisition;
+import io.smarthealth.stock.inventory.domain.enumeration.RequisitionStatus;
 import io.smarthealth.stock.inventory.service.RequisitionService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -62,8 +64,8 @@ public class RequisitionController {
 
     @GetMapping("/requisitions")
     @PreAuthorize("hasAuthority('view_requisition')")
-    public ResponseEntity<?> getAllRequisitions(  
-            @RequestParam(value = "status", required = false) final String status,
+    public ResponseEntity<?> getAllRequisitions(
+            @RequestParam(value = "status", required = false) List<RequisitionStatus> status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 

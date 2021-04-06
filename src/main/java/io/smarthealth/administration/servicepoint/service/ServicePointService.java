@@ -139,4 +139,16 @@ public class ServicePointService {
 
         return savedPoint.toData();
     }
+    public ServicePoint getServicePointByName(String name){
+         switch (name.toUpperCase()){
+             case "LABORATORY":
+                 return getServicePointByType(ServicePointType.Laboratory);
+             case "RADIOLOGY":
+                 return getServicePointByType(ServicePointType.Radiology);
+             case "PROCEDURE":
+                 return getServicePointByType(ServicePointType.Procedure);
+             default:
+                 return null;
+         }
+    }
 }

@@ -32,5 +32,7 @@ public class DoctorRequestItem {
     )
     private LocalDateTime orderDate;
     private String requestedByName, requestedByNo, status;
+    private boolean paid;
+    private boolean billed;
 
 }

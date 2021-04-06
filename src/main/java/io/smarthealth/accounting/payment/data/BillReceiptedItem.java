@@ -23,5 +23,6 @@ public class BillReceiptedItem {
     private Long servicePointId;
     private String servicePoint;
     private Long medicId;
+    private Long doctorRequestId;
 
 }

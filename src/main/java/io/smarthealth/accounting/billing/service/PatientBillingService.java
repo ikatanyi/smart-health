@@ -19,6 +19,7 @@ import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.config.domain.GlobalConfigNum;
 import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.service.ConfigService;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
@@ -887,6 +888,8 @@ public class PatientBillingService {
     private PatientBillItem createBillItem(BillReceiptedItem billReceiptedItem) {
         Item item = getItemById(billReceiptedItem.getPricelistItemId());
 
+
+
         PatientBillItem savedItem = new PatientBillItem();
         savedItem.setPrice(billReceiptedItem.getPrice());
         savedItem.setQuantity(billReceiptedItem.getQuantity());
@@ -903,6 +906,15 @@ public class PatientBillingService {
         savedItem.setServicePointId(billReceiptedItem.getServicePointId());
         savedItem.setBillPayMode(PaymentMethod.Cash);
         savedItem.setEntryType(BillEntryType.Debit);
+        savedItem.setRequestReference(billReceiptedItem.getDoctorRequestId());
+
+        if(billReceiptedItem.getServicePointId()==null) {
+            ServicePoint sp = servicePointService.getServicePointByName(billReceiptedItem.getServicePoint());
+            if (sp != null) {
+                savedItem.setServicePointId(sp.getId());
+                savedItem.setServicePoint(sp.getName());
+            }
+        }
 
         return savedItem;
     }

@@ -62,5 +62,6 @@ public class DoctorRequest extends Auditable {
 
     private double itemCostRate;
     private double itemRate;
-    private Boolean paid = Boolean.FALSE;
+    private boolean paid;
+    private boolean billed;
 }

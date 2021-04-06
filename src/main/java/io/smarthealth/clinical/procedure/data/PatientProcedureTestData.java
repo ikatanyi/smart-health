@@ -51,6 +51,7 @@ public class PatientProcedureTestData {
     private Double totalInsurance=0.0;
     @ApiModelProperty(required = false, hidden = true)
     private String referenceNo;
+    private boolean requestBilled;
 
 
     public static PatientProcedureTest map(PatientProcedureTestData scan) {

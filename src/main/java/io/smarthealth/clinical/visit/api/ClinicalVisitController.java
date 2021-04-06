@@ -225,10 +225,9 @@ public class ClinicalVisitController {
             //create bill for copay
             //Modification - reusing copayment billing (kelsas)
             //TODO disable copay from being billed at start
-//            if (config.isPresent() && config.get().getCoPayValue() > 0) {
-//                billingService.createCopay(new CopayData(visit.getVisitNumber(), visitData.getPayment().getSchemeId()));
-//            }
-
+            if (config.isPresent() && config.get().getCoPayValue() > 0) {
+                billingService.createCopay(new CopayData(visit.getVisitNumber(), visitData.getPayment().getSchemeId()));
+            }
         }
         //Push it to queue
         PatientQueue patientQueue = new PatientQueue();

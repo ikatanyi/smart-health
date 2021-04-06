@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.laboratory.api;
 
 import io.smarthealth.clinical.laboratory.data.LabResultData;
+import io.smarthealth.clinical.laboratory.data.ValidateResultData;
 import io.smarthealth.clinical.laboratory.domain.LabResult;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.documents.data.DocResponse;
@@ -141,4 +142,11 @@ public class LabResultController {
         auditTrailService.saveAuditTrail("Laboratory", "Uploaded lab test identified by test Id "+testId);
         return ResponseEntity.status(HttpStatus.OK).body(doc);
     }
-}
+    @PutMapping("/labs/results/validate")
+    public ResponseEntity<List<LabResultData>> validateLabResult(@Valid @RequestBody List<ValidateResultData> data) {
+        List<LabResultData> lists = service.validateResults(data).stream()
+                .map(LabResult::toData)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(lists);
+    }
+    }

@@ -75,6 +75,8 @@ public class PatientScanTest extends Auditable {
     @Transient
     private PaymentMethod paymentMethod;
 
+    private boolean billed;
+
     public PatientScanTestData toData() {
         PatientScanTestData entity = new PatientScanTestData();
         entity.setId(this.getId());
@@ -134,6 +136,7 @@ public class PatientScanTest extends Auditable {
 
             }
         }
+        entity.setRequestBilled(this.isBilled());
         return entity;
     }
 

@@ -40,6 +40,8 @@ public class LabResultData {
     private String enteredBy;
     private String validatedBy;
     private Boolean resultRead;
+    private Boolean validated;
+    private Boolean rejected;
 
     public String getFormattedReferenceValue(){
         return lowerLimit!=null ? units+"("+lowerLimit+"-"+upperLimit+")" : units;
