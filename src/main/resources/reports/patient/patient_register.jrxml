@@ -28,6 +28,7 @@
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.csv.parameters.override.IgnorePagination" value="true"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -257,7 +258,7 @@
 				<text><![CDATA[Residence]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="230" y="0" width="74" height="17" uuid="8c48b024-0d51-4deb-a090-8039cf50f67b"/>
+				<reportElement x="220" y="0" width="84" height="17" uuid="8c48b024-0d51-4deb-a090-8039cf50f67b"/>
 				<box rightPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -416,7 +417,7 @@
 				</graphicElement>
 			</line>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="230" y="1" width="74" height="12" uuid="4b6930da-63e5-4e0d-acc4-7ba7f69b7af5"/>
+				<reportElement positionType="Float" x="220" y="-1" width="84" height="14" uuid="4b6930da-63e5-4e0d-acc4-7ba7f69b7af5"/>
 				<box>
 					<pen lineWidth="0.15"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>

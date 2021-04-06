@@ -223,9 +223,10 @@ public class JasperReportsService {
         // Add parameters
         param.putAll(reportData.getFilters());
         // Fill the report
-        JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
-        jasperReportsContext.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
-        jasperReportsContext.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
+        JasperReportsContext ct = DefaultJasperReportsContext.getInstance();
+        ct.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
+        ct.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
+        //com.jaspersoft.jrs.export.xls.paginated=false
 
         jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
         System.out.println("Report generated in" + ChronoUnit.MILLIS.between(startTime, LocalDateTime.now()) + "ms");

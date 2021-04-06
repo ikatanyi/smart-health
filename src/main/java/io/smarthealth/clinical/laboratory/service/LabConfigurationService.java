@@ -4,32 +4,26 @@ import io.smarthealth.clinical.laboratory.data.AnalyteData;
 import io.smarthealth.clinical.laboratory.data.LabDisciplineData;
 import io.smarthealth.clinical.laboratory.data.LabSpecimenData;
 import io.smarthealth.clinical.laboratory.data.LabTestData;
-import io.smarthealth.clinical.laboratory.domain.Analyte;
-import io.smarthealth.clinical.laboratory.domain.AnalyteRepository;
-import io.smarthealth.clinical.laboratory.domain.LabDiscipline;
-import io.smarthealth.clinical.laboratory.domain.LabSpecimen;
-import io.smarthealth.clinical.laboratory.domain.LabSpecimenRepository;
-import io.smarthealth.clinical.laboratory.domain.LabTest;
-import io.smarthealth.clinical.laboratory.domain.LabTestRepository;
+import io.smarthealth.clinical.laboratory.domain.*;
 import io.smarthealth.clinical.laboratory.domain.specification.LabTestSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemRepository;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import io.smarthealth.clinical.laboratory.domain.LabDisciplineRepository;
 import io.smarthealth.stock.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author Kelsas
  */
 @Service
@@ -42,6 +36,7 @@ public class LabConfigurationService {
     private final ItemRepository itemRepository;
     private final LabTestRepository repository;
     private final ItemService itemService;
+    private final LabEquipmentRepository labEquipmentRepository;
 
     public LabTest createTest(LabTestData data) {
         LabTest toSave = toLabTest(data);
@@ -58,7 +53,7 @@ public class LabConfigurationService {
 
     public void fixTestsImportedForIvory(List<LabTestData> lists) {
 
-        for (LabTestData data : lists) { 
+        for (LabTestData data : lists) {
             LabTest labTest = getTestByName(data.getTestName());
             if (data.getItemCode() != null) {
                 labTest.setCode(data.getItemCode());
@@ -94,7 +89,7 @@ public class LabConfigurationService {
         clearAnalyte(toUpdateTest.getId());
 
         Item item = findByItemCodeOrThrow(data.getItemCode());
-        LabDiscipline displine =data.getCategoryId()!=null ? displineRepository.findById(data.getCategoryId()).orElse(null) : null;
+        LabDiscipline displine = data.getCategoryId() != null ? displineRepository.findById(data.getCategoryId()).orElse(null) : null;
 //        toUpdateTest.setActive(data.getActive()!=null ? data.getActive() : true);
         toUpdateTest.setRequiresConsent(data.getRequiresConsent());
         toUpdateTest.setTurnAroundTime(data.getTurnAroundTime());
@@ -288,5 +283,17 @@ public class LabConfigurationService {
 
     public List<LabDiscipline> findDisplines() {
         return displineRepository.findAll();
+    }
+
+    public LabEquipment createLabEquipment(LabEquipment equipment) {
+        return labEquipmentRepository.save(equipment);
+    }
+
+    public List<LabEquipment> searchLabEquipmentByName(String name) {
+        return labEquipmentRepository.findByEquipmentNameContaining(name);
+    }
+
+    public List<LabEquipment> fetchLabEquipments() {
+        return labEquipmentRepository.findAll();
     }
 }

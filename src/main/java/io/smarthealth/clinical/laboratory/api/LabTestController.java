@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.laboratory.api;
 
 import io.smarthealth.clinical.laboratory.data.LabTestData;
+import io.smarthealth.clinical.laboratory.domain.LabEquipment;
 import io.smarthealth.clinical.laboratory.domain.LabTest;
 import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -8,9 +9,11 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- *
  * @author Kelsas
  */
 @Api
@@ -48,7 +50,7 @@ public class LabTestController {
     public ResponseEntity<?> createLabTest(@Valid @RequestBody LabTestData data) {
 
         LabTest test = service.createTest(data);
-        auditTrailService.saveAuditTrail("Laboratory", "Created lab test  "+test.getTestName());
+        auditTrailService.saveAuditTrail("Laboratory", "Created lab test  " + test.getTestName());
         Pager<LabTestData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Lab Test Created.");
@@ -64,12 +66,12 @@ public class LabTestController {
         List<LabTestData> item = service.createTest(data)
                 .stream()
                 .map(x -> {
-                    auditTrailService.saveAuditTrail("Laboratory", "Created lab test  "+x.getTestName());
+                    auditTrailService.saveAuditTrail("Laboratory", "Created lab test  " + x.getTestName());
                     return x.toData();
-                        })
+                })
                 .collect(Collectors.toList());
 
-        Pager< List<LabTestData>> pagers = new Pager();
+        Pager<List<LabTestData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Lab Test Created.");
         pagers.setContent(item);
@@ -81,7 +83,7 @@ public class LabTestController {
     @PreAuthorize("hasAuthority('view_labtests')")
     public ResponseEntity<?> getLabTest(@PathVariable(value = "id") Long id) {
         LabTest item = service.getTestById(id);
-        auditTrailService.saveAuditTrail("Laboratory", "Searched lab test  "+item.getTestName());
+        auditTrailService.saveAuditTrail("Laboratory", "Searched lab test  " + item.getTestName());
         return ResponseEntity.ok(item.toData());
     }
 
@@ -89,7 +91,7 @@ public class LabTestController {
     @PreAuthorize("hasAuthority('edit_labtests')")
     public ResponseEntity<?> updateLabTest(@PathVariable(value = "id") Long id, @Valid @RequestBody LabTestData data) {
         LabTest test = service.updateTest(id, data);
-         auditTrailService.saveAuditTrail("Laboratory", "Updated lab test  "+test.getTestName());
+        auditTrailService.saveAuditTrail("Laboratory", "Updated lab test  " + test.getTestName());
         return ResponseEntity.ok(test.toData());
     }
 
@@ -97,7 +99,7 @@ public class LabTestController {
     @PreAuthorize("hasAuthority('delete_labtests')")
     public ResponseEntity<?> voidLabTest(@PathVariable(value = "id") Long id) {
         service.voidLabTest(id);
-         auditTrailService.saveAuditTrail("Laboratory", "Deleted lab test identified by id "+id);
+        auditTrailService.saveAuditTrail("Laboratory", "Deleted lab test identified by id " + id);
         return ResponseEntity.accepted().build();
     }
 
@@ -111,10 +113,10 @@ public class LabTestController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<LabTestData> list = service.getLabTests(query, displine, pageable)
-                .map(x ->{
-                    auditTrailService.saveAuditTrail("Laboratory", "viewed lab test  "+x.getTestName());
+                .map(x -> {
+                    auditTrailService.saveAuditTrail("Laboratory", "viewed lab test  " + x.getTestName());
                     return x.toData();
-                        });
+                });
 
         Pager<List<LabTestData>> pagers = new Pager();
         pagers.setCode("0");
@@ -134,13 +136,35 @@ public class LabTestController {
     @PreAuthorize("hasAuthority('view_labtests')")
     public ResponseEntity<?> search(@RequestParam(value = "search") String test) {
         List<LabTestData> lists = service.searchLabTest(test)
-                .stream().map(x ->{
-                    auditTrailService.saveAuditTrail("Laboratory", "viewed lab test  "+x.getTestName());
+                .stream().map(x -> {
+                    auditTrailService.saveAuditTrail("Laboratory", "viewed lab test  " + x.getTestName());
                     return x.toData();
-                        })
+                })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(lists);
     }
-     
+
+    @PostMapping("/labs/equipment")
+    public ResponseEntity<?> createLabEquipment(@RequestBody LabEquipment labEquipment) {
+        labEquipment = service.createLabEquipment(labEquipment);
+
+        auditTrailService.saveAuditTrail("Laboratory", "Created lab equipment");
+        Pager<LabEquipment> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Lab equipment created");
+        pagers.setContent(labEquipment);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+
+    @GetMapping("/labs/equipment")
+    public ResponseEntity<?> searchLabEquipment(@RequestParam(name = "name", required = false) String name) {
+        if (name != null) {
+            return ResponseEntity.ok(service.searchLabEquipmentByName(name));
+        } else {
+            return ResponseEntity.ok(service.fetchLabEquipments());
+        }
+    }
+
 }
