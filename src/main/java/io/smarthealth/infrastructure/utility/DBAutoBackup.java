@@ -1,22 +1,44 @@
 package io.smarthealth.infrastructure.utility;
 
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
+import io.smarthealth.approval.api.ApprovalsConfigurationController;
+import io.smarthealth.messaging.service.EmailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Configuration
 @EnableScheduling
 public class DBAutoBackup {
-    String DB_USER = "";
-    String DB_PASSWORD = "";
+    //TODO: Fetch db parameters from appproperties files
+    String DB_USER = "smarthealth";
+    String DB_PASSWORD = "Sm@rt_123";
+    String DB_NAME_LIST = "smarthealth";
 
-    //    @Scheduled(cron = "0 30 1 * * ?")
-    @Scheduled(fixedRate = 100000)
+
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    ConfigService configService;
+
+        @Scheduled(cron = "0 25 22 * * ?")
+//    @Scheduled(fixedRate = 100000)
     public void schedule() {
 
         System.out.println("Backup Started at " + new Date());
@@ -24,17 +46,19 @@ public class DBAutoBackup {
         Date backupDate = new Date();
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
         String backupDateStr = format.format(backupDate);
-        String dbNameList = "smarthealth";
 
         String fileName = "Daily_DB_Backup"; // default file name
-        String folderPath = "C:\\home";
+        GlobalConfiguration saveBackUPFolderTO = configService.getByNameOrThrow("SaveBackUPFolderTO");
+
+
+        String folderPath = saveBackUPFolderTO.getValue();
         File f1 = new File(folderPath);
         f1.mkdir(); // create folder if not exist
 
         String saveFileName = fileName + "_" + backupDateStr + ".sql";
         String savePath = folderPath + File.separator + saveFileName;
 
-        String executeCmd = "mysqldump -u " + DB_USER + " -p" + DB_PASSWORD + "  --databases " + dbNameList
+        String executeCmd = "mysqldump -u " + DB_USER + " -p" + DB_PASSWORD + "  --databases " + DB_NAME_LIST
                 + " -r " + savePath;
 
         Process runtimeProcess = null;
@@ -52,8 +76,58 @@ public class DBAutoBackup {
 
         if (processComplete == 0) {
             System.out.println("Backup Complete at " + new Date());
+            File file = new File(folderPath + "/" + saveFileName);
+
+            //zip the file
+            String zipFileName = folderPath + "/" + saveFileName.replace(".sql", ".zip");
+            File generatedZipFile = new File(zipFileName);
+            zipSingleFile(file, zipFileName);
+
+            Optional<GlobalConfiguration> sendBackUpToConfig = configService.findByName("SendBackUpTo");
+            String sendTo = "";
+            if (sendBackUpToConfig.isPresent()) {
+                sendTo = sendBackUpToConfig.get().getValue();
+            } else {
+                return;
+            }
+
+            //send mail
+            System.out.println("About to send email ");
+            emailService.sendMailWithAttachment(sendTo, saveFileName, "Please find attached database backup of " + saveFileName,
+                    zipFileName, saveFileName.replace(".sql", ".zip"), "application/zip");
         } else {
             System.out.println("Backup Failure");
         }
+
+    }
+
+    private void zipSingleFile(File file, String zipFileName) {
+        try {
+            //create ZipOutputStream to write to the zip file
+            FileOutputStream fos = new FileOutputStream(zipFileName);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            //add a new Zip Entry to the ZipOutputStream
+            ZipEntry ze = new ZipEntry(file.getName());
+            zos.putNextEntry(ze);
+            //read the file and write to ZipOutputStream
+            FileInputStream fis = new FileInputStream(file);
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = fis.read(buffer)) > 0) {
+                zos.write(buffer, 0, len);
+            }
+
+            //Close the zip entry to write to zip file
+            zos.closeEntry();
+            //Close resources
+            zos.close();
+            fis.close();
+            fos.close();
+            System.out.println(file.getCanonicalPath() + " is zipped to " + zipFileName);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
