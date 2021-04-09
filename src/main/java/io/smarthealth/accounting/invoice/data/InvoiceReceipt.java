@@ -6,6 +6,8 @@
 package io.smarthealth.accounting.invoice.data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,5 +30,9 @@ public class InvoiceReceipt {
     private String reportType;
     private String reference;
     private BigDecimal amount;
-    
+    private LocalDate billingDate;
+    private String itemName;
+    private Double quantity;
+    private BigDecimal price;
+
 }

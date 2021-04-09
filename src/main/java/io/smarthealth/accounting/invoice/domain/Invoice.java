@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.invoice.domain;
 
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceReceipt;
 import io.smarthealth.accounting.payment.domain.Copayment;
@@ -10,32 +11,21 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- *
  * @author Kelsas
  */
 @Data
@@ -131,9 +121,9 @@ public class Invoice extends Auditable {
             data.setVisitDate(this.visit.getStartDatetime().toLocalDate());
             data.setAge(ChronoUnit.DAYS.between(this.date, LocalDate.now()));
             data.setVisitType(this.getVisit().getVisitType().name());
-            if(this.visit.getPaymentDetails()!=null){
+            if (this.visit.getPaymentDetails() != null) {
                 data.setAuthorizationCode(this.visit.getPaymentDetails().getAuthorizationCode());
-            }else{
+            } else {
                 data.setAuthorizationCode("-");
             }
         }
@@ -154,21 +144,52 @@ public class Invoice extends Auditable {
         data.setAwaitingSmart(this.getAwaitingSmart());
         data.setInvoiceItems(
                 this.items.stream()
-                        .filter(x -> x.getBillItem().getAmount() > 0)
+//                        .filter(x -> x.getBillItem().getAmount() > 0)
+                        .filter(x -> x.getBillItem().getEntryType() == BillEntryType.Debit || x.getBillItem().getAmount() > 0)
                         .map(x -> x.toData())
                         .collect(Collectors.toList())
         );
 
         data.setInvoicePayments(
                 this.items.stream()
-                        .filter(x -> x.getBillItem().getAmount() < 0)
+//                        .filter(x -> x.getBillItem().getAmount() < 0)
+                        .filter(x -> x.getBillItem().getEntryType() == BillEntryType.Credit || x.getBillItem().getAmount() < 0)
                         .map(x -> {
                             InvoiceReceipt.Type type = x.getBillItem().getItem().getCategory() == ItemCategory.CoPay ? InvoiceReceipt.Type.Copayment : InvoiceReceipt.Type.Receipt;
-                            return new InvoiceReceipt(x.getId(), type, type.name(), x.getBillItem().getPaymentReference(), toBigDecimal(x.getBillItem().getAmount()).negate());
+                            return new InvoiceReceipt(x.getId(), type, type.name(), x.getBillItem().getPaymentReference(), toBigDecimal(x.getBillItem().getAmount()), x.getBillItem().getBillingDate(), x.getBillItem().getItem().getCategory() != null ? x.getBillItem().getItem().getCategory().name() : "", x.getBillItem().getQuantity(), BigDecimal.valueOf(x.getBillItem().getPrice()));
                         })
                         .collect(Collectors.toList())
         );
+
+        data.setCopay(
+                this.items.stream()
+                        .filter(x -> x.getBillItem().getItem().getCategory() == ItemCategory.CoPay)
+                        .map(y -> BigDecimal.valueOf(y.getBillItem().getAmount()))
+                        .reduce(BigDecimal::add)
+                        .orElse(BigDecimal.ZERO)
+        );
+
+        data.setPaid(
+                this.items.stream()
+                        .filter(x -> x.getBillItem().getItem().getCategory() != ItemCategory.CoPay && (x.getBillItem().getEntryType() == BillEntryType.Credit || x.getBillItem().getAmount() < 0))
+                        .map(y -> BigDecimal.valueOf(y.getBillItem().getAmount()))
+                        .reduce(BigDecimal::add)
+                        .orElse(BigDecimal.ZERO)
+        );
+
+        data.setTotalAmount(
+                this.items.stream()
+                        .filter(x -> x.getBillItem().getEntryType() == BillEntryType.Debit || x.getBillItem().getAmount() > 0)
+                        .map(y -> BigDecimal.valueOf(y.getBillItem().getAmount()))
+                        .reduce(BigDecimal::add)
+                        .orElse(BigDecimal.ZERO)
+        );
+
+        data.setAmountDue(data.getTotalAmount().add((data.getPaid().add(data.getCopay()))));
+
         data.setCapitation(this.capitation);
+
+
 
         return data;
     }

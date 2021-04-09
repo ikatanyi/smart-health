@@ -150,6 +150,7 @@ public class PaymentReportService {
         reportData.getFilters().put("showCapitationItem", showCapitationItem);
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
 
+        System.err.println("Hapa>> "+invoiceData);
         Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
         if (admission.isPresent()) {
             reportData.getFilters().put("inPatient", true);

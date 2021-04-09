@@ -46,11 +46,13 @@ import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.report.data.CompanyHeader;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stat.service.ReportService;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 
 import java.io.File;
@@ -97,6 +99,7 @@ public class InvoiceService {
     private final PatientBillingService patientBillingService;
 //    private final TxnService txnService;
     private final CompanyHeader companyHeader;
+    private final ReportService reportService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<Invoice> createInvoice(CreateInvoice invoiceData) {
@@ -739,6 +742,22 @@ public class InvoiceService {
        parameters.put("CompanyHeader", header);
        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
        return jasperPrint;
+   }
+
+   public byte[] generateInterimStatement(ExportFormat exportFormat, String visitNumber, String type){
+       if(type == null ) type ="standard";
+
+       type=  StringUtils.capitalize(type.toLowerCase());
+       String inputFileName = String.format("%sInterimStatement", type);
+
+       List<CompanyHeader> header = Arrays.asList(companyHeader);
+       Map<String, Object> parameters = new HashMap<>();
+       parameters.put("CompanyHeader", header);
+
+       List<InterimInvoice> invoices = Arrays.asList(getInterimInvoiceStatement(visitNumber, type));
+       JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(invoices);
+
+       return reportService.generateReport(exportFormat,inputFileName,parameters,dataSource);
    }
 
 }

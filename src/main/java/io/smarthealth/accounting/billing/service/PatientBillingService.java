@@ -310,7 +310,12 @@ public class PatientBillingService {
             billsItem.setServicePointId(0L);
             billsItem.setStatus(BillStatus.Paid);
             billsItem.setMedicId(null);
-            billsItem.setBillPayMode(itemCategory == NHIF_Rebate ? PaymentMethod.Insurance :PaymentMethod.Cash);
+            if(visit!=null){
+               billsItem.setBillPayMode(visit.getPaymentMethod());
+            }else {
+                billsItem.setBillPayMode(PaymentMethod.Cash);
+//                billsItem.setBillPayMode(itemCategory == NHIF_Rebate ? PaymentMethod.Insurance : PaymentMethod.Cash);
+            }
             billsItem.setEntryType(BillEntryType.Credit);
             billsItem.setPaymentReference(reference);
 //            billsItem.setTransactionType(TransactionType.Receipting);

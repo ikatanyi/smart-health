@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.core.MediaType;
 
 import lombok.SneakyThrows;
 import net.sf.jasperreports.engine.JRException;
@@ -34,6 +35,8 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -229,5 +232,33 @@ public class InvoiceController {
                 break;
             default:
         }
+    }
+
+    @GetMapping("/invoices/{invoiceNo}/reporter")
+    public ResponseEntity<byte[]> report(
+            @PathVariable String invoiceNo,
+            @RequestParam(value = "type", required = false, defaultValue = "standard") String type,
+            @RequestParam(value = "format", required = false, defaultValue = "PDF") ExportFormat format
+    ){
+        byte[] bytes = service.generateInterimStatement(format,invoiceNo, type);
+        String contentType = null;
+        if(format == ExportFormat.PDF){
+            contentType = "application/pdf";
+        }else if( format == ExportFormat.XLSX){
+            contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        }else if ( format == ExportFormat.HTML){
+            contentType = "text/html";
+        }
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+                .filename("SmartHealth_Invoice_"+invoiceNo + "." + format.name().toLowerCase()).build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(contentDisposition);
+        return ResponseEntity
+                .ok()
+                .header("Content-Type", contentType + "; charset=UTF-8")
+                .headers(headers)
+                .body(bytes);
     }
 }

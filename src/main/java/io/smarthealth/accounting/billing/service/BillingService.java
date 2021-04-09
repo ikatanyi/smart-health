@@ -1031,7 +1031,7 @@ public class BillingService {
         PatientBill patientbill = null;
         PriceList priceList = pricelistService.fetchPriceListByItemCategory(category);
         if (category == ItemCategory.NHIF_Rebate) {
-            sellingRate = -1 * (NumberUtils.toDouble(priceList.getSellingRate()));
+            sellingRate = 1 * (NumberUtils.toDouble(priceList.getSellingRate()));
 
         } else {
             sellingRate = (NumberUtils.toDouble(priceList.getSellingRate()));
@@ -1069,6 +1069,7 @@ public class BillingService {
         billItem.setStatus(BillStatus.Paid);
         billItem.setMedicId(null);
         billItem.setBillPayMode(visit.getPaymentMethod());
+        billItem.setEntryType(BillEntryType.Credit);
 
         patientbill.addBillItem(billItem);
 

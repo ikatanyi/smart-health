@@ -67,4 +67,9 @@ public class InvoiceData {
      private Boolean capitation=Boolean.FALSE;
     @ApiModelProperty(hidden=true, required=false)
      private String visitType;
+
+    private BigDecimal totalAmount;
+    private BigDecimal copay;
+    private BigDecimal paid;
+    private BigDecimal amountDue;
 }
