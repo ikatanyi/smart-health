@@ -7,25 +7,32 @@ package io.smarthealth.messaging.service;
 
 import io.smarthealth.messaging.model.EmailData;
 import io.smarthealth.security.domain.User;
+
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Locale;
+import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 /**
- *
  * @author Kelsas
  */
 @Slf4j
@@ -111,7 +118,7 @@ public class EmailService {
             log.warn("Email could not be sent to user '{}'", to, e);
         }
     }
-    
+
     @Async
     public void sendEmail(String to, String subject, String content, byte[] attachment, String filename, String contentType, boolean isMultipart, boolean isHtml) {
         log.debug("Send email[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}", isMultipart, isHtml, to, subject, content);
@@ -165,6 +172,32 @@ public class EmailService {
         String content = templateEngine.process(templateName, context);
         String subject = messageSource.getMessage(titleKey, null, locale);
         sendEmail(user.getEmail(), subject, content, attachment, filename, contentType, true, true);
+    }
+
+    @Async
+    public void sendMailWithAttachment(String to, String subject, String body, String fileToAttach, String fileName, String contentType) {
+        log.info("START send email with attachment ");
+        MimeMessagePreparator preparator = new MimeMessagePreparator() {
+            public void prepare(MimeMessage mimeMessage) throws Exception {
+                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+                mimeMessage.setFrom(messageFrom);
+                mimeMessage.setSubject(subject);
+                mimeMessage.setText(body);
+
+                FileSystemResource file = new FileSystemResource(new File(fileToAttach));
+                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+//                helper.addAttachment(MimeUtility.encodeText("")), new ByteArrayResource(IOUtils.toByteArray(file)));
+                helper.setText("", true);
+                helper.addAttachment(fileName, file, contentType);
+
+            }
+        };
+
+        try {
+            javaMailSender.send(preparator);
+        } catch (MailException ex) {
+            log.warn("Email could not be sent >> " + ex.getMessage());
+        }
     }
 
 }

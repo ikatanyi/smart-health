@@ -64,6 +64,7 @@ import io.smarthealth.report.data.clinical.OpData;
 import io.smarthealth.report.data.clinical.PatientReportData;
 import io.smarthealth.report.data.clinical.PatientVisitData;
 import io.smarthealth.report.data.clinical.reportVisitData;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -79,6 +80,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import io.smarthealth.report.domain.enumeration.ReportName;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
@@ -96,10 +99,10 @@ import org.springframework.util.MultiValueMap;
 import io.smarthealth.clinical.moh.data.MohData;
 import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.security.data.AuditTrailData;
+
 import java.time.Instant;
 
 /**
- *
  * @author Kennedy.Imbenzi
  */
 @Service
@@ -125,6 +128,7 @@ public class PatientReportServices {
     private final CodeService codeService;
     private final LaboratoryService laboratoryService;
     private final AuditTrailService auditTrailService;
+    private ExcelExporterService excelExporterService = new ExcelExporterService();
 
     private final VisitService visitService;
 
@@ -174,12 +178,12 @@ public class PatientReportServices {
             reportVisitData data = new reportVisitData();
             data.setPatientName(visit.getPatient().getFullName());
             data.setPatientNumber(visit.getPatient().getPatientNumber());
-            data.setVisitNumber(visit.getVisitNumber());           
-            if(visit.getStopDatetime()!=null)
-               data.setStopDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStopDatetime()));
-            if(visit.getStartDatetime()!=null){
-               data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
-               
+            data.setVisitNumber(visit.getVisitNumber());
+            if (visit.getStopDatetime() != null)
+                data.setStopDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStopDatetime()));
+            if (visit.getStartDatetime() != null) {
+                data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
+
             }
             data.setDate(visit.getStartDatetime().toLocalDate());
             data.setStartDatetime(String.valueOf(visit.getStartDatetime()));
@@ -515,28 +519,28 @@ public class PatientReportServices {
 
     public void getMorbidityReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Boolean a705=false , b705=false;
-        final String name=null;
+        Boolean a705 = false, b705 = false;
+        final String name = null;
         System.out.println(reportParam.getFirst("dateRange"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         String term = reportParam.getFirst("term");
         List<MonthlyMobidity> requestDataArray = new ArrayList();
-        if(term.equals(">5"))
-            a705=true;
+        if (term.equals(">5"))
+            a705 = true;
         else
-            b705=true;
-        
+            b705 = true;
+
         List<MohData> mohList = mohService.getAllMohs(a705, b705, name);
-        for(MohData moh:mohList){
+        for (MohData moh : mohList) {
             requestDataArray.addAll(mohService.getMonthlyMobidity(range, term, moh.getCode()));
         }
         reportData.setData(requestDataArray);
         reportData.setFormat(format);
-        
+
         LocalDate ld = range.getStartDate();
         Month month = ld.getMonth();
         Integer year = ld.getYear();
-        
+
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.getFilters().put("year", year);
         reportData.getFilters().put("month", month.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
@@ -632,16 +636,16 @@ public class PatientReportServices {
         List<Moh706LabData> Moh706LabDataArray = labService.getTestsByDate(range)
                 .stream()
                 .map((register) -> {
-                    Moh706LabData values = new Moh706LabData();    
-                    
+                    Moh706LabData values = new Moh706LabData();
+
                     Integer age = 0;
                     Integer total = 0;
                     Gender gender = null;
-                    List<LabRegisterTest> tests = labService.getLabTestsByDate(register.getLabTest(),range.getStartDateTime(),range.getEndDateTime());
+                    List<LabRegisterTest> tests = labService.getLabTestsByDate(register.getLabTest(), range.getStartDateTime(), range.getEndDateTime());
                     for (LabRegisterTest test : tests) {
                         String patientNo = test.getLabRegister().getPatientNo();
                         values.setTestName(test.getLabTest().getTestName());
-                        if(test.getLabTest().getIsPanel()){
+                        if (test.getLabTest().getIsPanel()) {
 
                         }
                         Optional<PatientData> patient = patientService.fetchPatientByPatientNumber(patientNo);
@@ -650,18 +654,18 @@ public class PatientReportServices {
                             gender = patient.get().getGender();
                         }
                         if (age < 5) {
-                            values.setUnder5(values.getUnder5()+1);
+                            values.setUnder5(values.getUnder5() + 1);
                         } else {
-                            values.setOver5(values.getOver5()+1);
+                            values.setOver5(values.getOver5() + 1);
                         }
                         if (gender == Gender.M) {
-                            values.setMale(values.getMale()+1);
+                            values.setMale(values.getMale() + 1);
                         } else {
-                            values.setFemale(values.getFemale()+1);
-                        } 
-                        values.setTotal(values.getTotal()+1);
+                            values.setFemale(values.getFemale() + 1);
+                        }
+                        values.setTotal(values.getTotal() + 1);
                     }
-                   
+
                     return values;
                 })
                 .collect(Collectors.toList());
@@ -673,7 +677,7 @@ public class PatientReportServices {
         reportService.generateReport(reportData, response);
     }
 
-    public List<Moh706LabData> getPanelLists(DateRange range){
+    public List<Moh706LabData> getPanelLists(DateRange range) {
         return labService.getPanels()
                 .stream()
                 .map((testPanel) -> {
@@ -681,7 +685,7 @@ public class PatientReportServices {
                     Integer age = 0;
                     Integer total = 0;
                     Gender gender = null;
-                    List<LabRegisterTest> tests = labService.getPanelTestsByDate(testPanel.getId(), range.getStartDateTime(),range.getEndDateTime());
+                    List<LabRegisterTest> tests = labService.getPanelTestsByDate(testPanel.getId(), range.getStartDateTime(), range.getEndDateTime());
                     for (LabRegisterTest test : tests) {
                         String patientNo = test.getLabRegister().getPatientNo();
                         values.setTestName(test.getParentLabTest().getTestName());
@@ -691,16 +695,16 @@ public class PatientReportServices {
                             gender = patient.get().getGender();
                         }
                         if (age < 5) {
-                            values.setUnder5(values.getUnder5()+1);
+                            values.setUnder5(values.getUnder5() + 1);
                         } else {
-                            values.setOver5(values.getOver5()+1);
+                            values.setOver5(values.getOver5() + 1);
                         }
                         if (gender == Gender.M) {
-                            values.setMale(values.getMale()+1);
+                            values.setMale(values.getMale() + 1);
                         } else {
-                            values.setFemale(values.getFemale()+1);
+                            values.setFemale(values.getFemale() + 1);
                         }
-                        values.setTotal(values.getTotal()+1);
+                        values.setTotal(values.getTotal() + 1);
                     }
 
                     return values;
@@ -718,8 +722,14 @@ public class PatientReportServices {
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setTemplate("/patient/patient_register");
         reportData.setReportName("Patient-Register");
-        reportService.generateReport(reportData, response);
+        if (reportParam.getFirst("format").equals(ExportFormat.CSV.name())) {
+            excelExporterService.getPatientRegisterExcelReport(ReportName.valueOf(reportParam.getFirst("reportName")),requestData, response);
+//            excelExporterService.generateGenericExcel(ReportName.valueOf(reportParam.getFirst("reportName")),requestData, response);
+        } else {
+            reportService.generateReport(reportData, response);
+        }
     }
+
 
     public void getPatientReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -779,7 +789,7 @@ public class PatientReportServices {
         reportData.setReportName("Patient_Attendance_Report");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAuditTrail(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String dateRange = reportParam.getFirst("dateRange");
@@ -788,9 +798,9 @@ public class PatientReportServices {
         List<AuditTrailData> auditData = auditTrailService.findAll(range, name, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map(x->x.toData())
+                .map(x -> x.toData())
                 .collect(Collectors.toList());
-        
+
         reportData.setData(auditData);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/audit_report");
