@@ -374,6 +374,7 @@ public class LaboratoryService {
 
     private LabRegisterTest toLabRegisterTest(LabRegisterTestData data, String paymentMode, ArrayList<LabRegisterTestData> panels, VisitEnum.VisitType visitType) {
         LabTest labTest = getLabTest(data.getTestId());
+
         if (labTest.getIsPanel() != null && labTest.getIsPanel()) {
             panels.add(data);
 
@@ -385,7 +386,7 @@ public class LaboratoryService {
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
         test.setPaymentMethod(data.getPaymentMethod());
-        if(data.getPaid()){
+        if(data.getPaid()!=null && data.getPaid()){
             test.setPaid(true);
         }else {
             test.setPaid(paymentMode.equals("Cash") && visitType.equals(VisitEnum.VisitType.Outpatient) ? Boolean.FALSE : Boolean.TRUE);
