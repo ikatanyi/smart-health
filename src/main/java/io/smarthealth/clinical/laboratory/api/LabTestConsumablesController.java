@@ -35,7 +35,7 @@ public class LabTestConsumablesController {
 
         Pager<List<LabTestConsumablesData>> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Lab test consumble created.");
+        pagers.setMessage("Lab test consumable created.");
         pagers.setContent(labTestConsumable);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
