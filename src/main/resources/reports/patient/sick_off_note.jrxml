@@ -13,7 +13,7 @@
 	<parameter name="Patient_Data" class="java.util.List"/>
 	<parameter name="Header_Data" class="java.util.List"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["D:\\code\\smarthealth.io\\sh-backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="practionerName" class="java.lang.String"/>
 	<queryString>
