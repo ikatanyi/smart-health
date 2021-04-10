@@ -106,6 +106,7 @@ public class GeneralClinicalServices {
         if (so.isPresent()) {
             throw APIException.conflict("Sick off note already exists", sod.getVisitNo());
         }
+
         SickOffNote note = SickOffNoteData.map(sod);
         note.setVisit(visit);
         note.setPatient(visit.getPatient());

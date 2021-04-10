@@ -145,7 +145,7 @@ public class Invoice extends Auditable {
         data.setInvoiceItems(
                 this.items.stream()
 //                        .filter(x -> x.getBillItem().getAmount() > 0)
-                        .filter(x -> x.getBillItem().getEntryType() == BillEntryType.Debit || x.getBillItem().getAmount() > 0)
+                        .filter(x -> x.getBillItem().getEntryType() == BillEntryType.Debit)
                         .map(x -> x.toData())
                         .collect(Collectors.toList())
         );
@@ -179,13 +179,13 @@ public class Invoice extends Auditable {
 
         data.setTotalAmount(
                 this.items.stream()
-                        .filter(x -> x.getBillItem().getEntryType() == BillEntryType.Debit || x.getBillItem().getAmount() > 0)
+                        .filter(x -> x.getBillItem().getEntryType() == BillEntryType.Debit)
                         .map(y -> BigDecimal.valueOf(y.getBillItem().getAmount()))
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO)
         );
 
-        data.setAmountDue(data.getTotalAmount().add((data.getPaid().add(data.getCopay()))));
+        data.setAmountDue(data.getTotalAmount().subtract((data.getPaid().add(data.getCopay()))));
 
         data.setCapitation(this.capitation);
 

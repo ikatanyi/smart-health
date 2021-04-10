@@ -216,13 +216,13 @@ public class InvoiceService {
                                     }
                                 });
                         BigDecimal lineTotals = invoice.getItems().stream()
-                                .map(x -> x.getBalance())
+                                .map(x -> x.getBillItem().getEntryType() == BillEntryType.Debit?  x.getBalance() :x.getBalance().negate())
                                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
                         System.err.println("Line Totals: ?>>>> " + lineTotals);
                         if (config.isPresent() && config.get().isCapitationEnabled()) {
                             invoice.setBalance(invoiceAmount);
                         } else {
-                            invoice.setBalance(invoice.getLineTotals());
+                            invoice.setBalance(lineTotals);
                         }
                         System.err.println("Calculated Line Totals: ?>>>> " + invoice.getBalance());
                     }

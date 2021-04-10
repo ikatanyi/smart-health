@@ -63,14 +63,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author Kelsas
  */
 @Slf4j
@@ -92,6 +90,11 @@ public class BillingService {
     private final PaymentDetailsService paymentDetailsService;
     private final PricelistService pricelistService;
     private final ReceiptRepository receiptRepository;
+
+    public static <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
+    }
 
     //Create service bill
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -163,7 +166,7 @@ public class BillingService {
         System.out.println("End of bill items");
 
         PatientBill savedBill = save(patientbill);
-        //TODO consider the inpatient billing 
+        //TODO consider the inpatient billing
         if (savedBill.getPaymentMode().equals("Insurance") || (visit != null && visit.getVisitType() == VisitEnum.VisitType.Inpatient)) {
             journalService.save(toJournal(savedBill, null));
         }
@@ -181,7 +184,7 @@ public class BillingService {
 
     public PatientBill createPatientBill(PatientBill patientBill) {
         PatientBill savedBill = patientBillRepository.saveAndFlush(patientBill);
-        //TODO consider the inpatient billing 
+        //TODO consider the inpatient billing
         if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
             journalService.save(toJournal(savedBill, null));
         }
@@ -348,7 +351,7 @@ public class BillingService {
                     return x;
                 })
                 .forEach(bill -> billItemRepository.save(bill));
-        //TODO be able to reverse the doctors fee 
+        //TODO be able to reverse the doctors fee
     }
 
     public void cancelItem(Long billId) {
@@ -423,6 +426,14 @@ public class BillingService {
         return billItemRepository.findByTransactionId(transactionNo);
     }
 
+//    public Page<SummaryBill> getSummaryBill(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range, Pageable pageable) {
+//        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, range, pageable);
+//    }
+//
+//    public Page<SummaryBill> getWalkinSummaryBill(String patientNumber, Boolean hasBalance, Pageable pageable) {
+//        return billItemRepository.getWalkinBillSummary(patientNumber, hasBalance, pageable);
+//    }
+
     public Page<PatientBillItem> getReceiptedBillItems(String visitNo, Pageable page) {
         Visit visit = findVisitEntityOrThrow(visitNo);
         Specification<PatientBillItem> spec = PatientBillSpecification.getReceiptedItems(visitNo, visit.getPaymentMethod());
@@ -431,14 +442,6 @@ public class BillingService {
 
         return lists;
     }
-
-//    public Page<SummaryBill> getSummaryBill(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range, Pageable pageable) {
-//        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, range, pageable);
-//    }
-//
-//    public Page<SummaryBill> getWalkinSummaryBill(String patientNumber, Boolean hasBalance, Pageable pageable) {
-//        return billItemRepository.getWalkinBillSummary(patientNumber, hasBalance, pageable);
-//    }
 
     public Page<PatientBillItem> getWalkBillItems(String walkIn, Boolean hasBalance, Pageable page) {
         Specification<PatientBillItem> spec = PatientBillSpecification.getWalkinBillItems(walkIn, hasBalance);
@@ -454,7 +457,7 @@ public class BillingService {
         return patientBillRepository.groupBy(status);
     }
 
-//    @Deprecated
+    //    @Deprecated
 //    public Page<PatientBillItem> getPatientBillItemByVisit(String visitNumber, Pageable page) {
 //        Visit visit = findVisitEntityOrThrow(visitNumber);
 //
@@ -469,7 +472,7 @@ public class BillingService {
 //        return (Root<PatientBill> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
 //            return cb.greaterThan(root.get("balance"), 0);
 //        };
-//    }  
+//    }
     private JournalEntry toJournal(PatientBill bill, Store store) {
         String description = "Patient Billing";
         if (bill.getPatient() != null) {
@@ -489,7 +492,7 @@ public class BillingService {
                     .stream()
                     .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
                             Collectors.summingDouble(PatientBillItem::getAmount)
-                    )
+                            )
                     );
             //then here since we making a revenue
             map.forEach((k, v) -> {
@@ -510,7 +513,7 @@ public class BillingService {
                         .filter(x -> x.getItem().isInventoryItem())
                         .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
                                 Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity()))
-                        )
+                                )
                         );
                 if (!inventory.isEmpty()) {
                     inventory.forEach((k, v) -> {
@@ -519,7 +522,7 @@ public class BillingService {
                         if (bill.getPatient() != null) {
                             pat = bill.getPatient().getPatientNumber() + " - " + bill.getPatient().getFullName();
                         }
-                        //TODO                      
+                        //TODO
                         String desc = "Issuing Stocks to " + pat;
                         ServicePoint srv = servicePointService.getServicePoint(k);
                         Account debit = srv.getExpenseAccount(); // cost of sales
@@ -585,7 +588,7 @@ public class BillingService {
         return item.getAmount();
     }
 
-//    public List<PatientBill> search(String search) {
+    //    public List<PatientBill> search(String search) {
 //        BillSpecificationsBuilder builder = new BillSpecificationsBuilder();
 //
 //        String operationSetExper = StringUtils.join(SearchOperation.SIMPLE_OPERATION_SET, "|");
@@ -713,6 +716,7 @@ public class BillingService {
 
         return savedItem;
     }
+    //TODO 2020-05-03 -> filter all the bills and group them together
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createCopay(CopayData data) {
@@ -801,7 +805,6 @@ public class BillingService {
         }
         return null;
     }
-    //TODO 2020-05-03 -> filter all the bills and group them together
 
     // Get Bills
     public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled, VisitEnum.VisitType visitType) {
@@ -825,9 +828,11 @@ public class BillingService {
                     if (x.getBalance() > 0 && (x.getStatus() == BillStatus.Draft)) {
                         bills.add(x.toBillItem());
                     } else if (x.getStatus() == BillStatus.Paid && x.isFinalized() == false) {
-                        paidBills.add(x.toBillItem());
+                        if(x.getItem().getCategory() != ItemCategory.Receipt) {
+                            paidBills.add(x.toBillItem());
+                        }
                         //only return receipts
-                        if (x.getItem().getCategory() == ItemCategory.CoPay || x.getItem().getCategory() == ItemCategory.Receipt || x.getItem().getCategory() == ItemCategory.NHIF_Rebate ) {
+                        if (x.getItem().getCategory() == ItemCategory.CoPay || x.getItem().getCategory() == ItemCategory.Receipt || x.getItem().getCategory() == ItemCategory.NHIF_Rebate) {
                             BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
                             ReceiptType receiptType = ReceiptType.Payment;
 
@@ -851,7 +856,11 @@ public class BillingService {
 
         details.setBills(bills);
         details.setPaidBills(paidBills);
-        details.setPayments(payments);
+        details.setPayments(
+                payments.stream()
+                        .filter(distinctByKey(BillPayment::getReference))
+                        .collect(Collectors.toList())
+        );
 
         return details;
 
@@ -866,9 +875,10 @@ public class BillingService {
 //                     payments.add(new BillPayment(k, visitNumber, v));
 //                });
     }
+    //when changing billing I should only show those
 
     public List<BillItem> getAllBillDetails(String visitNumber, boolean includeCanceled) {
-        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, null,null));
+        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, null, null));
         List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber, includeCanceled, null));
         if (!walkinItems.isEmpty()) {
             patientItems.addAll(walkinItems);
@@ -885,7 +895,6 @@ public class BillingService {
         details.setBills(bills);
         return bills;
     }
-    //when changing billing I should only show those
 
     private Specification<PatientBillItem> withVisitNumber(String visitNo, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
@@ -946,7 +955,7 @@ public class BillingService {
                     .stream()
                     .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
                             Collectors.summingDouble(PatientBillItem::getAmount)
-                    )
+                            )
                     );
             //then here since we making a revenue
             map.forEach((k, v) -> {
@@ -967,7 +976,7 @@ public class BillingService {
                         .filter(x -> x.getItem().isInventoryItem())
                         .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
                                 Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity()))
-                        )
+                                )
                         );
                 if (!inventory.isEmpty()) {
                     inventory.forEach((k, v) -> {
@@ -981,7 +990,7 @@ public class BillingService {
                         items.add(new JournalEntryItem(debitInventory, desc, amount, BigDecimal.ZERO));
                         items.add(new JournalEntryItem(creditExpense, desc, BigDecimal.ZERO, amount));
 
-                        //this should return the stocks 
+                        //this should return the stocks
                     });
                 }
             }
@@ -1172,14 +1181,14 @@ public class BillingService {
         List<PatientBillItem> updatedBills = billItemRepository.saveAll(lists);
 
         updatedBills.forEach(pi -> {
-            if (pi.getItem().getCategory() == ItemCategory.Receipt) {
-                Optional<Receipt> savedReceipt = receiptRepository.findByReceiptNo(pi.getPaymentReference());
-                if (savedReceipt.isPresent() && savedReceipt.get().getPrepayment()) {
-                    // we have a deposit to journal it
+                    if (pi.getItem().getCategory() == ItemCategory.Receipt) {
+                        Optional<Receipt> savedReceipt = receiptRepository.findByReceiptNo(pi.getPaymentReference());
+                        if (savedReceipt.isPresent() && savedReceipt.get().getPrepayment()) {
+                            // we have a deposit to journal it
 
+                        }
+                    }
                 }
-            }
-        }
         );
 
         return cinvoice;
@@ -1188,15 +1197,6 @@ public class BillingService {
     @Transactional
     public void updatePaymentReference(String oldReference, String newReference) {
         billItemRepository.updatePaymentReference(newReference, oldReference);
-    }
-
-//    public List<PatientBillDetail> getPatientBills(String search, String patientNumber, String visitNumber, PaymentMethod paymentMethod, Long payerId, Long schemeId,VisitEnum.VisitType visitType, DateRange range, Pageable pageable){
-//        //TODO a better pagination on the creteria search
-//        List<PatientBillDetail> patientBills = patientBillRepository.getPatientBills(search, patientNumber, visitNumber, paymentMethod, payerId, schemeId, visitType, range);
-//        return patientBills;
-//    }
-    public Page<PatientBillItem> getPatientBillItems(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType, Pageable pageable){
-        return billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, paymentMethod, billEntryType), pageable);
     }
 //    private JournalEntry toJournalDeposits(Receipt payment, CreateRemittance data) {
 //        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.DeferredRevenue);
@@ -1255,4 +1255,13 @@ public class BillingService {
 //        toSave.setStatus(JournalState.PENDING);
 //        return toSave;
 //    }
+
+    //    public List<PatientBillDetail> getPatientBills(String search, String patientNumber, String visitNumber, PaymentMethod paymentMethod, Long payerId, Long schemeId,VisitEnum.VisitType visitType, DateRange range, Pageable pageable){
+//        //TODO a better pagination on the creteria search
+//        List<PatientBillDetail> patientBills = patientBillRepository.getPatientBills(search, patientNumber, visitNumber, paymentMethod, payerId, schemeId, visitType, range);
+//        return patientBills;
+//    }
+    public Page<PatientBillItem> getPatientBillItems(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType, Pageable pageable) {
+        return billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, paymentMethod, billEntryType), pageable);
+    }
 }

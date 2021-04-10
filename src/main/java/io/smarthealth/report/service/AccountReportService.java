@@ -818,7 +818,7 @@ public class AccountReportService {
                         break;
                 }
                 data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
-                data.setDiscount(data.getDiscount().add(NumberUtils.toScaledBigDecimal(item.getDiscount())));
+                data.setDiscount(NumberUtils.toScaledBigDecimal(item.getDiscount()));
             }
             receiptDataArray.add(data);
         }
