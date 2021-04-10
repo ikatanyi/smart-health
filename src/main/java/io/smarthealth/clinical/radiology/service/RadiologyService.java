@@ -2,6 +2,7 @@ package io.smarthealth.clinical.radiology.service;
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
@@ -236,6 +237,9 @@ public class RadiologyService {
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setPaid(Boolean.FALSE);
                     billItem.setBillingDate(data.getBillingDate());
+//                    billItem.setEntryType(BillEntryType.Debit);
+                    billItem.setEntryType(BillEntryType.Debit);
+                    billItem.setBillPayMode(lineData.getPaymentMethod());
 
                     return billItem;
                 })
