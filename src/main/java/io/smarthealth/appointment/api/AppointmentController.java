@@ -163,7 +163,7 @@ public class AppointmentController {
         details.setPage(1);
         details.setPerPage(25);
         details.setReportName("Appointment Types fetched");
-//        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
+        details.setTotalElements(results.getTotalElements());
         pager.setPageDetails(details);
         return ResponseEntity.ok(pager);
 
