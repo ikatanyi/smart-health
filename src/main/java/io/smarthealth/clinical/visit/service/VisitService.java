@@ -112,9 +112,7 @@ public class VisitService {
 //        visitData = visits.getContent();
         if (billPaymentValidation) {
             for (Visit v : visits.getContent()) {
-//fetchPatientBillItems by visit number
                 List<BillItem> items = billingService.getAllBillDetails(v.getVisitNumber(), false);
-                //items.forEach(System.out::println);
 
                 for (BillItem bi : items) {
                     //if item equals "DoctorFee" && item.amount > 0
