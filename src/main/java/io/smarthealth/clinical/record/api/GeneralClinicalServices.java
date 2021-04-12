@@ -35,11 +35,13 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,17 +49,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
- *
  * @author Simon.waweru
  */
 @RestController
@@ -91,11 +85,11 @@ public class GeneralClinicalServices {
 
     @Autowired
     DoctorItemService doctorItemService;
-    
+
     @Autowired
     AuditTrailService auditTrailService;
 
-//    prepare sick-off note
+    //    prepare sick-off note
     @PostMapping("/sick-off")
     @PreAuthorize("hasAuthority('create_clinicalservice')")
     public @ResponseBody
@@ -116,7 +110,40 @@ public class GeneralClinicalServices {
         pagers.setCode("0");
         pagers.setMessage("Patient Sick-Off Note");
         pagers.setContent(data);
-        auditTrailService.saveAuditTrail("Consultation", "Created a sick-note for patient "+visit.getPatient().getFullName());
+        auditTrailService.saveAuditTrail("Consultation", "Created a sick-note for patient " + visit.getPatient().getFullName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+
+    @PutMapping("/sick-off/{id}")
+    @PreAuthorize("hasAuthority('create_clinicalservice')")
+    public @ResponseBody
+    ResponseEntity<?> updateSickOffNote(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody SickOffNoteData data
+    ) {
+        Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNo());
+        Optional<SickOffNote> so = sickOffNoteService.fetchSickNoteByVisitId(id);
+        if (!so.isPresent()) {
+            throw APIException.conflict("Sick off note identified by {0} does not exist", id);
+        }
+        SickOffNote s = so.get();
+
+        s.setEndDate(data.getEndDate());
+        s.setStartDate(data.getStartDate());
+        s.setReviewDate(data.getReviewDate());
+        s.setSickOffNumber(data.getSickOffNumber());
+        s.setRecommendation(data.getRecommendation());
+        s.setReason(data.getReason());
+
+
+        SickOffNote son = sickOffNoteService.createSickOff(s);
+        SickOffNoteData sod = SickOffNoteData.map(son);
+        Pager<SickOffNoteData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Patient Sick-Off Note Successfully updated");
+        pagers.setContent(sod);
+        auditTrailService.saveAuditTrail("Consultation",
+                "Created a sick-note for patient " + visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -130,7 +157,7 @@ public class GeneralClinicalServices {
         pagers.setCode("0");
         pagers.setMessage("Patient Sick-Off Note");
         pagers.setContent(note);
-        auditTrailService.saveAuditTrail("Consultation", "Created a sick-off for patient "+visit.getPatient().getFullName());
+        auditTrailService.saveAuditTrail("Consultation", "Created a sick-off for patient " + visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -151,7 +178,7 @@ public class GeneralClinicalServices {
         details.setTotalPage(page.getTotalPages());
         details.setReportName("Patient Sick-Off Notes");
         pagers.setPageDetails(details);
-        auditTrailService.saveAuditTrail("Consultation", "Viewed a sick-notes for patient "+patient.getFullName());
+        auditTrailService.saveAuditTrail("Consultation", "Viewed a sick-notes for patient " + patient.getFullName());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }
@@ -225,7 +252,7 @@ public class GeneralClinicalServices {
         pagers.setCode("0");
         pagers.setMessage("Patient referral request successfully submitted");
         pagers.setContent(data);
-        auditTrailService.saveAuditTrail("Consultation", "Created a referral for patient "+data.getPatientName());
+        auditTrailService.saveAuditTrail("Consultation", "Created a referral for patient " + data.getPatientName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -239,7 +266,7 @@ public class GeneralClinicalServices {
         pagers.setCode("0");
         pagers.setMessage("Patient Referral Details");
         pagers.setContent(note);
-        auditTrailService.saveAuditTrail("Consultation", "Viewed a referral for patient "+visit.getPatient().getFullName()+" identified by visitNo "+visitNo);
+        auditTrailService.saveAuditTrail("Consultation", "Viewed a referral for patient " + visit.getPatient().getFullName() + " identified by visitNo " + visitNo);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -289,7 +316,7 @@ public class GeneralClinicalServices {
         }
         Page<ReferralData> page = referralsService.fetchReferrals(visitNo, patientNo, pageable).map((r) -> ReferralData.map(r));
         auditTrailService.saveAuditTrail("Consultation", "Viewed all referrals");
-        Pager< List< ReferralData>> pagers = new Pager();
+        Pager<List<ReferralData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(page.getContent());

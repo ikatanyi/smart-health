@@ -20,6 +20,9 @@ import lombok.Data;
 @Data
 public class SickOffNoteData {
 
+    @ApiModelProperty(required = false, hidden = true)
+    private Long id;
+
     private String visitNo;
 
     private String sickOffNumber;
@@ -49,6 +52,7 @@ public class SickOffNoteData {
         data.setReason(s.getReason());
         data.setDuration(ChronoUnit.DAYS.between(s.getStartDate(), s.getEndDate())+1);
         data.setCreatedBy(s.getCreatedBy());
+        data.setId(s.getId());
 
         return data;
     }

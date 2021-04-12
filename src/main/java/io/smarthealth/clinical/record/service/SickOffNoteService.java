@@ -10,14 +10,15 @@ import io.smarthealth.clinical.record.domain.SickOffNoteRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.patient.domain.Patient;
+
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author Simon.waweru
  */
 @Service
@@ -36,6 +37,10 @@ public class SickOffNoteService {
 
     public Optional<SickOffNote> fetchSickNoteByVisit(final Visit visit) {
         return sickOffNoteRepository.findByVisit(visit);
+    }
+
+    public Optional<SickOffNote> fetchSickNoteByVisitId(final Long id) {
+        return sickOffNoteRepository.findById(id);
     }
 
     public Page<SickOffNote> fetchSickOffNoteByPatient(final Patient patient, final Pageable pageable) {
