@@ -48,29 +48,29 @@ public class AdmissionSpecification {
                 }
             }
             if (active != null) {
-                if(active){
-                predicates.add(cb.notEqual(root.get("status"), VisitEnum.Status.CheckOut));
-                }else{
-                  predicates.add(cb.equal(root.get("status"), VisitEnum.Status.CheckOut));
+//                if(active){
+//                predicates.add(cb.notEqual(root.get("status"), VisitEnum.Status.CheckOut));
+//                }else{
+//                  predicates.add(cb.equal(root.get("status"), VisitEnum.Status.CheckOut));
+//                }
+                // if status not equat to checkout am active
+                System.out.println("Active " + active);
+                if (active == true) {
+                    predicates.add(cb.or(
+                            cb.equal(root.get("status"), VisitEnum.Status.CheckIn),
+                            cb.equal(root.get("status"), VisitEnum.Status.Admitted)
+                    )
+                    );
                 }
-//                // if status not equat to checkout am active
-//                System.out.println("Active " + active);
-//                if (active == true) {
-//                    predicates.add(cb.or(
-//                            cb.equal(root.get("status"), VisitEnum.Status.CheckIn),
-//                            cb.equal(root.get("status"), VisitEnum.Status.Admitted)
-//                    )
-//                    );
-//                }
-//                if (active == false) {
-////                    predicates.add(cb.equal(root.get("status"), VisitEnum.Status.CheckOut));
-//                    
-//                      predicates.add(cb.or(
-//                            cb.equal(root.get("status"), VisitEnum.Status.CheckOut),
-//                            cb.equal(root.get("status"), VisitEnum.Status.Discharged)
-//                    )
-//                    );
-//                }
+                if (active == false) {
+//                    predicates.add(cb.equal(root.get("status"), VisitEnum.Status.CheckOut));
+
+                      predicates.add(cb.or(
+                            cb.equal(root.get("status"), VisitEnum.Status.CheckOut),
+                            cb.equal(root.get("status"), VisitEnum.Status.Discharged)
+                    )
+                    );
+                }
 
             }
 
