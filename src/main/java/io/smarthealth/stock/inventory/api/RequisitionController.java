@@ -69,7 +69,7 @@ public class RequisitionController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = PaginationUtil.createUnPaged(page, size);
 
         Page<RequisitionData> list = service.getRequisitions(status, pageable)
                 .map(u -> RequisitionData.map(u));
