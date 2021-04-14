@@ -11,6 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  *
@@ -21,4 +25,11 @@ public interface PatientDiagnosisRepository extends JpaRepository<PatientDiagnos
     Page<PatientDiagnosis> findByPatient(final Patient patient, Pageable page);
 
     Page<PatientDiagnosis> findByVisit(Visit visit, Pageable pageable);
+
+    @Query("SELECT d FROM PatientDiagnosis  d WHERE d.visit.visitNumber = :visitNumber")
+    List<PatientDiagnosis> findPatientDiagnosisByVisitNumber(String visitNumber);
+
+    @Modifying
+    @Query("DELETE FROM PatientDiagnosis  p where p.id = :id")
+    void deleteDiagnosis(Long id);
 }

@@ -295,6 +295,11 @@ public class PatientBillingService {
 
         if (creditItem != null) {
             PatientBill receiptBill = createPatientBill(patientNumber, patientName, visitNumber, LocalDate.now(), "Cash", amount, 0D, isWalking);
+             Double qty= 1D;
+             if(creditItem.getCategory() == NHIF_Rebate){
+                 qty= (amount/creditItem.getRate().doubleValue());
+             }
+
             PatientBillItem billsItem = new PatientBillItem();
 
             billsItem.setBillingDate(LocalDate.now());
@@ -302,7 +307,7 @@ public class PatientBillingService {
             billsItem.setItem(creditItem);
             billsItem.setPaid(true);
             billsItem.setPrice(amount);
-            billsItem.setQuantity(1D);
+            billsItem.setQuantity(qty);
             billsItem.setAmount(amount);
             billsItem.setDiscount(0D);
             billsItem.setBalance(amount);

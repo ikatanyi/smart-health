@@ -39,9 +39,12 @@ public class AdmissionData {
     @ApiModelProperty(hidden = true)
     private Gender gender;
 
+    private String formattedGender;
+
     private String admittingReason;
 
     private PaymentMethod paymentMethod;
+
     private Long wardId;
 
     @ApiModelProperty(hidden = true)
@@ -73,6 +76,7 @@ public class AdmissionData {
     private String dischargedBy;
     @ApiModelProperty(example = "CheckIn,CheckOut,Admitted,Transferred, Discharged, Booked")
     private VisitEnum.Status status;
+
     private List<CareTeamData> careTeam = new ArrayList<>();
 
     private List<EmergencyContactData> emergencyContactData = new ArrayList();
@@ -82,6 +86,8 @@ public class AdmissionData {
     private PaymentDetailsData paymentDetailsData;
     private String inpatientNumber;
     private Integer stayDuration;
+    private String formattedAge;
+
 
     public static AdmissionData map(Admission adm) {
         AdmissionData d = new AdmissionData();
@@ -116,13 +122,20 @@ public class AdmissionData {
 
         LocalDateTime end = adm.getDischargeDate() != null ? adm.getDischargeDate() : LocalDateTime.now();
         int duration = 0;
-        if(adm.getAdmissionDate().toLocalDate().equals(adm.getDischargeDate())){
-           duration = 1;
-        }else{
+        if (adm.getAdmissionDate().toLocalDate().equals(adm.getDischargeDate())) {
+            duration = 1;
+        } else {
             Period period = Period.between(adm.getAdmissionDate().toLocalDate(), end.toLocalDate());
             duration = period.getDays();
         }
         d.setStayDuration(duration);
+
+        if (adm.getPatient().getGender() != null) {
+            d.setFormattedGender(adm.getPatient().getGender().getFormattedValue());
+        }
+
+        d.setFormattedAge(adm.getPatient().getFormattedAge());
+
         return d;
     }
 
@@ -135,6 +148,8 @@ public class AdmissionData {
         d.setDischargedBy(adm.getDischargedBy());
         d.setPaymentMethod(adm.getPaymentMethod());
         d.setStatus(adm.getStatus());
+
         return d;
     }
+
 }

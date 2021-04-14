@@ -36,6 +36,7 @@ public class PatientDiagnosisData {
     private String notes;
     private String mCode;
     private Boolean isCondition = Boolean.FALSE;
+    private String doctor;
 
     public static PatientDiagnosisData map(PatientDiagnosis diagnosis) {
         PatientDiagnosisData data = new PatientDiagnosisData();
@@ -63,6 +64,7 @@ public class PatientDiagnosisData {
         data.setNotes(diagnosis.getNotes());
         data.setMCode(diagnosis.getMCode());
         data.setIsCondition(diagnosis.getIsCondition());
+        data.setDoctor(diagnosis.getDoctor());
 
         return data;
     }

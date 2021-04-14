@@ -12,6 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -90,5 +91,7 @@ public class DiagnosisData {
         diagnos.setDateRecorded(entity.getDateRecorded());
         return diagnos;
     }
-
+    public String toFormattedString(){
+        return StringUtils.clean(this.description).concat(" ("+StringUtils.clean(this.code)+") ");
+    }
 }

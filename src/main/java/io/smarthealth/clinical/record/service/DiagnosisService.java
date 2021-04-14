@@ -85,7 +85,7 @@ public class DiagnosisService {
         }
         return diagnosisRepository.save(d);
     }
-    
+    @Transactional
     public void deleteDiagnosis(final Long diagnosisId) {
         diagnosisRepository.deleteById(diagnosisId);
     }
@@ -161,5 +161,5 @@ public class DiagnosisService {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", visitNumber));
     }
-    
+
 }

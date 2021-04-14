@@ -26,4 +26,7 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Long
 //    @Query(value = "SELECT * FROM patient_prescriptions p JOIN patient_doctor_request r ON p.id=r.id WHERE r.order_number=:orderNumber",nativeQuery = true)
 //    @Query("SELECT p FROM Prescription p WHERE p.orderNumber=:orderNumber")
     List<Prescription> findByOrderNumberOrVisit(final String orderNumber, final Visit visit);
+
+    @Query("select p FROM Prescription p where p.visit.visitNumber = :visitNumber and p.onDischarge = true")
+    List<Prescription> findDischargePrescriptionByVisitNumber(String visitNumber);
 }

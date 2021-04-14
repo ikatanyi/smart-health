@@ -2,6 +2,7 @@ package io.smarthealth.clinical.admission.api;
 
 import io.smarthealth.clinical.admission.data.DischargeData;
 import io.smarthealth.clinical.admission.data.DischargeDiagnosis;
+import io.smarthealth.clinical.admission.data.DischargeSummaryReport;
 import io.smarthealth.clinical.admission.domain.DischargeSummary;
 import io.smarthealth.clinical.admission.service.DischargeService;
 import io.smarthealth.clinical.record.data.DiagnosisData;
@@ -125,5 +126,12 @@ public class DischargesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
+    @GetMapping("/discharge-summary/report")
+    public ResponseEntity<DischargeSummaryReport> getDischarge(@RequestParam(value = "dischargeNo", required = false) final String dischargeNo,
+                                                               @RequestParam(value = "admissionNo", required = false) final String admissionNo
+                                                               ) {
+        DischargeSummaryReport report = service.getDischargeSummaryReport(dischargeNo, admissionNo);
 
+         return ResponseEntity.ok(report);
+    }
 }

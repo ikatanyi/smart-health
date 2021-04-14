@@ -23,6 +23,6 @@ public interface DischargeSummaryRepository extends JpaRepository<DischargeSumma
 
     Optional<DischargeSummary> findByAdmission(Admission admission);
     
-    @Query("SELECT d FROM DischargeSummary d WHERE d.admission.visitNumber =:visitNo")
-    Optional<DischargeSummary> findDischargeByVisitNo(@Param("visitNo") String visitNo);
+    @Query("SELECT d FROM DischargeSummary d left join d.admission.paymentDetails p WHERE d.admission.admissionNo =:admissionNo ")
+    Optional<DischargeSummary> findDischargeByVisitNo(@Param("admissionNo") String admissionNo);
 }

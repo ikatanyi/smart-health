@@ -37,9 +37,15 @@ public class AdmissionSpecification {
                 predicates.add(cb.equal(root.get("discharged"), discharged));
             }
             if (range != null) {
-                predicates.add(
-                        cb.between(root.get("admissionDate"), range.getStartDateTime(), range.getEndDateTime())
-                );
+                if(discharged!=null && discharged){
+                    predicates.add(
+                            cb.between(root.get("dischargeDate"), range.getStartDateTime(), range.getEndDateTime())
+                    );
+                }else {
+                    predicates.add(
+                            cb.between(root.get("admissionDate"), range.getStartDateTime(), range.getEndDateTime())
+                    );
+                }
             }
             if (active != null) {
                 if(active){

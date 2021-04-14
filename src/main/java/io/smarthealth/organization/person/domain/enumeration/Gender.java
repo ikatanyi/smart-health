@@ -29,4 +29,13 @@ public enum Gender {
     public static Gender fromValue(String v) {
         return valueOf(v);
     }
+
+    public String getFormattedValue(){
+       if(this.name().equals("M")){
+           return "Male";
+       }else if(this.name().equals("F")){
+           return "Female";
+       }else
+           return "Others";
+    }
 }

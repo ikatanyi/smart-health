@@ -140,17 +140,23 @@ public class ConsultationController {
     @PreAuthorize("hasAuthority('view_consultation')")
     public @ResponseBody
     ResponseEntity<?> fetchPatientNotesByVisit(@PathVariable("visitNumber") final String visitNumber) {
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);        
-        Optional<PatientNotes> pn = patientNotesService.fetchPatientNotesByVisit(visit);
-        
-        if (pn.isPresent()) {
-            PatientNotesData savedData = patientNotesService.convertEntityToData(pn.get());
-            auditTrailService.saveAuditTrail("Consultation", "Viewed Patient notes for patient  "+visit.getPatient().getFullName()+" for visit "+visit.getVisitNumber());
-            return ResponseEntity.ok().body(ApiResponse.successMessage("Success", HttpStatus.OK, savedData));
-        } else {
-            return ResponseEntity.ok().body(ApiResponse.successMessage("No records found", HttpStatus.OK, new ArrayList<>()));
+
+        Optional<Visit> visitOptional = visitService.findVisit(visitNumber);
+
+
+        if(visitOptional.isPresent()) {
+            Visit visit = visitOptional.get();
+            Optional<PatientNotes> pn = patientNotesService.fetchPatientNotesByVisit(visit);
+
+            if (pn.isPresent()) {
+                PatientNotesData savedData = patientNotesService.convertEntityToData(pn.get());
+                auditTrailService.saveAuditTrail("Consultation", "Viewed Patient notes for patient  " + visit.getPatient().getFullName() + " for visit " + visit.getVisitNumber());
+                return ResponseEntity.ok().body(ApiResponse.successMessage("Success", HttpStatus.OK, savedData));
+            } else {
+                return ResponseEntity.ok().body(ApiResponse.successMessage("No records found", HttpStatus.OK, new ArrayList<>()));
+            }
         }
-        
+        return ResponseEntity.ok().body(ApiResponse.successMessage("Success", HttpStatus.OK, new PatientNotesData()));
     }
 
     @GetMapping("/patient/{patientNo}/patient-notes")

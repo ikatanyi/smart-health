@@ -3,6 +3,7 @@ package io.smarthealth.organization.person.domain;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
@@ -66,4 +67,13 @@ public class Person extends Auditable {
 //    private List<Biometrics> biometrics =new ArrayList<>();
 //    @OneToMany(mappedBy = "person")
 //    private List<ContactDetail> contactDetails=new ArrayList<>();
+    public String getFormattedAge(){
+        if(this.dateOfBirth == null ) return "";
+        Period agePeriod = Period.between(this.dateOfBirth, LocalDate.now());
+
+        if(agePeriod.getYears() <= 0){
+            return String.format("%sM %sD", agePeriod.getMonths(), agePeriod.getDays());
+        }
+        return String.format("%sY", agePeriod.getYears());
+    }
 }

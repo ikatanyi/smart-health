@@ -5,24 +5,13 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
-import io.smarthealth.clinical.admission.data.AdmissionData;
-import io.smarthealth.clinical.admission.data.BedData;
-import io.smarthealth.clinical.admission.data.CareTeamData;
-import io.smarthealth.clinical.admission.data.DischargeData;
-import io.smarthealth.clinical.admission.data.RoomData;
-import io.smarthealth.clinical.admission.data.WardData;
+import io.smarthealth.clinical.admission.data.*;
 import io.smarthealth.clinical.admission.domain.*;
 import io.smarthealth.clinical.admission.domain.Room.Type;
-import io.smarthealth.clinical.admission.service.AdmissionService;
-import io.smarthealth.clinical.admission.service.BedService;
-import io.smarthealth.clinical.admission.service.CareTeamService;
-import io.smarthealth.clinical.admission.service.DischargeService;
-import io.smarthealth.clinical.admission.service.RoomService;
-import io.smarthealth.clinical.admission.service.WardService;
+import io.smarthealth.clinical.admission.service.*;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
@@ -40,13 +29,6 @@ import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.lang.NumberUtils;
@@ -57,8 +39,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- *
  * @author Kennedy.Imbenzi
  */
 @Service
@@ -84,16 +72,16 @@ public class AdmissionReportService {
 
     public void getAdmittedPatients(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Long wardId = null, roomId=null, bedId=null;
-        Boolean active=null;
+        Long wardId = null, roomId = null, bedId = null;
+        Boolean active = null;
         String admissionNo = reportParam.getFirst("admissionNo");
-        if(reportParam.getFirst("wardId")!=null)
-           wardId = NumberUtils.createLong(reportParam.getFirst("wardId"));
-        if(reportParam.getFirst("roomId")!=null)
-           roomId = NumberUtils.createLong(reportParam.getFirst("roomId"));
-        if(reportParam.getFirst("bedId")!=null)
-           bedId = NumberUtils.createLong(reportParam.getFirst("bedId"));
-        if(reportParam.getFirst("active")!=null)
+        if (reportParam.getFirst("wardId") != null)
+            wardId = NumberUtils.createLong(reportParam.getFirst("wardId"));
+        if (reportParam.getFirst("roomId") != null)
+            roomId = NumberUtils.createLong(reportParam.getFirst("roomId"));
+        if (reportParam.getFirst("bedId") != null)
+            bedId = NumberUtils.createLong(reportParam.getFirst("bedId"));
+        if (reportParam.getFirst("active") != null)
             active = Boolean.getBoolean(reportParam.getFirst("active"));
         String term = reportParam.getFirst("term");
         Boolean discharged = BooleanUtils.toBoolean(reportParam.getFirst("discharged"));
@@ -103,10 +91,10 @@ public class AdmissionReportService {
         List<AdmissionData> admissionData = admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, dateRange, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((adm) ->{
-                    AdmissionData admissionData1 =  AdmissionData.map(adm);
-                    CareTeam ct = careTeamService.fetchCareTeamByAdmissionNumberAndCareRole(adm.getAdmissionNo(),CareTeamRole.Admitting);
-                    if(ct!=null)
+                .map((adm) -> {
+                    AdmissionData admissionData1 = AdmissionData.map(adm);
+                    CareTeam ct = careTeamService.fetchCareTeamByAdmissionNumberAndCareRole(adm.getAdmissionNo(), CareTeamRole.Admitting);
+                    if (ct != null)
                         admissionData1.setAdmittingDoctor(ct.getMedic().getFullName());
                     return admissionData1;
                 })
@@ -188,10 +176,10 @@ public class AdmissionReportService {
         List<DischargeData> discharges = dischargeService.getDischarges(admissionNo, patientNo, term, range, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map(ds->{
+                .map(ds -> {
                     DischargeData data = ds.toData();
-                    List<Invoice>invoices = invoiceService.getInvoiceByVisit(ds.getAdmission().getAdmissionNo());
-                    for(Invoice invoice:invoices){
+                    List<Invoice> invoices = invoiceService.getInvoiceByVisit(ds.getAdmission().getAdmissionNo());
+                    for (Invoice invoice : invoices) {
                         data.setAmount(data.getAmount().add(invoice.getAmount()));
                         data.setInvoiceNo(invoice.getNumber());
                         data.setScheme(invoice.getScheme().getSchemeName());
@@ -211,21 +199,21 @@ public class AdmissionReportService {
         String visitNumber = reportParam.getFirst("visitNumber");
         Admission adm = admissionService.findAdmissionByNumber(visitNumber);
         DischargeData discharges = dischargeService.getDischargeByAdmission(adm).toData();
-        String procedures="",diagnosis="",drugs="", scans="",tests="";
-        String dd="";
-        int i=1;
-        
+        String procedures = "", diagnosis = "", drugs = "", scans = "", tests = "";
+        String dd = "";
+        int i = 1;
+
         List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visitNumber)
                 .stream()
                 .map((scan) -> {
-                   PatientScanTestData data =  scan.toData();
-                   
-                   return data;
-                        })
+                    PatientScanTestData data = scan.toData();
+
+                    return data;
+                })
                 .collect(Collectors.toList());
-        
-        for(PatientScanTestData data:scanData){
-            scans = scans.concat(String.valueOf(i++)+". ").concat(data.getScanName()).concat("\n");
+
+        for (PatientScanTestData data : scanData) {
+            scans = scans.concat(String.valueOf(i++) + ". ").concat(data.getScanName()).concat("\n");
         }
 
         List<PatientProcedureTestData> proceduresData = procedureService.findProcedureResultsByVisit(adm)
@@ -246,36 +234,36 @@ public class AdmissionReportService {
                 })
                 .collect(Collectors.toList());
 
-        i=1;
-        for(PrescriptionData data:pharmacyData){
-            drugs= drugs.concat(String.valueOf(i++)+". ").concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
-            dd= dd.concat(data.getItemName());
+        i = 1;
+        for (PrescriptionData data : pharmacyData) {
+            drugs = drugs.concat(String.valueOf(i++) + ". ").concat(StringUtils.capitalise(data.getItemName())).concat(" (" + StringUtils.clean(data.getRoute()) + ") Take " + data.getDose() + " " + StringUtils.clean(data.getDoseUnits()) + " " + StringUtils.clean(data.getFrequency()) + " " + data.getDuration() + " " + StringUtils.clean(data.getDurationUnits()) + "\n");
+            dd = dd.concat(data.getItemName());
 //            System.out.println("DDD "+dd);
-            System.out.println("Drugs "+drugs);
+            System.out.println("Drugs " + drugs);
         }
 
 
         List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(adm, Pageable.unpaged())
                 .stream()
                 .map((diag) -> {
-                   DiagnosisData data =  DiagnosisData.map(diag);
-                   return data;
-                        })
+                    DiagnosisData data = DiagnosisData.map(diag);
+                    return data;
+                })
                 .collect(Collectors.toList());
 
-        i=1;
-        for(DiagnosisData data:diagnosisData){
-           diagnosis=  diagnosis.concat(String.valueOf(i++)+". ").concat(StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
+        i = 1;
+        for (DiagnosisData data : diagnosisData) {
+            diagnosis = diagnosis.concat(String.valueOf(i++) + ". ").concat(StringUtils.clean(data.getDescription()) + "(" + StringUtils.clean(data.getCode()) + ")\n");
         }
 
-        i=1;
-        for(LabRegisterTestData data:labTests){
-            tests=tests.concat(String.valueOf(i++)+". ").concat(StringUtils.clean(data.getTestName())).concat("\n");
+        i = 1;
+        for (LabRegisterTestData data : labTests) {
+            tests = tests.concat(String.valueOf(i++) + ". ").concat(StringUtils.clean(data.getTestName())).concat("\n");
         }
-        i=1;
-        for(PatientProcedureTestData data:proceduresData){
-            if(!data.getGeneralFeeItem())
-                procedures=procedures.concat(String.valueOf(i++)+". ").concat(StringUtils.clean(data.getProcedureName())).concat("\n");
+        i = 1;
+        for (PatientProcedureTestData data : proceduresData) {
+            if (!data.getGeneralFeeItem())
+                procedures = procedures.concat(String.valueOf(i++) + ". ").concat(StringUtils.clean(data.getProcedureName())).concat("\n");
         }
         reportData.getFilters().put("pharmacyData", drugs);
         reportData.getFilters().put("diagnosis", diagnosis);
