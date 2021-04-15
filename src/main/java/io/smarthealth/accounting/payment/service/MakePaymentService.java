@@ -220,6 +220,14 @@ public class MakePaymentService {
                 creditTax = acc;
             }
             break;
+            case Others: {
+
+                Account acc = accountRepository.findByIdentifier(data.getExpenseAccount()).get();
+                String narration = "Miscellaneous Expense's Payment Voucher no. " + payment.getVoucherNo();
+                items.add(new JournalEntryItem(acc, narration, payment.getAmount(), BigDecimal.ZERO));
+                descType = "Other's Payment";
+                creditTax = acc;
+            }
             default:
         }
         //PAYMENT CHANNEL

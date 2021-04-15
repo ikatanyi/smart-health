@@ -48,7 +48,7 @@ public class DischargeSummary extends Auditable {
     public DischargeData toData() {
         DischargeData data = new DischargeData();
         data.setId(this.getId());
-        data.setDoctor(this.doctor);
+        data.setDoctor(this.dischargedBy);
         data.setDiagnosis(this.diagnosis);
         data.setDischargeDate(this.dischargeDate);
         data.setDischargeMethod(this.dischargeMethod);

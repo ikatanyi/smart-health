@@ -233,7 +233,12 @@ public class DischargeService {
     }
     @Transactional
     public PatientDiagnosis updateDiagnosis(String admissionNo, DischargeDiagnosis data) {
-        PatientDiagnosis diagnosis = new PatientDiagnosis();
+        PatientDiagnosis diagnosis;
+        if(data.getId()!=null){
+            diagnosis = patientDiagnosisRepository.findById(data.getId()).orElse(new PatientDiagnosis());
+        }else {
+            diagnosis = new PatientDiagnosis();
+        }
 
         Visit admission = admissionRepository.findByAdmissionNo(admissionNo).orElseThrow(() -> APIException.notFound("Admission with Number {0} Not Found", admissionNo));
         if (!admissionNo.equals(data.getAdmissionNumber())) {
@@ -241,18 +246,31 @@ public class DischargeService {
         }
         diagnosis.setPatient(admission.getPatient());
         diagnosis.setVisit(admission);
-        diagnosis.setCertainty(data.getCertainty());
-        Diagnosis diag = new Diagnosis();
-        diag.setCode(data.getCode());
-        diag.setDescription(data.getDescription());
-        diagnosis.setDoctor(data.getDoctor());
+        if(data.getCertainty()!=null) {
+            diagnosis.setCertainty(data.getCertainty());
+        }
+        Diagnosis diag = Optional.of(diagnosis.getDiagnosis()).orElse(new Diagnosis());
+        if(data.getCode()!=null) {
+            diag.setCode(data.getCode());
+        }
+        if(data.getDescription()!=null) {
+            diag.setDescription(data.getDescription());
+        }
+        if(data.getDoctor()!=null) {
+            diagnosis.setDoctor(data.getDoctor());
+        }
 
         diagnosis.setDiagnosis(diag);
-        diagnosis.setDiagnosisOrder(data.getDiagnosisOrder());
+        if(data.getDiagnosisOrder()!=null) {
+            diagnosis.setDiagnosisOrder(data.getDiagnosisOrder());
+        }
         diagnosis.setIsCondition(Boolean.FALSE);
-        diagnosis.setNotes(data.getRemarks());
-        diagnosis.setDateRecorded(data.getDiagnosisDate().atStartOfDay());
-
+        if(data.getRemarks()!=null) {
+            diagnosis.setNotes(data.getRemarks());
+        }
+        if(data.getDiagnosisDate()!=null) {
+            diagnosis.setDateRecorded(data.getDiagnosisDate().atStartOfDay());
+        }
         return patientDiagnosisRepository.save(diagnosis);
     }
 

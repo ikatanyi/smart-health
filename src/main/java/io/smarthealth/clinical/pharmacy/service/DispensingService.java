@@ -384,7 +384,7 @@ public class DispensingService {
     private WalkIn createWalking(String patientName) {
         WalkIn w = new WalkIn();
         w.setFirstName(patientName);
-        w.setSurname("WI");
+        w.setSurname("");
         return walkingService.createWalking(w);
     }
 

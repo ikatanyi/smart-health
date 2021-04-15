@@ -44,6 +44,8 @@ public class MakePayment {
     private String taxAccountNumber;
 
     private PayChannel paymentChannel;
+    private String expenseAccount;
+    private String expenseAccountName;
 
     private List<BillToPay> invoices = new ArrayList<>();
 }

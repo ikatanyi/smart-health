@@ -24,7 +24,8 @@ public enum FinancialActivity {
     Patient_Debt("Patient Debt", AccountType.ASSET),
     DeferredRevenue("Deferred Revenue", AccountType.LIABILITY),
     CapitationExpense("Capitation Expense", AccountType.EXPENSE),
-    CapitationIncome("Capitation Income", AccountType.REVENUE);
+    CapitationIncome("Capitation Income", AccountType.REVENUE),
+    MiscellaneousExpense("Miscellaneous Expense", AccountType.EXPENSE);
 
     private final String activityName;
     private final AccountType accountType;

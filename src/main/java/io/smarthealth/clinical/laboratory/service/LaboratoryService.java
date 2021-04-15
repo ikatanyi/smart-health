@@ -16,6 +16,7 @@ import io.smarthealth.clinical.laboratory.domain.specification.LabRegisterSpecif
 import io.smarthealth.clinical.laboratory.domain.specification.LabResultSpecification;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -386,9 +387,11 @@ public class LaboratoryService {
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
         test.setPaymentMethod(data.getPaymentMethod());
-        if(data.getPaid()!=null && data.getPaid()){
+        if(data.getPaid()!=null && data.getPaid() || data.getPaymentMethod() == PaymentMethod.Insurance){
+            System.err.println("nimeingia hapa tufinish ... ");
             test.setPaid(true);
         }else {
+            System.err.println("nimepita tu straight");
             test.setPaid(paymentMode.equals("Cash") && visitType.equals(VisitEnum.VisitType.Outpatient) ? Boolean.FALSE : Boolean.TRUE);
         }
         test.setVoided(Boolean.FALSE);
@@ -507,7 +510,7 @@ public class LaboratoryService {
     private WalkIn createWalking(String patientName) {
         WalkIn w = new WalkIn();
         w.setFirstName(patientName);
-        w.setSurname("WI");
+        w.setSurname("");
         return walkingService.createWalking(w);
     }
 

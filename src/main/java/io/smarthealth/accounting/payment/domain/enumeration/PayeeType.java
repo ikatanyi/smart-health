@@ -12,5 +12,6 @@ package io.smarthealth.accounting.payment.domain.enumeration;
 public enum PayeeType {
     Doctor,
     Supplier,
-    PettyCash
+    PettyCash,
+    Others
 }
