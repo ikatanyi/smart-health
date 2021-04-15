@@ -1,5 +1,6 @@
 package io.smarthealth.stock.stores.api;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -72,12 +73,13 @@ public class StoreRestController {
     public ResponseEntity<?> getAllStorees( 
              @RequestParam(value = "isPatientStore", required = false) Boolean patientStore,
              @RequestParam(value = "storeType", required = false) Store.Type storeType,
+             @RequestParam(value = "servicePointType", required = false) ServicePointType servicePointType,
                      @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<StoreData> list = service.fetchAllStores(storeType,patientStore,pageable).map(store -> StoreData.map(store));
+        Page<StoreData> list = service.fetchAllStores(patientStore,storeType, servicePointType,pageable).map(store -> StoreData.map(store));
         Pager<List<StoreData>> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

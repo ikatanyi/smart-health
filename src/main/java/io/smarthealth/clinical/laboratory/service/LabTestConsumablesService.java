@@ -8,6 +8,7 @@ import io.smarthealth.clinical.laboratory.domain.LabTestConsumables;
 import io.smarthealth.clinical.laboratory.domain.LabTestConsumablesRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.inventory.domain.StockEntry;
+import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.domain.specification.StockEntrySpecification;
@@ -31,6 +32,7 @@ public class LabTestConsumablesService {
     private final ItemRepository itemRepository;
     private final LabRegisterRepository labRegisterRepository;
     private final StoreService storeService;
+    private final StockEntryRepository stockEntryRepository;
 
     public List<LabTestConsumables> saveLabTestConsumable(final Long labRegisterId, List<LabTestConsumablesData> d) {
         List<LabTestConsumables> consumables = new ArrayList<>();
@@ -55,10 +57,10 @@ public class LabTestConsumablesService {
         }
 
         List<LabTestConsumables> savedConsumables = labTestConsumablesRepository.saveAll(consumables);
+
         //affect stocks
-        //this fn has been halted
-       List<StockEntry> stockEntries = createStockEntry(savedConsumables);
-        StockEntrySpecification
+        List<StockEntry> stockEntries = createStockEntry(savedConsumables);
+        stockEntryRepository.saveAll(stockEntries);
 
         return savedConsumables;
 
@@ -71,15 +73,15 @@ public class LabTestConsumablesService {
     }
 
 
-    private List<StockEntry> createStockEntry(List<LabTestConsumables>  labTestConsumables) {
+    private List<StockEntry> createStockEntry(List<LabTestConsumables> labTestConsumables) {
         return labTestConsumables.stream()
                 .map(consumable -> {
                     Item item = consumable.getItem();
                     Store store = consumable.getStore();
-                    String patientName ="";
-                    if(consumable.getLabRegister().getIsWalkin()){
-                        patientName= consumable.getLabRegister().getWalkIn().getFullName();
-                    }else{
+                    String patientName = "";
+                    if (consumable.getLabRegister().getIsWalkin()) {
+                        patientName = consumable.getLabRegister().getWalkIn().getFullName();
+                    } else {
                         patientName = consumable.getLabRegister().getVisit().getPatient().getFullName();
                     }
 
