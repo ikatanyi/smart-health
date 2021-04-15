@@ -485,7 +485,7 @@ public class PaymentReportService {
 
                         break;
                 }
-                data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
+                data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))).add(data.getOther()));
                 data.setDiscount(data.getDiscount().add(NumberUtils.toScaledBigDecimal(item.getDiscount())));
             }
             receiptDataArray.add(data);
