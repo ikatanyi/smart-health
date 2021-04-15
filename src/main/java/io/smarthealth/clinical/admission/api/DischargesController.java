@@ -77,6 +77,12 @@ public class DischargesController {
         return ResponseEntity.ok(diag.toData());
     }
 
+    @PatchMapping("/discharge-summary/{admissionNo}/diagnosis")
+    public ResponseEntity<DischargeDiagnosis> patchDischargeDiagnosis(@PathVariable(value = "admissionNo") String admissionNo, @Valid @RequestBody DischargeDiagnosis diagnosisData) {
+        PatientDiagnosis diag = service.patchDiagnosis(admissionNo, diagnosisData);
+        return ResponseEntity.ok(diag.toData());
+    }
+
     @GetMapping("/discharge-summary")
 //    @PreAuthorize("hasAuthority('view_discharge-summary')")
     public ResponseEntity<?> getDischarges(
@@ -125,10 +131,21 @@ public class DischargesController {
 
     }
 
+    @PatchMapping("/discharge-summary/{id}")
+    public ResponseEntity<Pager<DischargeData>> patchDischarge(@PathVariable("id") Long id, @Valid @RequestBody DischargeData summaryData) {
+        DischargeSummary result = service.updatePartialDischarge(id, summaryData);
+        Pager<DischargeData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("DischargeSummary Updated successful");
+        pagers.setContent(result.toData());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+
     @GetMapping("/discharge-summary/report")
-    public ResponseEntity<DischargeSummaryReport> getDischarge(@RequestParam(value = "dischargeNo", required = false) final String dischargeNo,
-                                                               @RequestParam(value = "admissionNo", required = false) final String admissionNo
-    ) {
+    public ResponseEntity<DischargeSummaryReport> getDischarge(
+            @RequestParam(value = "dischargeNo", required = false) final String dischargeNo,
+            @RequestParam(value = "admissionNo", required = false) final String admissionNo) {
         DischargeSummaryReport report = service.getDischargeSummaryReport(dischargeNo, admissionNo);
 
         return ResponseEntity.ok(report);

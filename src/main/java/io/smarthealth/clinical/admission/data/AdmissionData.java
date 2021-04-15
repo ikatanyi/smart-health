@@ -24,8 +24,6 @@ import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 @Data
 public class AdmissionData {
 
-    //patient details
-    @ApiModelProperty(hidden = true)
     private Long id;
     @ApiModelProperty(hidden = true)
     private String admissionNumber; //this should be same as visit number
@@ -77,20 +75,24 @@ public class AdmissionData {
     @ApiModelProperty(example = "CheckIn,CheckOut,Admitted,Transferred, Discharged, Booked")
     private VisitEnum.Status status;
 
-    private List<CareTeamData> careTeam = new ArrayList<>();
-
-    private List<EmergencyContactData> emergencyContactData = new ArrayList();
-
     private String narration;
 
     private PaymentDetailsData paymentDetailsData;
+
     private String inpatientNumber;
     private Integer stayDuration;
     private String formattedAge;
+    private String dischargeNo;
+
+    private List<CareTeamData> careTeam = new ArrayList<>();
+    private List<EmergencyContactData> emergencyContactData = new ArrayList();
 
 
     public static AdmissionData map(Admission adm) {
         AdmissionData d = new AdmissionData();
+
+        d.setId(adm.getId());
+
         d.setAdmissionDate(adm.getAdmissionDate());
         d.setAdmissionNumber(adm.getAdmissionNo());
         d.setBedId(adm.getBed().getId());
@@ -102,7 +104,9 @@ public class AdmissionData {
         d.setDischargeDate(adm.getDischargeDate());
         d.setDischarged(adm.getDischarged());
         d.setDischargedBy(adm.getDischargedBy());
-        d.setId(adm.getId());
+        d.setDischargeNo(adm.getDischargeNo());
+
+
         d.setAdmittingReason(adm.getAdmissionReason());
         if (adm.getHealthProvider() != null)
             d.setAdmittingDoctor(adm.getHealthProvider().getFullName());
@@ -133,7 +137,6 @@ public class AdmissionData {
         if (adm.getPatient().getGender() != null) {
             d.setFormattedGender(adm.getPatient().getGender().getFormattedValue());
         }
-
         d.setFormattedAge(adm.getPatient().getFormattedAge());
 
         return d;
@@ -148,7 +151,6 @@ public class AdmissionData {
         d.setDischargedBy(adm.getDischargedBy());
         d.setPaymentMethod(adm.getPaymentMethod());
         d.setStatus(adm.getStatus());
-
         return d;
     }
 

@@ -28,6 +28,8 @@ public class Admission extends Visit {
 
     private String admissionReason;
 
+    private String dischargeNo;
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pat_admisssion_ward_id"))
     private Ward ward;

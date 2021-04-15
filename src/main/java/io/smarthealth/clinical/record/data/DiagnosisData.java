@@ -7,6 +7,8 @@ import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.io.File;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
@@ -92,6 +94,6 @@ public class DiagnosisData {
         return diagnos;
     }
     public String toFormattedString(){
-        return StringUtils.clean(this.description).concat(" ("+StringUtils.clean(this.code)+") ");
+        return StringUtils.clean(this.description).concat(" ("+StringUtils.clean(this.code)+") ".concat("\n"));
     }
 }

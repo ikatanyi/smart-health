@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -75,6 +76,7 @@ public class DischargeService {
         admission.setDischarged(Boolean.TRUE);
         admission.setDischargedBy(discharge.getDischargedBy());
         admission.setStatus(VisitEnum.Status.Discharged);
+        admission.setDischargeNo(dischargeNo);
         admissionRepository.save(admission);
 
         return repository.save(discharge);
@@ -132,8 +134,7 @@ public class DischargeService {
     public DischargeSummary updateDischarge(Long id, DischargeData data) {
         DischargeSummary discharge = getDischargeById(id);
 
-        Admission admission = admissionRepository.findByAdmissionNo(data.getAdmissionNumber())
-                .orElseThrow(() -> APIException.notFound("Admission with  Number {} Not Found", data.getAdmissionNumber()));
+        Admission admission = discharge.getAdmission();
 
         discharge.setAdmission(admission);
         discharge.setPatient(admission.getPatient());
@@ -143,6 +144,9 @@ public class DischargeService {
         discharge.setDischargedBy(data.getDischargedBy());
         discharge.setInstructions(data.getInstructions());
         discharge.setOutcome(data.getOutcome());
+        if(data.getReviewDate()!=null){
+            discharge.setReviewDate(data.getReviewDate());
+        }
 
         admission.setDischargeDate(discharge.getDischargeDate());
         admission.setDischarged(Boolean.TRUE);
@@ -152,6 +156,81 @@ public class DischargeService {
         return repository.save(discharge);
     }
 
+    @Transactional
+    public DischargeSummary updatePartialDischarge(Long id, DischargeData data) {
+        DischargeSummary discharge = getDischargeById(id);
+
+        Admission admission = discharge.getAdmission();
+        if(data.getDiagnosis()!=null) {
+            discharge.setDiagnosis(data.getDiagnosis());
+        }
+        if(data.getDischargeDate()!=null) {
+            discharge.setDischargeDate(data.getDischargeDate());
+            admission.setDischargeDate(discharge.getDischargeDate());
+        }
+        if(data.getDischargeMethod()!=null) {
+            discharge.setDischargeMethod(data.getDischargeMethod());
+        }
+        if(data.getDischargedBy()!=null) {
+            discharge.setDischargedBy(data.getDischargedBy());
+            admission.setDischargedBy(discharge.getDischargedBy());
+        }
+        if(data.getInstructions()!=null) {
+            discharge.setInstructions(data.getInstructions());
+        }
+        if(data.getOutcome()!=null) {
+            discharge.setOutcome(data.getOutcome());
+        }
+
+        if(data.getReviewDate()!=null){
+            discharge.setReviewDate(data.getReviewDate());
+        }
+
+        admission.setDischarged(Boolean.TRUE);
+
+        admissionRepository.save(admission);
+
+        return repository.save(discharge);
+    }
+
+    @Transactional
+    public PatientDiagnosis patchDiagnosis(String admissionNo, DischargeDiagnosis data) {
+        PatientDiagnosis diagnosis = patientDiagnosisRepository.findPatientDiagnosisByVisitNumber(admissionNo)
+                .stream().findFirst().orElse(new PatientDiagnosis());
+
+        Optional<Admission> admissionOptional = admissionRepository.findByAdmissionNo(admissionNo);
+
+        if(admissionOptional.isPresent()){
+            Admission admission = admissionOptional.get();
+            diagnosis.setPatient(admission.getPatient());
+            diagnosis.setVisit(admission);
+            if(data.getCertainty()!=null) {
+                diagnosis.setCertainty(data.getCertainty());
+            }
+
+            Diagnosis diag = Optional.of(diagnosis.getDiagnosis()).orElse(new Diagnosis());
+            diag.setCode(data.getCode());
+            diag.setDescription(data.getDescription());
+            if(data.getDoctor()!=null) {
+                diagnosis.setDoctor(data.getDoctor());
+            }
+            diagnosis.setDiagnosis(diag);
+            if(data.getDiagnosisOrder()!=null) {
+                diagnosis.setDiagnosisOrder(data.getDiagnosisOrder());
+            }
+            diagnosis.setIsCondition(Boolean.FALSE);
+            if(data.getRemarks()!=null) {
+                diagnosis.setNotes(data.getRemarks());
+            }
+            if(data.getDiagnosisDate()!=null) {
+                diagnosis.setDateRecorded(data.getDiagnosisDate().atStartOfDay());
+            }
+
+            return patientDiagnosisRepository.save(diagnosis);
+        }
+        return diagnosis;
+
+    }
     @Transactional
     public PatientDiagnosis updateDiagnosis(String admissionNo, DischargeDiagnosis data) {
         PatientDiagnosis diagnosis = new PatientDiagnosis();

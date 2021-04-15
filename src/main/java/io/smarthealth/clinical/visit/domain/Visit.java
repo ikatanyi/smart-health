@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import javax.persistence.*; 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 /**
  * Patient CheckIn
@@ -73,6 +75,7 @@ public class Visit extends Auditable {
 //    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL,
 //              fetch = FetchType.LAZY, optional = false)
 //    private PostDetails details;
-    @OneToOne(mappedBy = "visit", optional = false)
+    @OneToOne(mappedBy = "visit")
+//    @NotFound(action = NotFoundAction.IGNORE)
     private PaymentDetails paymentDetails;
 }

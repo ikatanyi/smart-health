@@ -4,21 +4,15 @@ import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.data.CareTeamData;
-import io.smarthealth.clinical.admission.domain.Admission;
-import io.smarthealth.clinical.admission.domain.Bed;
-import io.smarthealth.clinical.admission.domain.BedType;
-import io.smarthealth.clinical.admission.domain.CareTeam;
-import io.smarthealth.clinical.admission.domain.EmergencyContact;
-import io.smarthealth.clinical.admission.domain.Room;
-import io.smarthealth.clinical.admission.domain.Ward;
+import io.smarthealth.clinical.admission.domain.*;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
 import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
-import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Scheme;
@@ -32,15 +26,16 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  *
