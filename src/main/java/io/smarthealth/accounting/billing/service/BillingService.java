@@ -1078,8 +1078,11 @@ public class BillingService {
         billItem.setStatus(BillStatus.Paid);
         billItem.setMedicId(null);
         billItem.setBillPayMode(visit.getPaymentMethod());
-        billItem.setEntryType(BillEntryType.Credit);
-
+        if(category == ItemCategory.Admission){
+            billItem.setEntryType(BillEntryType.Debit);
+        }else {
+            billItem.setEntryType(BillEntryType.Credit);
+        }
         patientbill.addBillItem(billItem);
 
         return save(patientbill);

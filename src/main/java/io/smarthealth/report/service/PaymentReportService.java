@@ -169,9 +169,10 @@ public class PaymentReportService {
         String voucherNo = reportParam.getFirst("voucherNo");
 
         PaymentData paymentData = paymentService.getPaymentByVoucherNo(voucherNo).toData();
+        System.err.println("my type for now "+paymentData.getPayeeType().name());
 
         reportData.getFilters().put("category", paymentData.getPayeeType().toString());
-        if (paymentData.getPayeeType() == PayeeType.Doctor || paymentData.getPayeeType() == PayeeType.PettyCash) {
+        if (paymentData.getPayeeType() == PayeeType.Doctor || paymentData.getPayeeType() == PayeeType.PettyCash ) {
             if (paymentData.getPayeeId() != null) {
                 Employee emp = employeeService.findEmployeeByIdOrThrow(paymentData.getPayeeId());
                 reportData.setEmployeeId(emp.getStaffNumber());
@@ -191,6 +192,11 @@ public class PaymentReportService {
             List<PettyCashPaymentData> paymentDataItem = paymentService.getPettyCashPayment(paymentData.getId());
             reportData.getFilters().put("PaymentData", paymentDataItem);
         }
+        if (paymentData.getPayeeType() == PayeeType.Others) {
+            List<PettyCashPaymentData> paymentDataItem = Arrays.asList(PettyCashPaymentData.of(paymentData));
+            reportData.getFilters().put("PaymentData", paymentDataItem);
+        }
+
         reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(paymentData.getAmount()).toUpperCase());
         reportData.setData(Arrays.asList(paymentData));
         reportData.setFormat(format);

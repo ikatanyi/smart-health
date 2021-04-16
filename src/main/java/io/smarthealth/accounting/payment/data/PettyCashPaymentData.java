@@ -42,4 +42,18 @@ public class PettyCashPaymentData {
     private String transactionNo;
     private String requestedBy;
     private LocalDate requestDate;
+
+    public static PettyCashPaymentData of(PaymentData paymentData){
+        PettyCashPaymentData data=new PettyCashPaymentData();
+        data.setDescription(paymentData.getDescription()!=null ? paymentData.getDescription() : "Other Payments");
+        data.setPaymentDate(paymentData.getPaymentDate());
+        data.setCredit(paymentData.getAmount());
+        data.setDebit(paymentData.getAmount());
+        data.setPayee(paymentData.getPayee());
+        data.setReferenceNumber(paymentData.getReferenceNumber());
+        data.setRequestDate(paymentData.getPaymentDate());
+        data.setTransactionNo(paymentData.getTransactionNo());
+        data.setVoucherNo(paymentData.getVoucherNo());
+        return data;
+    }
 }

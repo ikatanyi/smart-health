@@ -173,7 +173,7 @@ public class ProcedureService {
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
 
-                if(id.isPaid()){
+                if(id.isPaid() || patientProcRegData.getPaymentMode().equals("Insurance")){
                     pte.setPaid(true);
                 }else {
                     if (patientProcRegData.getPaymentMode().equals("Cash") && visit != null && visit.getVisitType() == VisitEnum.VisitType.Outpatient) {

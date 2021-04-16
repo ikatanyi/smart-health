@@ -142,7 +142,7 @@ public class RadiologyService {
                 pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
-                if(id.isPaid()) {
+                if(id.isPaid() || patientScanReg.getPaymentMode().equals("Insurance") ) {
                     pte.setPaid(Boolean.TRUE);
                 }else {
                     if (patientScanReg.getPaymentMode().equals("Cash")) {

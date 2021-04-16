@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="480" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
@@ -13,7 +14,7 @@
 		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["D:\\code\\smarthealth.io\\sh-backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="Employee_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
@@ -108,7 +109,7 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="64">
+		<band height="51">
 			<subreport>
 				<reportElement x="1" y="2" width="307" height="48" uuid="9f408f77-6458-4591-935a-77d74f77e4d6">
 					<printWhenExpression><![CDATA[$P{category}.equals( "Supplier" )]]></printWhenExpression>
@@ -118,7 +119,7 @@
 			</subreport>
 			<subreport>
 				<reportElement x="2" y="2" width="306" height="48" uuid="5fe0f837-f4cd-4acc-b3d0-ebf331b3d270">
-					<printWhenExpression><![CDATA[$P{category}.equals( "Doctor" )||$P{category}.equals( "pettycash" )]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$P{category}.equals( "Doctor" ) || $P{category}.equals( "PettyCash" ) || $P{category}.equals( "Others" )]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="payee">
 					<subreportParameterExpression><![CDATA[$F{payee}]]></subreportParameterExpression>
@@ -182,6 +183,24 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{paymentMethod}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="2" y="2" width="50" height="21" uuid="02ab3992-4420-45fd-aa53-587a16d88b4f">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Others" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payee]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="52" y="2" width="248" height="20" uuid="523f6f15-d507-49b0-9fef-120df8004355">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Others" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{payee}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>
@@ -195,7 +214,7 @@
 			</subreport>
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="14" uuid="f9c90bad-1d6a-4b5d-ac83-0e773438bbbe">
-					<printWhenExpression><![CDATA[$P{category}.equals( "PettyCash" )]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$P{category}.equals( "PettyCash" ) || $P{category}.equals( "Others" )]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{PaymentData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "payment_voucher_subreport_2.jasper"]]></subreportExpression>
@@ -236,7 +255,7 @@
 				</textElement>
 				<text><![CDATA[Acceptance Endorsement]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="false">
 				<reportElement x="16" y="3" width="354" height="11" uuid="353f591c-e31b-48b8-84c5-92b3d3be7671"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
