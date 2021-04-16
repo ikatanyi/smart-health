@@ -130,7 +130,7 @@ public class SupplierService {
         return supplierRepository.findBySupplierNameOrLegalName(supplierName, supplierName);
     }
 
-    public Page<Supplier> getSuppliers(String type, boolean includeClosed, String term, Pageable page) {
+    public Page<Supplier> getSuppliers(String type, Boolean includeClosed, String term, Pageable page) {
         SupplierType searchType = null;
         if (type != null && EnumUtils.isValidEnum(SupplierType.class, type)) {
             searchType = SupplierType.valueOf(type);

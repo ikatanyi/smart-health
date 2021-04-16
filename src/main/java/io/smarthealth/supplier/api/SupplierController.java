@@ -71,7 +71,7 @@ public class SupplierController {
     @GetMapping("/suppliers")
     @PreAuthorize("hasAuthority('view_suppliers')")
     public ResponseEntity<?> getAllSuppliers(
-            @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
+            @RequestParam(value = "includeClosed", required = false) Boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
             @RequestParam(value = "type", required = false) final String type,
             @RequestParam(value = "page", required = false) Integer page,

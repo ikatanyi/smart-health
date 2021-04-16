@@ -3,6 +3,7 @@ package io.smarthealth.supplier.domain.specification;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.domain.enumeration.SupplierType;
 import java.util.ArrayList;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -17,11 +18,11 @@ public class SupplierSpecification {
         super();
     }
     
-    public static Specification<Supplier> createSpecification(final SupplierType type, final String term, final boolean includeClosed) {
+    public static Specification<Supplier> createSpecification(final SupplierType type, String term, Boolean includeClosed) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
-            if (!includeClosed) {
+            if (includeClosed!=null && !includeClosed) {
                 predicates.add(cb.equal(root.get("active"), true));
             }
 
@@ -29,13 +30,8 @@ public class SupplierSpecification {
                 predicates.add(cb.equal(root.get("supplierType"), type));
             } 
             if (term != null) {
-                final String likeExpression = "%" + term + "%";
-                predicates.add(
-                        cb.or(
-                                cb.like(root.get("supplierName"), likeExpression),
-                                cb.like(root.get("legalName"), likeExpression)
-                        )
-                );
+               String likeExpression = "%" + term.toLowerCase() + "%";
+                predicates.add(cb.like(root.get("supplierName"), likeExpression));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
