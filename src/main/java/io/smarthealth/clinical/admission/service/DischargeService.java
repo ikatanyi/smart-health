@@ -249,7 +249,7 @@ public class DischargeService {
         if(data.getCertainty()!=null) {
             diagnosis.setCertainty(data.getCertainty());
         }
-        Diagnosis diag = Optional.of(diagnosis.getDiagnosis()).orElse(new Diagnosis());
+        Diagnosis diag = diagnosis.getDiagnosis()!=null ? diagnosis.getDiagnosis() : new Diagnosis();
         if(data.getCode()!=null) {
             diag.setCode(data.getCode());
         }
