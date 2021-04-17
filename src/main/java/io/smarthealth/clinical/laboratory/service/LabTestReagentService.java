@@ -50,6 +50,7 @@ public class LabTestReagentService {
             reagent.setReagentService(item);
             reagent.setTest(labTest);
             reagent.setEquipment(labEquipment);
+            reagent.setEstimatedQuantity(data.getEstimatedQuantity());
 
             testReagents.add(reagent);
         }
