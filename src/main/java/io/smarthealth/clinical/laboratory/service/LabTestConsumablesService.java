@@ -10,6 +10,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
+import io.smarthealth.stock.inventory.domain.specification.StockEntrySpecification;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemRepository;
 import io.smarthealth.stock.stores.domain.Store;
@@ -40,19 +41,24 @@ public class LabTestConsumablesService {
         for (LabTestConsumablesData data : d) {
             //find item service
             Item item = itemRepository.findById(data.getConsumableItemId()).orElseThrow(() -> APIException.notFound("Item/Service identified by id {0} not found ", data.getConsumableItemId()));
+            Store store = storeService.getStoreWithNoFoundDetection(data.getStoreId());
+
             LabTestConsumables consumable = new LabTestConsumables();
             consumable.setItem(item);
             consumable.setQuantity(data.getQuantity());
             consumable.setUnitOfMeasure(data.getUnitOfMeasure());
             consumable.setLabRegister(labRegister);
             consumable.setType(data.getType());
+            consumable.setStore(store);
+
             consumables.add(consumable);
         }
 
         List<LabTestConsumables> savedConsumables = labTestConsumablesRepository.saveAll(consumables);
         //affect stocks
         //this fn has been halted
-       //List<StockEntry> stockEntries = createStockEntry(savedConsumables);
+       List<StockEntry> stockEntries = createStockEntry(savedConsumables);
+        StockEntrySpecification
 
         return savedConsumables;
 
@@ -64,35 +70,37 @@ public class LabTestConsumablesService {
         return labTestConsumablesRepository.findByLabRegister(labRegister);
     }
 
-/*
+
     private List<StockEntry> createStockEntry(List<LabTestConsumables>  labTestConsumables) {
         return labTestConsumables.stream()
-                .filter(x -> x.getStoreId() != null)
                 .map(consumable -> {
-                    Item item = drug.getItem();
-                    Store store = storeService.getStoreWithNoFoundDetection(consumable.getStoreId());
-
-                    BigDecimal amt = BigDecimal.valueOf(consumable.getAmount());
-                    BigDecimal price = BigDecimal.valueOf(consumable.getPrice());
+                    Item item = consumable.getItem();
+                    Store store = consumable.getStore();
+                    String patientName ="";
+                    if(consumable.getLabRegister().getIsWalkin()){
+                        patientName= consumable.getLabRegister().getWalkIn().getFullName();
+                    }else{
+                        patientName = consumable.getLabRegister().getVisit().getPatient().getFullName();
+                    }
 
                     StockEntry stock = new StockEntry();
-                    stock.setAmount(amt);
+                    stock.setAmount(consumable.getItem().getRate().multiply(BigDecimal.valueOf(consumable.getQuantity())));
                     stock.setQuantity(consumable.getQuantity() * -1);
                     stock.setItem(item);
                     stock.setMoveType(MovementType.Dispensed);
-                    stock.setPrice(price);
+                    stock.setPrice(consumable.getItem().getRate());
                     stock.setPurpose(MovementPurpose.Issue);
-                    stock.setReferenceNumber(patientBill.getPatient().getPatientNumber());
-                    stock.setIssuedTo(patientBill.getPatient().getPatientNumber() + " " + patientBill.getPatient().getFullName());
+                    stock.setReferenceNumber(consumable.getLabRegister().getPatientNo());
+                    stock.setIssuedTo(consumable.getLabRegister().getPatientNo() + " " + patientName);
                     stock.setStore(store);
-                    stock.setTransactionDate(consumable.getBillingDate());
-                    stock.setTransactionNumber(consumable.getTransactionId());
+                    stock.setTransactionDate(consumable.getLabRegister().getRequestDatetime().toLocalDate());
+                    stock.setTransactionNumber(consumable.getLabRegister().getLabNumber());
                     stock.setUnit("");
                     stock.setBatchNo("-");
 
                     return stock;
                 })
                 .collect(Collectors.toList());
-    }*/
+    }
 
 }
