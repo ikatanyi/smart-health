@@ -67,7 +67,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
     @Query(value = "SELECT COUNT(c) FROM Visit c WHERE (c.status='CheckIn' OR c.status = 'Admitted')")
     Long countWhereVisitsAreActive();
 
-    @Query(value = "SELECT v FROM Visit v WHERE  TIMESTAMPDIFF(hour, start_datetime,now())  >=:hours AND v.status = 'CheckIn'")
+    @Query(value = "SELECT v FROM Visit v WHERE  TIMESTAMPDIFF(hour, start_datetime,now())  >=:hours AND (v.status='CheckIn' OR v.status='Discharged')")
     List<Visit> visitsPast24hours(@Param("hours") int hours);
 
     @Query(value = "SELECT v FROM Visit v WHERE v.patient=:patient AND  v.visitNumber <> :visitNumber ORDER BY v.id DESC")

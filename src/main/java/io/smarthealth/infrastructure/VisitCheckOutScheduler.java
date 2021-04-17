@@ -31,7 +31,8 @@ public class VisitCheckOutScheduler {
     
     Reference source https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm
      */
-    @Scheduled(cron = "0 15 06 * * ?") //Fire at 06:15 AM every day 
+    @Scheduled(cron = "0 15 06 * * ?") //Fire at 06:15 AM every day
+//    @Scheduled(cron = "0 52 13 * * ?") //Fire at 06:15 AM every day
     public void checkoutAllActiveVisitsPast24Hours() {
         log.info("checkoutAllActiveVisitsPast24Hours Job started");
         List<Visit> visits = visitService.fetchAllVisitsSurpassed24hrs();
