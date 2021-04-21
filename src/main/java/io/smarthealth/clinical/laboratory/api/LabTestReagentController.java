@@ -53,14 +53,15 @@ public class LabTestReagentController {
     @GetMapping("/lab-test-reagents")
     public ResponseEntity<?> fetchLaReagentsByTestAndReagent(
             @RequestParam(required = true, value = "testId") Long testId,
-            @RequestParam(required = true, value = "equipmentId") Long equipmentId
+            @RequestParam(required = true, value = "equipmentId") Long equipmentId,
+            @RequestParam(required = true, value = "storeId") Long storeId
     ) {
 
-        List<LabTestReagent> labTestReagent = labTestReagentService.fetchByTestAndEquipment(testId, equipmentId);
+        List<LabTestReagentData> labTestReagent = labTestReagentService.fetchByTestAndEquipmentData(testId, equipmentId, storeId);
         Pager<List<LabTestReagentData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Lab Test Created.");
-        pagers.setContent(LabTestReagentData.map(labTestReagent));
+        pagers.setContent(labTestReagent);
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }

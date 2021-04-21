@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.xpath.operations.Bool;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -195,13 +196,19 @@ public class LaboratoryService {
         testRepository.save(registerTest);
     }
 
-    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, List<LabTestStatus> status, DateRange range, String search, Pageable page) {
-        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, search);
+    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber,
+                                            String patientNumber, List<LabTestStatus> status, DateRange range,
+                                            String search, Pageable page) {
+        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber,
+                visitNumber, patientNumber, status, range, search);
         return repository.findAll(spec, page);
     }
 
-    public Page<LabRegisterTest> getLabRegisterTest(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range, Boolean isWalkin, String search, Pageable page) {
-        Specification<LabRegisterTest> spec = LabRegisterTestSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, isWalkin, search);
+    public Page<LabRegisterTest> getLabRegisterTest(String labNumber, String orderNumber, String visitNumber,
+                                                    String patientNumber, LabTestStatus status, DateRange range,
+                                                    Boolean isWalkin, String search, Boolean stockEntryDone, Pageable page) {
+        Specification<LabRegisterTest> spec = LabRegisterTestSpecification.createSpecification(labNumber, orderNumber,
+                visitNumber, patientNumber, status, range, isWalkin, search,stockEntryDone);
         return testRepository.findAll(spec, page);
     }
 
@@ -404,6 +411,7 @@ public class LaboratoryService {
         test.setBilled(data.isRequestBilled());
 
         test.setStatus(LabTestStatus.AwaitingSpecimen);
+        test.setStockEntryDone(data.getStockEntryDone());
         return test;
     }
 

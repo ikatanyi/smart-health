@@ -144,7 +144,8 @@ public class LabRegisterController {
         Pageable pageable = PaginationUtil.createPage(page, size);
          final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
          
-        Page<LabRegisterData> list = service.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status, range,search,pageable)
+        Page<LabRegisterData> list = service.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status,
+                range,search,pageable)
                 .map(x -> {
                     LabRegisterData data =  x.toData(isExpanded(expand));
                     if(x.getIsWalkin()){

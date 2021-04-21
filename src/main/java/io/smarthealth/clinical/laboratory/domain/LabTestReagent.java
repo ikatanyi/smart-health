@@ -8,6 +8,10 @@ import javax.persistence.*;
 
 @Entity
 @Data
+@Table(
+        uniqueConstraints =
+        @UniqueConstraint(columnNames = {"test_id", "equipment_id", "reagent_service_id"})
+)
 public class LabTestReagent extends Auditable {
 
     @ManyToOne
@@ -21,4 +25,8 @@ public class LabTestReagent extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_test_types_reagent_service_id"))
     private Item reagentService;
+
+    private Double estimatedQuantity;
+
+//    private String uom;
 }

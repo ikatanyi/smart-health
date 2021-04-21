@@ -30,6 +30,8 @@ public class LabRegisterTestData {
     private String orderNumber;
     private String labNumber;
     private String requestedBy;
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
+    private LocalDateTime requestDatetime;
 
     private Long testId;
     private String testName;
@@ -87,4 +89,6 @@ public class LabRegisterTestData {
     @ApiModelProperty(required = false, hidden = true)
     private Boolean isWalkin;
     private boolean requestBilled;
+
+    private Boolean stockEntryDone= Boolean.FALSE;
 }
