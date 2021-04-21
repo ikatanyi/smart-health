@@ -2,22 +2,22 @@ package io.smarthealth.clinical.laboratory.service;
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.clinical.laboratory.data.LabTestConsumablesData;
-import io.smarthealth.clinical.laboratory.domain.LabRegister;
-import io.smarthealth.clinical.laboratory.domain.LabRegisterRepository;
-import io.smarthealth.clinical.laboratory.domain.LabTestConsumables;
-import io.smarthealth.clinical.laboratory.domain.LabTestConsumablesRepository;
+import io.smarthealth.clinical.laboratory.domain.*;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.domain.specification.StockEntrySpecification;
+import io.smarthealth.stock.inventory.events.InventoryEvent;
+import io.smarthealth.stock.inventory.events.InventorySpringEventPublisher;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemRepository;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,13 +31,17 @@ public class LabTestConsumablesService {
     private final LabTestConsumablesRepository labTestConsumablesRepository;
     private final ItemRepository itemRepository;
     private final LabRegisterRepository labRegisterRepository;
+    private final LabRegisterTestRepository labRegisterTestRepository;
     private final StoreService storeService;
     private final StockEntryRepository stockEntryRepository;
+    private final InventorySpringEventPublisher inventoryEventSender;
 
-    public List<LabTestConsumables> saveLabTestConsumable(final Long labRegisterId, List<LabTestConsumablesData> d) {
+
+    @Transactional
+    public List<LabTestConsumables> saveLabTestConsumable(final Long labRegisterTestId, List<LabTestConsumablesData> d) {
         List<LabTestConsumables> consumables = new ArrayList<>();
         //find lab register
-        LabRegister labRegister = labRegisterRepository.findById(labRegisterId).orElseThrow(() -> APIException.notFound("Consumable identified by id {0} not available ", labRegisterId));
+        LabRegisterTest labRegisterTest = labRegisterTestRepository.findById(labRegisterTestId).orElseThrow(() -> APIException.notFound("Lab register test identified by id {0} not available ", labRegisterTestId));
 
 
         for (LabTestConsumablesData data : d) {
@@ -49,7 +53,7 @@ public class LabTestConsumablesService {
             consumable.setItem(item);
             consumable.setQuantity(data.getQuantity());
             consumable.setUnitOfMeasure(data.getUnitOfMeasure());
-            consumable.setLabRegister(labRegister);
+            consumable.setLabRegister(labRegisterTest.getLabRegister());
             consumable.setType(data.getType());
             consumable.setStore(store);
 
@@ -60,7 +64,18 @@ public class LabTestConsumablesService {
 
         //affect stocks
         List<StockEntry> stockEntries = createStockEntry(savedConsumables);
-        stockEntryRepository.saveAll(stockEntries);
+
+        stockEntries.stream().forEach((i) -> {
+//            doStockEntry(InventoryEvent.Type.Decrease, i, i.getStore(), i.getItem(), i.getQuantity());
+            save(i);
+        });
+
+//        stockEntryRepository.saveAll(stockEntries);
+
+
+        //update lab register test
+        labRegisterTest.setStockEntryDone(Boolean.TRUE);
+        labRegisterTestRepository.save(labRegisterTest);
 
         return savedConsumables;
 
@@ -103,6 +118,32 @@ public class LabTestConsumablesService {
                     return stock;
                 })
                 .collect(Collectors.toList());
+    }
+
+//    public void doStockEntry(InventoryEvent.Type type, StockEntry stock, Store store, Item item, Double qty) {
+//        stockEntryRepository.save(stock);
+////        inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
+//        inventoryEventSender.publishInventoryEvent(type, store, item, qty);
+//    }
+
+    public void save(StockEntry entry) {
+        stockEntryRepository.saveAndFlush(entry);
+        Double qty = entry.getQuantity();
+        if (entry.getPurpose() == MovementPurpose.Issue && entry.getMoveType() == MovementType.Dispensed) {
+            if (BigDecimal.valueOf(qty).signum() == -1) {
+                qty *= -1;
+            }
+        }
+        inventoryEventSender.publishInventoryEvent(
+                getEvent(entry.getMoveType()),
+                entry.getStore(),
+                entry.getItem(),
+                qty
+        );
+    }
+
+    private InventoryEvent.Type getEvent(MovementType type) {
+        return type == MovementType.Dispensed ? InventoryEvent.Type.Decrease : InventoryEvent.Type.Increase;
     }
 
 }

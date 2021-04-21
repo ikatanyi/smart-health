@@ -55,11 +55,14 @@ public class InventoryItemController {
 
     @GetMapping("/inventoryItem/{id}/store/{storeId}")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
-    public InventoryItemData getInventoryItem(@PathVariable(value = "id") Long code, @PathVariable(value = "storeId") Long storeId) {
+    public InventoryItemData getInventoryItem(@PathVariable(value = "id") Long code,
+                                              @PathVariable(value = "storeId") Long storeId) {
         InventoryItem inventoryItem = service.getInventoryItem(code, storeId).orElse(null);
         Item item = inventoryItem != null ? inventoryItem.getItem() : null;
         if (item != null) {
-            auditTrailService.saveAuditTrail("Inventory", "viewed inventory item " + inventoryItem.getItem().getItemName() + "at the store identified by id " + storeId);
+            auditTrailService.saveAuditTrail("Inventory",
+                    "viewed inventory item " + inventoryItem.getItem().getItemName() +
+                            "at the store identified by id " + storeId);
         }
         return inventoryItem != null ? inventoryItem.toData() : null;
     }

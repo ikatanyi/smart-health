@@ -4,6 +4,7 @@ import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.domain.Identifiable;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +15,6 @@ import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringExclude;
 
 /**
- *
  * @author Kelsas
  */
 @Data
@@ -60,10 +60,10 @@ public class LabRegisterTest extends Identifiable {
     @ToStringExclude
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_register_parent_test_id"))
     private LabTest parentLabTest;
-//    @Transient
+    //    @Transient
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
-    
+
     @OneToMany(mappedBy = "labRegisterTest")
     private List<LabResult> labResults;
 
@@ -73,6 +73,8 @@ public class LabRegisterTest extends Identifiable {
     private String testName;
 
     private boolean billed;
+
+    private Boolean stockEntryDone = Boolean.FALSE;
 
     public LabRegisterTestData toData(Boolean expand) {
         LabRegisterTestData data = new LabRegisterTestData();
@@ -99,13 +101,24 @@ public class LabRegisterTest extends Identifiable {
             data.setLabNumber(this.labRegister.getLabNumber());
             data.setPatientNumber(this.labRegister.getPatientNo());
             data.setReferenceNo(this.labRegister.getTransactionId());
-            data.setIsWalkin(Boolean.TRUE);
+            data.setIsWalkin(this.labRegister.getIsWalkin());
+            data.setRequestDatetime(this.labRegister.getRequestDatetime());
             if (this.labRegister.getVisit() != null) {
                 data.setPatientName(this.labRegister.getVisit().getPatient().getGivenName());
                 data.setDOB(this.labRegister.getVisit().getPatient().getDateOfBirth());
                 data.setGender(this.labRegister.getVisit().getPatient().getGender());
                 data.setIsWalkin(Boolean.FALSE);
+                data.setVisitNumber(this.labRegister.getVisit().getVisitNumber());
+                data.setPatientNumber(this.labRegister.getVisit().getPatient().getPatientNumber());
             }
+
+            if (this.labRegister.getWalkIn() != null) {
+                data.setPatientName(this.labRegister.getWalkIn().getFullName());
+//                data.setDOB(this.labRegister.getWalkIn().getAge());
+                data.setPatientNumber(this.labRegister.getWalkIn().getWalkingIdentitificationNo());
+                data.setIsWalkin(Boolean.TRUE);
+            }
+
         }
 
         data.setPaid(this.paid);

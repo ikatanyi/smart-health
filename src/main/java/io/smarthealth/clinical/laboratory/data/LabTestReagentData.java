@@ -18,6 +18,9 @@ public class LabTestReagentData {
     private Double estimatedQuantity;
     private String uom;
 
+    //to display only
+    private Double availableQuantity;//in store selected
+
 
     public static LabTestReagentData map(LabTestReagent e) {
         LabTestReagentData data = new LabTestReagentData();
@@ -27,7 +30,7 @@ public class LabTestReagentData {
         data.setTestName(e.getTest().getTestName());
         data.setReagentServiceId(e.getReagentService().getId());
         data.setReagentServiceName(e.getReagentService().getItemName());
-        data.setUom(e.getTest().getService().getUnit());
+        data.setUom(e.getReagentService().getUnit());
         data.setEstimatedQuantity(e.getEstimatedQuantity());
         return data;
     }
