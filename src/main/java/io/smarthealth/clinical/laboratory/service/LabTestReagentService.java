@@ -65,7 +65,7 @@ public class LabTestReagentService {
         return reagentRepository.saveAll(testReagents);
     }
 
-    public List<LabTestReagent> fetchByTestAndEquipment(final Long testId, final Long equipmentId, final Long storeId) {
+    public List<LabTestReagent> fetchByTestAndEquipment(final Long testId, final Long equipmentId) {
         //find test
         LabTest labTest = labTestRepository.findById(testId).orElseThrow(() -> APIException.notFound("Test identified by id {0} not found ", testId));
         //find Equipment
@@ -87,9 +87,13 @@ public class LabTestReagentService {
         for (LabTestReagent e : labTestReagents) {
             LabTestReagentData data = LabTestReagentData.map(e);
             Optional<Item> item = itemRepository.findByItemCode(e.getReagentService().getItemCode());
-            Double available = 0D;
+            Double available = 0.0;
             if (item.isPresent()) {
-                available = inventoryItemRepository.findItemCountByItemAndStore(item.get(), store).doubleValue();
+                try {
+                    available = inventoryItemRepository.findItemCountByItemAndStore(item.get(), store).doubleValue();
+                } catch (Exception ex) {
+                    available = 0.0;
+                }
             } else {
                 available = 0.0;
             }
