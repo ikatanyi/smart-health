@@ -205,7 +205,7 @@ public class InventoryService {
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(st.getUnit());
                         stock.setExpiryDate(st.getExpiryDate());
-                        stock.setBatchNo(stock.getBatchNo());
+                        stock.setBatchNo(st.getBatchNumber());
 
                         StockEntry savedEntry = stockEntryRepository.save(stock);
 

@@ -403,13 +403,13 @@
 	<columnFooter>
 		<band/>
 	</columnFooter>
-	<pageFooter>
-		<band height="26">
+	<lastPageFooter>
+		<band height="50">
 			<subreport>
-				<reportElement x="0" y="0" width="515" height="26" uuid="04794731-d16b-413e-88e0-5d242895aed2"/>
+				<reportElement x="0" y="4" width="515" height="26" uuid="04794731-d16b-413e-88e0-5d242895aed2"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
-	</pageFooter>
+	</lastPageFooter>
 </jasperReport>
