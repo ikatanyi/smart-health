@@ -93,7 +93,7 @@
 				<reportElement x="0" y="3" width="40" height="15" uuid="cc387c6c-c765-4c98-87ec-5c30e536eeac">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
-				<text><![CDATA[Static Text]]></text>
+				<text><![CDATA[#]]></text>
 			</staticText>
 		</band>
 	</pageHeader>
@@ -104,28 +104,28 @@
 				<reportElement x="100" y="-1" width="250" height="14" uuid="a0d74a17-3ed2-4b16-a1b1-7e74837163a9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{item}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="40" y="0" width="60" height="13" uuid="489ccc5f-6614-4fa5-aa23-c0ffcf536928"/>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemCode}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="-1" width="100" height="14" uuid="e465a5c9-5598-4e9a-b46d-d3557ac9bec7"/>
-				<textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="450" y="0" width="100" height="13" uuid="04a1859f-2d69-4097-a504-0993cd880294"/>
-				<textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{receivedQuantity}]]></textFieldExpression>
@@ -134,6 +134,7 @@
 				<reportElement x="0" y="0" width="41" height="13" uuid="3f8c0218-dfbf-4c78-8c3e-01f8a34bb252">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
+				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$V{PAGE_COUNT}]]></textFieldExpression>
 			</textField>
 		</band>
