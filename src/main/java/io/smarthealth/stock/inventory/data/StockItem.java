@@ -21,4 +21,5 @@ public class StockItem implements Serializable {
     private BigDecimal tax;
     private BigDecimal amount;
     private String unit;
+    private Long requistionId;
 }

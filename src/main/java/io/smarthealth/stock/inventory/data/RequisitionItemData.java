@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class RequisitionItemData {
 
+    private Long id;
     private Long itemId;
     private String itemCode;
     private String item;
@@ -21,6 +22,7 @@ public class RequisitionItemData {
 
     public static RequisitionItemData map(RequisitionItem item) {
         RequisitionItemData data = new RequisitionItemData();
+        data.setId(item.getId());
         if (item.getItem() != null) {
             data.setItemId(item.getItem().getId());
             data.setItemCode(item.getItem().getItemCode());

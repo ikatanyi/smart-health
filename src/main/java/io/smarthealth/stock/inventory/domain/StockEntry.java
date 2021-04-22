@@ -7,11 +7,14 @@ import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.supplier.domain.Supplier;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 /**
  * Stock Entry
@@ -22,7 +25,11 @@ import java.time.LocalDate;
 @Data
 @Table(name = "stock_inventory_entries")
 public class StockEntry extends Auditable {
-
+    public enum Status{
+        Active,
+        Received,
+        Deleted
+    }
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_store_id"))
     private Store store;
@@ -50,6 +57,18 @@ public class StockEntry extends Auditable {
     private LocalDate expiryDate;
     private String batchNo;
 
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_destination_store_id"))
+    private Store destinationStore;
+    private Double cachedQuantity;
+    private String notes;
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    private LocalDateTime receivedAt;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_supplier_id"))
+    private Supplier supplier;
+
     /*
     Perpetual Inventory
         If perpetual inventory system is enabled, additional costs will be booked in "Expense Included In Valuation" account.
@@ -62,6 +81,10 @@ public class StockEntry extends Auditable {
         if (this.getStore() != null) {
             data.setStoreId(this.getStore().getId());
             data.setStore(this.getStore().getStoreName());
+        }
+        if(this.destinationStore!=null){
+            data.setDestinationStoreId(this.getDestinationStore().getId());
+            data.setDestinationStore(this.getDestinationStore().getStoreName());
         }
         if (this.getItem() != null) {
             data.setItemId(this.getItem().getId());
@@ -81,7 +104,9 @@ public class StockEntry extends Auditable {
         data.setPurpose(this.getPurpose());
         data.setCostCenter(this.getCostCenter());
         data.setCreatedBy(this.getCreatedBy());
-
+        data.setStatus(this.getStatus());
+        data.setDateCreated(this.getTransactionDate());
+        data.setLastUpdated(this.getReceivedAt());
         return data;
     }
 
@@ -113,5 +138,7 @@ public class StockEntry extends Auditable {
         stock.setBatchNo(drug.getBatchNumber());
         return stock;
     }
-
+    public LocalDateTime getLastUpdatedDateTime(){
+        return LocalDateTime.ofInstant(getLastModifiedOn(), ZoneOffset.systemDefault());
+    }
 }

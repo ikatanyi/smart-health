@@ -274,7 +274,9 @@ public class ClinicalVisitController {
             //get the scheme
             if (schemeId != null) {
                 Scheme scheme = schemeService.fetchSchemeById(schemeId);
-                pb = Optional.of(scheme.getPayer().getPriceBook()).orElse(null);
+                if(scheme.getPayer().getPriceBook()!=null) {
+                    pb = Optional.of(scheme.getPayer().getPriceBook()).orElse(null);
+                }
             }
         }
 

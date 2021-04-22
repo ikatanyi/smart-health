@@ -35,7 +35,7 @@ public class SupplierStockEntry {
     
     private Long supplierId;
     private String supplierName;
-
+    private String documentNo;
     private String supplierInvoiceNumber;
      @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate supplierInvoiceDate;

@@ -44,4 +44,5 @@ public class DischargeData {
     private String invoiceNo;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String scheme;
+    private Long diagnosisId;
 }

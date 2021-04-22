@@ -3,6 +3,7 @@ package io.smarthealth.stock.purchase.domain.specification;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Predicate;
@@ -18,7 +19,7 @@ public class PurchaseInvoiceSpecification {
         super();
     }
 
-    public static Specification<PurchaseInvoice> createSpecification(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved) {
+    public static Specification<PurchaseInvoice> createSpecification(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved, String term, PurchaseInvoice.Type transactionType) {
         
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
@@ -46,15 +47,14 @@ public class PurchaseInvoiceSpecification {
                 );
             }
              
-//             if (item != null) {
-//                final String likeExpression = "%" + item + "%";
-//                predicates.add(
-//                        cb.or(
-//                                cb.like(root.get("item").get("itemName"), likeExpression),
-//                                cb.like(root.get("item").get("itemCode"), likeExpression)
-//                        )
-//                );
-//            }
+             if (term != null|| StringUtils.isNotBlank(term)) {
+                final String likeExpression = "%" + term + "%";
+                predicates.add( cb.like(root.get("invoiceNumber"), likeExpression) );
+            }
+
+             if(transactionType!=null){
+                 predicates.add(cb.equal(root.get("type"), transactionType));
+             }
              
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

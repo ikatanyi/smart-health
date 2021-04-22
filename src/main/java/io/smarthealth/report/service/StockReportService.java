@@ -177,7 +177,7 @@ public class StockReportService {
         String invoiceNumber = reportParam.getFirst("invoiceNumber");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         PurchaseInvoiceStatus status = EnumUtils.getEnum(PurchaseInvoiceStatus.class, reportParam.getFirst("status"));
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status,approved, Pageable.unpaged())
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status,approved, null, null, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((inv) -> {

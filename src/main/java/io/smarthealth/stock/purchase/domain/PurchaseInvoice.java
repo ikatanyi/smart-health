@@ -23,7 +23,8 @@ public class PurchaseInvoice extends Auditable {
     public enum Type {
         Stock_Delivery,
         Stock_Returns,
-        Supplier_Bill
+        Supplier_Bill,
+        Payment
     }
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purchase_invoice_supplier_id"))
@@ -47,6 +48,7 @@ public class PurchaseInvoice extends Auditable {
     private boolean approved= false;
     private String approvedBy;
     private LocalDate approvalDate;
+    private String documentNumber;
 
     @Enumerated(EnumType.STRING)
     private PurchaseInvoiceStatus status;
@@ -58,6 +60,7 @@ public class PurchaseInvoice extends Auditable {
             data.setSupplierId(this.supplier.getId());
             data.setSupplier(this.supplier.getSupplierName());
         }
+
         data.setPurchaseOrderNumber(this.purchaseOrderNumber);
         data.setTransactionDate(this.transactionDate);
         data.setDueDate(this.dueDate);
@@ -75,6 +78,7 @@ public class PurchaseInvoice extends Auditable {
         data.setAge(ChronoUnit.DAYS.between(this.transactionDate, LocalDate.now()));
         data.setApproved(this.approved);
         data.setApprovedBy(this.approvedBy);
+        data.setDocumentNumber(this.documentNumber);
         
         return data;
     }
