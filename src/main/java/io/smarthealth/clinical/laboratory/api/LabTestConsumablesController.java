@@ -27,11 +27,11 @@ public class LabTestConsumablesController {
     @Autowired
     AuditTrailService auditTrailService;
 
-    @PostMapping("/lab-test-consumable/lab-register/{labRegisterId}")
+    @PostMapping("/lab-test-consumable/lab-register/{labRegisterTestId}")
     public ResponseEntity<?> createLabTestConsumable(
-            @PathVariable(value = "labRegisterId") Long labRegisterId,
+            @PathVariable(value = "labRegisterTestId") Long labRegisterTestId,
             @Valid @RequestBody List<LabTestConsumablesData> data) {
-        List<LabTestConsumablesData> labTestConsumable = service.saveLabTestConsumable(labRegisterId,data).stream().map((c)->LabTestConsumablesData.map(c)).collect(Collectors.toList());
+        List<LabTestConsumablesData> labTestConsumable = service.saveLabTestConsumable(labRegisterTestId,data).stream().map((c)->LabTestConsumablesData.map(c)).collect(Collectors.toList());
 
         Pager<List<LabTestConsumablesData>> pagers = new Pager();
         pagers.setCode("0");

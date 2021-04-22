@@ -6,6 +6,8 @@ import io.smarthealth.security.util.SecurityUtils;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -66,4 +68,5 @@ public interface LabRegisterTestRepository extends JpaRepository<LabRegisterTest
 
     @Query("SELECT d.labTest.testName as testName, d.labRegister.requestedBy as practitioner, count(d.labTest.testName) AS count, SUM(d.price) as totalPrice FROM LabRegisterTest d WHERE d.labRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.labRegister.requestedBy")
     List<TotalTest>findTotalTestsByPractitioner(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
+
 }

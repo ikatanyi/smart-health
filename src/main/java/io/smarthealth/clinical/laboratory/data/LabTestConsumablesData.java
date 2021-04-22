@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.laboratory.data;
 
 import io.smarthealth.clinical.laboratory.domain.LabTestConsumables;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -11,10 +12,17 @@ public class LabTestConsumablesData {
     private Long consumableItemId;
     private Long labRegisterId;
     private String labRegisterNumber;
-    private int quantity;
+    private Double quantity;
     private String unitOfMeasure;
 
-    @NotNull(message = "Please provide the type : Other/Reagent")
+    @NotNull(message = "Store location is required")
+    private Long storeId;
+
+    @ApiModelProperty(hidden=true, required=false) //for swagger documentation purpose
+    private String storeName;
+
+
+    @NotNull(message = "Please provide the type i.e Other/Reagent")
     private String type;//Other/Reagent
 
     public static LabTestConsumablesData map(LabTestConsumables e) {
@@ -26,6 +34,8 @@ public class LabTestConsumablesData {
         data.setQuantity(e.getQuantity());
         data.setUnitOfMeasure(e.getUnitOfMeasure());
         data.setType(e.getType());
+        data.setStoreId(e.getStore().getId());
+        data.setStoreName(e.getStore().getStoreName());
         return data;
     }
 

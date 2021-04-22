@@ -4,8 +4,11 @@ import io.smarthealth.clinical.laboratory.domain.LabRegister;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.lang.DateRange;
+
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
+
+import org.apache.xpath.operations.Bool;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -19,7 +22,7 @@ public class LabRegisterTestSpecification {
         super();
     }
 
-    public static Specification<LabRegisterTest> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status,DateRange range, Boolean isWalkin, String search) {
+    public static Specification<LabRegisterTest> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range, Boolean isWalkin, String search, Boolean stockEffectCaptured) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (orderNumber != null) {
@@ -37,10 +40,13 @@ public class LabRegisterTestSpecification {
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
             }
-            
-              if (range != null) {
+
+            if (range != null) {
 //                   System.out.println("date ranger .. "+range.getStartDateTime()+ " end : "+range.getEndDateTime());
                 predicates.add(cb.between(root.get("entryDateTime"), range.getStartDateTime(), range.getEndDateTime()));
+            }
+            if (stockEffectCaptured!=null) {
+                predicates.add(cb.equal(root.get("stockEntryDone"), stockEffectCaptured));
             }
             if (search != null) {
                 final String likeExpression = "%" + search + "%";

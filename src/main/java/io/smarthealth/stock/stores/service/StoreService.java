@@ -3,6 +3,7 @@ package io.smarthealth.stock.stores.service;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
 import io.smarthealth.accounting.accounts.service.AccountService;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- *
  * @author Kelsas
  */
 @Service
@@ -52,14 +52,14 @@ public class StoreService {
         }
 
         if (data.getInventoryAccountNumber() != null) {
-            Optional< Account> inventory = accountService.findByAccountNumber(data.getInventoryAccountNumber());
+            Optional<Account> inventory = accountService.findByAccountNumber(data.getInventoryAccountNumber());
             if (inventory.isPresent()) {
                 toSave.setInventoryAccount(inventory.get());
             }
         }
 
         if (data.getExpenseAccountNumber() != null) {
-            Optional< Account> expense = accountService.findByAccountNumber(data.getExpenseAccountNumber());
+            Optional<Account> expense = accountService.findByAccountNumber(data.getExpenseAccountNumber());
             if (expense.isPresent()) {
                 toSave.setExpenseAccount(expense.get());
             }
@@ -82,14 +82,14 @@ public class StoreService {
         }
 
         if (data.getInventoryAccountNumber() != null) {
-            Optional< Account> inventory = accountService.findByAccountNumber(data.getInventoryAccountNumber());
+            Optional<Account> inventory = accountService.findByAccountNumber(data.getInventoryAccountNumber());
             if (inventory.isPresent()) {
                 toSave.setInventoryAccount(inventory.get());
             }
         }
 
         if (data.getExpenseAccountNumber() != null) {
-            Optional< Account> expense = accountService.findByAccountNumber(data.getExpenseAccountNumber());
+            Optional<Account> expense = accountService.findByAccountNumber(data.getExpenseAccountNumber());
             if (expense.isPresent()) {
                 toSave.setExpenseAccount(expense.get());
             }
@@ -98,9 +98,25 @@ public class StoreService {
         return storeRepository.save(toSave);
     }
 
-    public Page<Store> fetchAllStores(Type storeType, Boolean patientStore, Pageable page) {
+    public Page<Store> fetchAllStores(Boolean patientStore,Type storeType,  ServicePointType servicePointType, Pageable page) {
+//        storeType,patientStore, servicePointType
+        return storeRepository.findAll(findStoreWith(patientStore, storeType, servicePointType), page);
+    }
 
-        return storeRepository.findAll(findStoreWith(patientStore,storeType), page);
+    private static Specification<Store> findStoreWith(Boolean patientStore, Type storeType, ServicePointType servicePointType) {
+        return (root, query, builder) -> {
+            ArrayList<Predicate> predicateList = new ArrayList<>();
+            if (patientStore != null) {
+                predicateList.add(builder.equal(root.get("patientStore"), patientStore));
+            }
+            if (storeType != null) {
+                predicateList.add(builder.equal(root.get("storeType"), storeType));
+            }
+            if (servicePointType != null) {
+                predicateList.add(builder.equal(root.get("servicePoint").get("servicePointType"), servicePointType));
+            }
+            return builder.and(predicateList.toArray(new Predicate[predicateList.size()]));
+        };
     }
 
     public Optional<Store> getStore(Long id) {
@@ -130,16 +146,5 @@ public class StoreService {
         return accountService.getIncomeExpenseAccounts();
     }
 
-    private static Specification<Store> findStoreWith(Boolean patientStore, Type storeType) {
-        return (root, query, builder) -> {
-            ArrayList<Predicate> predicateList = new ArrayList<>();
-            if (patientStore != null) {
-                predicateList.add(builder.equal(root.get("patientStore"), patientStore));
-            }
-            if (storeType!=null) {
-                predicateList.add(builder.equal(root.get("storeType"), storeType));
-            }
-            return builder.and(predicateList.toArray(new Predicate[predicateList.size()]));
-        };
-    }
+
 }

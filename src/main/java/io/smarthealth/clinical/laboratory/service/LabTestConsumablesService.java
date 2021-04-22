@@ -17,6 +17,7 @@ import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,30 +31,51 @@ public class LabTestConsumablesService {
     private final LabTestConsumablesRepository labTestConsumablesRepository;
     private final ItemRepository itemRepository;
     private final LabRegisterRepository labRegisterRepository;
+    private final LabRegisterTestRepository labRegisterTestRepository;
     private final StoreService storeService;
+    private final StockEntryRepository stockEntryRepository;
+    private final InventorySpringEventPublisher inventoryEventSender;
 
-    public List<LabTestConsumables> saveLabTestConsumable(final Long labRegisterId, List<LabTestConsumablesData> d) {
+
+    @Transactional
+    public List<LabTestConsumables> saveLabTestConsumable(final Long labRegisterTestId, List<LabTestConsumablesData> d) {
         List<LabTestConsumables> consumables = new ArrayList<>();
         //find lab register
-        LabRegister labRegister = labRegisterRepository.findById(labRegisterId).orElseThrow(() -> APIException.notFound("Consumable identified by id {0} not available ", labRegisterId));
+        LabRegisterTest labRegisterTest = labRegisterTestRepository.findById(labRegisterTestId).orElseThrow(() -> APIException.notFound("Lab register test identified by id {0} not available ", labRegisterTestId));
 
 
         for (LabTestConsumablesData data : d) {
             //find item service
             Item item = itemRepository.findById(data.getConsumableItemId()).orElseThrow(() -> APIException.notFound("Item/Service identified by id {0} not found ", data.getConsumableItemId()));
+            Store store = storeService.getStoreWithNoFoundDetection(data.getStoreId());
+
             LabTestConsumables consumable = new LabTestConsumables();
             consumable.setItem(item);
             consumable.setQuantity(data.getQuantity());
             consumable.setUnitOfMeasure(data.getUnitOfMeasure());
-            consumable.setLabRegister(labRegister);
+            consumable.setLabRegister(labRegisterTest.getLabRegister());
             consumable.setType(data.getType());
+            consumable.setStore(store);
+
             consumables.add(consumable);
         }
 
         List<LabTestConsumables> savedConsumables = labTestConsumablesRepository.saveAll(consumables);
+
         //affect stocks
-        //this fn has been halted
-       //List<StockEntry> stockEntries = createStockEntry(savedConsumables);
+        List<StockEntry> stockEntries = createStockEntry(savedConsumables);
+
+        stockEntries.stream().forEach((i) -> {
+//            doStockEntry(InventoryEvent.Type.Decrease, i, i.getStore(), i.getItem(), i.getQuantity());
+            save(i);
+        });
+
+//        stockEntryRepository.saveAll(stockEntries);
+
+
+        //update lab register test
+        labRegisterTest.setStockEntryDone(Boolean.TRUE);
+        labRegisterTestRepository.save(labRegisterTest);
 
         return savedConsumables;
 
@@ -65,35 +87,63 @@ public class LabTestConsumablesService {
         return labTestConsumablesRepository.findByLabRegister(labRegister);
     }
 
-/*
-    private List<StockEntry> createStockEntry(List<LabTestConsumables>  labTestConsumables) {
-        return labTestConsumables.stream()
-                .filter(x -> x.getStoreId() != null)
-                .map(consumable -> {
-                    Item item = drug.getItem();
-                    Store store = storeService.getStoreWithNoFoundDetection(consumable.getStoreId());
 
-                    BigDecimal amt = BigDecimal.valueOf(consumable.getAmount());
-                    BigDecimal price = BigDecimal.valueOf(consumable.getPrice());
+    private List<StockEntry> createStockEntry(List<LabTestConsumables> labTestConsumables) {
+        return labTestConsumables.stream()
+                .map(consumable -> {
+                    Item item = consumable.getItem();
+                    Store store = consumable.getStore();
+                    String patientName = "";
+                    if (consumable.getLabRegister().getIsWalkin()) {
+                        patientName = consumable.getLabRegister().getWalkIn().getFullName();
+                    } else {
+                        patientName = consumable.getLabRegister().getVisit().getPatient().getFullName();
+                    }
 
                     StockEntry stock = new StockEntry();
-                    stock.setAmount(amt);
+                    stock.setAmount(consumable.getItem().getRate().multiply(BigDecimal.valueOf(consumable.getQuantity())));
                     stock.setQuantity(consumable.getQuantity() * -1);
                     stock.setItem(item);
                     stock.setMoveType(MovementType.Dispensed);
-                    stock.setPrice(price);
+                    stock.setPrice(consumable.getItem().getRate());
                     stock.setPurpose(MovementPurpose.Issue);
-                    stock.setReferenceNumber(patientBill.getPatient().getPatientNumber());
-                    stock.setIssuedTo(patientBill.getPatient().getPatientNumber() + " " + patientBill.getPatient().getFullName());
+                    stock.setReferenceNumber(consumable.getLabRegister().getPatientNo());
+                    stock.setIssuedTo(consumable.getLabRegister().getPatientNo() + " " + patientName);
                     stock.setStore(store);
-                    stock.setTransactionDate(consumable.getBillingDate());
-                    stock.setTransactionNumber(consumable.getTransactionId());
+                    stock.setTransactionDate(consumable.getLabRegister().getRequestDatetime().toLocalDate());
+                    stock.setTransactionNumber(consumable.getLabRegister().getLabNumber());
                     stock.setUnit("");
                     stock.setBatchNo("-");
 
                     return stock;
                 })
                 .collect(Collectors.toList());
-    }*/
+    }
+
+//    public void doStockEntry(InventoryEvent.Type type, StockEntry stock, Store store, Item item, Double qty) {
+//        stockEntryRepository.save(stock);
+////        inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
+//        inventoryEventSender.publishInventoryEvent(type, store, item, qty);
+//    }
+
+    public void save(StockEntry entry) {
+        stockEntryRepository.saveAndFlush(entry);
+        Double qty = entry.getQuantity();
+        if (entry.getPurpose() == MovementPurpose.Issue && entry.getMoveType() == MovementType.Dispensed) {
+            if (BigDecimal.valueOf(qty).signum() == -1) {
+                qty *= -1;
+            }
+        }
+        inventoryEventSender.publishInventoryEvent(
+                getEvent(entry.getMoveType()),
+                entry.getStore(),
+                entry.getItem(),
+                qty
+        );
+    }
+
+    private InventoryEvent.Type getEvent(MovementType type) {
+        return type == MovementType.Dispensed ? InventoryEvent.Type.Decrease : InventoryEvent.Type.Increase;
+    }
 
 }

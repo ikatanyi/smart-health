@@ -43,6 +43,7 @@ import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
 import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.clinical.admission.domain.Admission;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -53,6 +54,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
@@ -67,7 +69,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 /**
- *
  * @author Kennedy.Imbenzi
  */
 @Service
@@ -150,7 +151,7 @@ public class PaymentReportService {
         reportData.getFilters().put("showCapitationItem", showCapitationItem);
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
 
-        System.err.println("Hapa>> "+invoiceData);
+        System.err.println("Hapa>> " + invoiceData);
         Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
         if (admission.isPresent()) {
             reportData.getFilters().put("inPatient", true);
@@ -169,10 +170,10 @@ public class PaymentReportService {
         String voucherNo = reportParam.getFirst("voucherNo");
 
         PaymentData paymentData = paymentService.getPaymentByVoucherNo(voucherNo).toData();
-        System.err.println("my type for now "+paymentData.getPayeeType().name());
+        System.err.println("my type for now " + paymentData.getPayeeType().name());
 
         reportData.getFilters().put("category", paymentData.getPayeeType().toString());
-        if (paymentData.getPayeeType() == PayeeType.Doctor || paymentData.getPayeeType() == PayeeType.PettyCash ) {
+        if (paymentData.getPayeeType() == PayeeType.Doctor || paymentData.getPayeeType() == PayeeType.PettyCash) {
             if (paymentData.getPayeeId() != null) {
                 Employee emp = employeeService.findEmployeeByIdOrThrow(paymentData.getPayeeId());
                 reportData.setEmployeeId(emp.getStaffNumber());
@@ -346,6 +347,7 @@ public class PaymentReportService {
             }
 
             for (ReceiptItemData item : receipt.getReceiptItems()) {
+                System.out.println("Line 349");
                 data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                 data.setDiscount(data.getDiscount().add(NumberUtils.toScaledBigDecimal(item.getDiscount())));
                 data.setDiscount(data.getDiscount().add(item.getDiscount()));
@@ -376,7 +378,7 @@ public class PaymentReportService {
                 }
 
             }
-            
+
             receiptDataArray.add(data);
         }
 
@@ -397,6 +399,8 @@ public class PaymentReportService {
     }
 
     public void getCashierShift(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        System.out.println("The working reporte");
+
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
         String payee = reportParam.getFirst("payee");
@@ -434,9 +438,13 @@ public class PaymentReportService {
             data.setStatus(receipt.getShiftData().getStatus());
             data.setStartDate(receipt.getShiftData().getStartDate());
             data.setStopDate(receipt.getShiftData().getEndDate());
-            if (receipt.getPrepayment()) {
-                data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
+            BigDecimal otherReceipts = BigDecimal.ZERO;
+            if ( receipt.getPrepayment()) {
+                otherReceipts = data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount();
+                System.out.println("Other receipts line 444 " + otherReceipts);
             }
+
+            data.setOther(otherReceipts);
 
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
                 switch (trx.getMethod().toUpperCase()) {
@@ -460,11 +468,12 @@ public class PaymentReportService {
                         data.setOtherPayment(data.getOtherPayment().add(trx.getAmount()));
                         break;
                 }
-
             }
 
             for (ReceiptItemData item : receipt.getReceiptItems()) {
+
                 data.setDiscount(data.getDiscount().add(item.getDiscount()));
+
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
                         data.setLab(data.getLab().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
@@ -487,13 +496,22 @@ public class PaymentReportService {
                         data.setCopayment(data.getCopayment().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
                     default:
-                        data.setOther(data.getOther() != null ? data.getOther().add(item.getAmountPaid()) : item.getAmountPaid());
-
+//                        otherReceipts=data.getOther() != null ? data.getOther().add(item.getAmountPaid()) : item.getAmountPaid();
+//                        data.setOther(otherReceipts);
                         break;
                 }
-                data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))).add(data.getOther()));
+
+                data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))).add(otherReceipts));
                 data.setDiscount(data.getDiscount().add(NumberUtils.toScaledBigDecimal(item.getDiscount())));
             }
+
+            System.out.println("Other receipts line 519 " + otherReceipts);
+            BigDecimal runningAmount = data.getAmount();
+            System.out.println("Running amount "+runningAmount);
+            BigDecimal newAmount = runningAmount.add(otherReceipts);
+            System.out.println("New amount "+newAmount);
+            data.setAmount(newAmount);
+
             receiptDataArray.add(data);
         }
 

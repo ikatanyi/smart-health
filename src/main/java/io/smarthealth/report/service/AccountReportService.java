@@ -765,8 +765,9 @@ public class AccountReportService {
             data.setShiftNo(receipt.getShiftNo());
             data.setTransactionDate(receipt.getTransactionDate());
             data.setCreatedBy(receipt.getCreatedBy());
-            if(receipt.getPrepayment())
+            if(receipt.getPrepayment()){
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
+            }
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
                 switch (trx.getMethod().toUpperCase()) {
                     case "BANK":

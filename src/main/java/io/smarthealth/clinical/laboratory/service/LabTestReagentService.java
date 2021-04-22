@@ -56,20 +56,48 @@ public class LabTestReagentService {
             reagent.setReagentService(item);
             reagent.setTest(labTest);
             reagent.setEquipment(labEquipment);
+            reagent.setEstimatedQuantity(data.getEstimatedQuantity());
 
             testReagents.add(reagent);
+
         }
 
         return reagentRepository.saveAll(testReagents);
     }
 
-    public List<LabTestReagent> fetchByTestAndEquipment(final Long testId, final Long equipmentId) {
+    public List<LabTestReagent> fetchByTestAndEquipment(final Long testId, final Long equipmentId, final Long storeId) {
         //find test
         LabTest labTest = labTestRepository.findById(testId).orElseThrow(() -> APIException.notFound("Test identified by id {0} not found ", testId));
         //find Equipment
         LabEquipment labEquipment = labEquipmentRepository.findById(equipmentId).orElseThrow(() -> APIException.notFound("Equipment identified by id {0} not found ", equipmentId));
 
-        return  reagentRepository.findByTestAndEquipment(labTest, labEquipment);
+        return reagentRepository.findByTestAndEquipment(labTest, labEquipment);
+    }
+
+    public List<LabTestReagentData> fetchByTestAndEquipmentData(final Long testId, final Long equipmentId, final Long storeId) {
+        //find test
+        LabTest labTest = labTestRepository.findById(testId).orElseThrow(() -> APIException.notFound("Test identified by id {0} not found ", testId));
+        //find Equipment
+        LabEquipment labEquipment = labEquipmentRepository.findById(equipmentId).orElseThrow(() -> APIException.notFound("Equipment identified by id {0} not found ", equipmentId));
+        //find store
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> APIException.notFound("Store selected not found id {0} ", storeId));
+        List<LabTestReagent> labTestReagents = reagentRepository.findByTestAndEquipment(labTest, labEquipment);
+
+        List<LabTestReagentData> labTestReagentDataList = new ArrayList<>();
+        for (LabTestReagent e : labTestReagents) {
+            LabTestReagentData data = LabTestReagentData.map(e);
+            Optional<Item> item = itemRepository.findByItemCode(e.getReagentService().getItemCode());
+            Double available = 0D;
+            if (item.isPresent()) {
+                available = inventoryItemRepository.findItemCountByItemAndStore(item.get(), store).doubleValue();
+            } else {
+                available = 0.0;
+            }
+            data.setAvailableQuantity(available);
+            labTestReagentDataList.add(data);
+        }
+
+        return labTestReagentDataList;
     }
 
 }
