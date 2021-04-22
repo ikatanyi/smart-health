@@ -50,6 +50,8 @@ public interface StockEntryRepository extends JpaRepository<StockEntry, Long>, J
     Double sumQuantities(Item item, Store store);
 
     List<StockEntry> findByMoveTypeAndReferenceNumber(MovementType type, String invoiceNo);
+
+    List<StockEntry> findStockEntriesByDeliveryNumber(String docNo);
                                                                                                                                                                                                                                 //    SELECT e FROM employees e LEFT  JOIN e.posts p GROUP BY e HAVING max(p.timestamp) < ? OR count(p) = 0"
     @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' group by s.referenceNumber ")
     Page<StockTransferData> findStockTransfers(Pageable pageable);

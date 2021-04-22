@@ -55,6 +55,8 @@ public class StockEntryData {
     private LocalDate dateCreated;
     @JsonFormat(pattern = "MMM dd yyyy")
     private LocalDateTime lastUpdated;
+    private BigDecimal discount;
+    private BigDecimal tax;
 
     public static StockEntryData map(StockEntry stock) {
         StockEntryData data = new StockEntryData();
@@ -92,6 +94,8 @@ public class StockEntryData {
         data.setDateCreated(stock.getTransactionDate());
         data.setLastUpdated(stock.getReceivedAt());
         data.setStatus(stock.getStatus());
+        data.setDiscount(stock.getDiscount());
+        data.setTax(stock.getTax());
 
         return data;
     }

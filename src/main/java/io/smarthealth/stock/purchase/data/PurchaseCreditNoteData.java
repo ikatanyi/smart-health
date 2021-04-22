@@ -31,6 +31,7 @@ public class PurchaseCreditNoteData {
     private String reason;
     private String supplierReference;
     private String vatReference;
+    private String documentNumber;
     private List<PurchaseCreditNoteItemData> items = new ArrayList<>();
 
     public BigDecimal getTotalAmount(){

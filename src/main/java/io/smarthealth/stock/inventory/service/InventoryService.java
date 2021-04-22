@@ -100,6 +100,8 @@ public class InventoryService {
                         stock.setTransactionDate(stockData.getTransactionDate());
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(st.getUnit());
+                        stock.setDiscount(st.getDiscount());
+                        stock.setTax(st.getTax());
 
                         if (stockData.getMovementPurpose() == MovementPurpose.Transfer) {
                             stock.setCachedQuantity(st.getQuantity());
@@ -220,6 +222,7 @@ public class InventoryService {
                         stock.setExpiryDate(st.getExpiryDate());
                         stock.setBatchNo(stock.getBatchNo());
                         stock.setDeliveryNumber(docNo);
+                        stock.setBatchNo(st.getBatchNumber());
 
                         StockEntry savedEntry = stockEntryRepository.save(stock);
 

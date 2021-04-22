@@ -65,9 +65,8 @@ public class StockEntry extends Auditable {
     @Enumerated(EnumType.STRING)
     private Status status;
     private LocalDateTime receivedAt;
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_supplier_id"))
-    private Supplier supplier;
+    private BigDecimal discount;
+    private BigDecimal tax;
 
     /*
     Perpetual Inventory
@@ -105,8 +104,12 @@ public class StockEntry extends Auditable {
         data.setCostCenter(this.getCostCenter());
         data.setCreatedBy(this.getCreatedBy());
         data.setStatus(this.getStatus());
+        data.setTax(this.getTax());
+        data.setDiscount(this.getDiscount());
+
         data.setDateCreated(this.getTransactionDate());
         data.setLastUpdated(this.getReceivedAt());
+
         return data;
     }
 

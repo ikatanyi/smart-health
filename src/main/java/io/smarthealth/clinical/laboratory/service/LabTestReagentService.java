@@ -3,13 +3,17 @@ package io.smarthealth.clinical.laboratory.service;
 import io.smarthealth.clinical.laboratory.data.LabTestReagentData;
 import io.smarthealth.clinical.laboratory.domain.*;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemRepository;
+import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.stock.stores.domain.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +22,8 @@ public class LabTestReagentService {
     private final ItemRepository itemRepository;
     private final LabEquipmentRepository labEquipmentRepository;
     private final LabTestRepository labTestRepository;
+    private final StoreRepository storeRepository;
+    private final InventoryItemRepository inventoryItemRepository;
 
     public LabTestReagent saveNewLabTestReagent(LabTestReagentData data) {
         LabTestReagent reagent = new LabTestReagent();

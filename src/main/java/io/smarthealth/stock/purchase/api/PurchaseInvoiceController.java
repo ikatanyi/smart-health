@@ -90,9 +90,11 @@ public class PurchaseInvoiceController {
     }
 
     @GetMapping("/purchaseinvoices/items")
-    public ResponseEntity<List<StockEntryData>> getPurchaseInvoiceItems(@RequestParam(value = "invoiceNo", required = true) String invoiceNumber) {
+    public ResponseEntity<List<StockEntryData>> getPurchaseInvoiceItems(
+            @RequestParam(value = "invoiceNo", required = false) String invoiceNumber,
+            @RequestParam(value = "docNo", required = false) String docNo) {
 
-        List<StockEntryData> entries = service.findPurchaseInvoiceItems(invoiceNumber)
+        List<StockEntryData> entries = service.findPurchaseInvoiceItems(invoiceNumber, docNo)
                 .stream().map(StockEntry::toData).collect(Collectors.toList());
 
         return ResponseEntity.ok(entries);

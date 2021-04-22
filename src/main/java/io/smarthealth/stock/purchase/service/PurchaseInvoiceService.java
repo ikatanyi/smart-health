@@ -141,6 +141,9 @@ public class PurchaseInvoiceService {
 
         String trdId = creditNote.getTransactionId() == null ? sequenceNumberService.next(1L, Sequences.Transactions.name()) : creditNote.getTransactionId();
 
+        creditNote.setDocumentNumber(docNo);
+        creditNote.setTransactionId(trdId);
+
         PurchaseInvoice invoice = new PurchaseInvoice();
 
         invoice.setSupplier(supplier);
@@ -182,7 +185,10 @@ public class PurchaseInvoiceService {
         return purchaseInvoiceRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Purchase Invoice with Id {0} not found", id));
     }
-    public List<StockEntry> findPurchaseInvoiceItems(String referenceNumber){
+    public List<StockEntry> findPurchaseInvoiceItems(String referenceNumber, String docNumber){
+        if(docNumber!=null){
+            return stockEntryRepository.findStockEntriesByDeliveryNumber(docNumber);
+        }
         return stockEntryRepository.findByMoveTypeAndReferenceNumber(MovementType.Purchase, referenceNumber);
     }
     public PurchaseCreditNote findByNumberWithNoFoundDetection(String creditNoteNumber) {
@@ -252,16 +258,18 @@ public class PurchaseInvoiceService {
 
                     StockEntry stock = new StockEntry();
                     stock.setAmount(st.getAmount());
-                    stock.setDeliveryNumber(creditNote.getCreditNoteNumber());
+                    stock.setDeliveryNumber(creditNote.getDocumentNumber());
                     stock.setQuantity(qty.doubleValue());
                     stock.setItem(item);
                     stock.setMoveType(MovementType.Purchase);
                     stock.setPrice(st.getRate());
                     stock.setPurpose(MovementPurpose.Returns);
-                    stock.setReferenceNumber(creditNote.getCreditNoteNumber());
+                    stock.setReferenceNumber(creditNote.getInvoiceNumber());
                     stock.setStore(store);
                     stock.setTransactionDate(LocalDate.now());
                     stock.setTransactionNumber(creditNote.getTransactionId());
+                    stock.setDiscount(st.getDiscount());
+                    stock.setTax(st.getTax());
 
                     stockEntryRepository.save(stock);
 //                    inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Decrease, store, item, qty.doubleValue()));
