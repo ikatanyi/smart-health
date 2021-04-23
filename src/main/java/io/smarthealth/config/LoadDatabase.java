@@ -5,6 +5,7 @@
  */
 package io.smarthealth.config;
 
+import io.smarthealth.sequence.SequenceDefinition;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
@@ -70,6 +71,8 @@ public class LoadDatabase {
                 log.info("save {}", repo.save(toSave));
             }
 
+            sequenceNumberService.create(1L, Sequences.PurchaseInvoiceNumber.name(), "SIV%07d",1L);
+            sequenceNumberService.create(1L, Sequences.StockReturnNumber.name(), "CN%05d",1L);
         };
     }
     //

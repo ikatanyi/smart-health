@@ -4,6 +4,8 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.purchase.data.ApproveSupplierBill;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
 import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
@@ -21,6 +23,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,26 +84,39 @@ public class PurchaseInvoiceController {
 
     @GetMapping("/purchaseinvoices/{id}")
     @PreAuthorize("hasAuthority('view_purchaseinvoices')")
-    public PurchaseInvoiceData getPurchaseInvoice(@PathVariable(value = "id") Long code) {
+    public PurchaseInvoiceData  getPurchaseInvoice(@PathVariable(value = "id") Long code) {
         PurchaseInvoice po = service.findOneWithNoFoundDetection(code);
         return po.toData();
     }
 
+    @GetMapping("/purchaseinvoices/items")
+    public ResponseEntity<List<StockEntryData>> getPurchaseInvoiceItems(
+            @RequestParam(value = "invoiceNo", required = false) String invoiceNumber,
+            @RequestParam(value = "docNo", required = false) String docNo) {
+
+        List<StockEntryData> entries = service.findPurchaseInvoiceItems(invoiceNumber, docNo)
+                .stream().map(StockEntry::toData).collect(Collectors.toList());
+
+        return ResponseEntity.ok(entries);
+    }
+
     @GetMapping("/purchaseinvoices")
     @PreAuthorize("hasAuthority('view_purchaseinvoices')")
-    public ResponseEntity<?> getAllPurchaseInvoices(
+    public ResponseEntity<Pager<List<PurchaseInvoiceData>>> getAllPurchaseInvoices(
             @RequestParam(value = "supplier_id", required = false) Long supplierId,
             @RequestParam(value = "paid", required = false) Boolean paid,
             @RequestParam(value = "approved", required = false) Boolean approved,
             @RequestParam(value = "invoice_no", required = false) String invoiceNumber,
             @RequestParam(value = "status", required = false) final PurchaseInvoiceStatus status,
+            @RequestParam(value = "invoiceType", required = false) final PurchaseInvoice.Type invoiceType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = PaginationUtil.createUnPaged(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<PurchaseInvoiceData> list = service.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved, pageable) // service.getPurchaseInvoices(status, pageable)
+        Page<PurchaseInvoiceData> list = service.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved,query,invoiceType, pageable) // service.getPurchaseInvoices(status, pageable)
                 .map(u -> u.toData());
 
         Pager<List<PurchaseInvoiceData>> pagers = new Pager();

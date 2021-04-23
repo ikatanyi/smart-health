@@ -33,4 +33,10 @@ public class DischargeSummaryReport extends DischargeData{
                 .map(DiagnosisData::toFormattedString)
                 .collect(Collectors.joining());
     }
+    public Long getDiagnosisId(){
+        DiagnosisData dia= diagnosisList.stream().findFirst().orElse(null);
+        if(dia==null) return null;
+
+        return dia.getId();
+    }
 }

@@ -169,7 +169,7 @@ public class SupplierReportService {
         PurchaseInvoiceStatus status = PurchaseInvoiceStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved, Pageable.unpaged())
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved, null,null, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())
@@ -199,7 +199,7 @@ public class SupplierReportService {
         PurchaseInvoiceStatus status = PurchaseInvoiceStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved, Pageable.unpaged())
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved,null,null, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())

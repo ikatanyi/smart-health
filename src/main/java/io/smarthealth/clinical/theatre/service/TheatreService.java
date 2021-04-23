@@ -16,6 +16,7 @@ import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
@@ -134,6 +135,8 @@ public class TheatreService {
                     //get store for the item if inventory
                     billItem.setStoreId(lineData.getStoreId());
                     billItem.setBillPayMode(lineData.getPaymentMethod());
+                    billItem.setEntryType(BillEntryType.Debit);
+
                     return billItem;
                 })
                 .collect(Collectors.toList());

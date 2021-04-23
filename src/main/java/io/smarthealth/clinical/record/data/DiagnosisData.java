@@ -82,8 +82,12 @@ public class DiagnosisData {
         diagnos.setId(entity.getId());
         diagnos.setPatientNumber(entity.getPatient().getPatientNumber());
         diagnos.setVisitNumber(entity.getVisit().getVisitNumber());
-        diagnos.setCode(entity.getDiagnosis().getCode());
-        diagnos.setDescription(entity.getDiagnosis().getDescription());
+        if(entity.getDiagnosis()!=null) {
+            diagnos.setCode(entity.getDiagnosis().getCode());
+        }
+        if(entity.getDiagnosis()!=null) {
+            diagnos.setDescription(entity.getDiagnosis().getDescription());
+        }
         if (entity.getCertainty() != null) {
             diagnos.setCertainty(Certainty.valueOf(entity.getCertainty()));
         }

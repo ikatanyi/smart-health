@@ -18,10 +18,7 @@ import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.inventory.events.InventorySpringEventPublisher;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
-import io.smarthealth.stock.purchase.data.ApproveSupplierBill;
-import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
-import io.smarthealth.stock.purchase.data.SupplierBill;
-import io.smarthealth.stock.purchase.data.SupplierBillItem;
+import io.smarthealth.stock.purchase.data.*;
 import io.smarthealth.stock.purchase.domain.PurchaseCreditNote;
 import io.smarthealth.stock.purchase.domain.PurchaseCreditNoteRepository;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
@@ -72,6 +69,7 @@ public class PurchaseInvoiceService {
     public List<PurchaseInvoice> createPurchaseInvoice(SupplierBill invoiceData) {
 
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String docNo = sequenceNumberService.next(1L, Sequences.PurchaseInvoiceNumber.name());
 
         List<PurchaseInvoice> savedInvoices = new ArrayList<>();
         invoiceData.getBills().stream()
@@ -96,6 +94,7 @@ public class PurchaseInvoiceService {
                             invoice.setTax(bill.getTaxAmount());
                             invoice.setInvoiceBalance(bill.getNetAmount());
                             invoice.setStatus(PurchaseInvoiceStatus.Unpaid);
+                            invoice.setDocumentNumber(docNo);
 
                             bill.setTransactionId(trdId);
 
@@ -110,7 +109,7 @@ public class PurchaseInvoiceService {
 
     public void createPurchaseInvoice(Store store, SupplierStockEntry stockEntry) {
         Supplier supplier = supplierService.getSupplierOrThrow(stockEntry.getSupplierId());
-
+        String docNo = stockEntry.getDocumentNo()!=null ? stockEntry.getDocumentNo() : sequenceNumberService.next(1L, Sequences.StockReturnNumber.name());
         PurchaseInvoice invoice = new PurchaseInvoice();
         invoice.setSupplier(supplier);
         invoice.setType(PurchaseInvoice.Type.Stock_Delivery);
@@ -128,6 +127,7 @@ public class PurchaseInvoiceService {
         invoice.setNetAmount(stockEntry.getNetAmount());
         invoice.setStatus(PurchaseInvoiceStatus.Unpaid);
         invoice.setTransactionNumber(stockEntry.getTransactionId());
+        invoice.setDocumentNumber(docNo);
 
         PurchaseInvoice savedInvoice = purchaseInvoiceRepository.save(invoice);
         journalService.save(toJournal(savedInvoice, store));
@@ -137,34 +137,43 @@ public class PurchaseInvoiceService {
     public PurchaseInvoice doCreditNote(PurchaseCreditNoteData creditNote) {
 
         Supplier supplier = supplierService.getSupplierOrThrow(creditNote.getSupplierId());
-        Store store = getStore(creditNote.getStoreId());
+        String docNo = sequenceNumberService.next(1L, Sequences.StockReturnNumber.name());
+
         String trdId = creditNote.getTransactionId() == null ? sequenceNumberService.next(1L, Sequences.Transactions.name()) : creditNote.getTransactionId();
+
+        creditNote.setDocumentNumber(docNo);
+        creditNote.setTransactionId(trdId);
 
         PurchaseInvoice invoice = new PurchaseInvoice();
 
         invoice.setSupplier(supplier);
         invoice.setType(PurchaseInvoice.Type.Stock_Returns);
-        invoice.setPurchaseOrderNumber(creditNote.getCreditNoteNumber());
+        invoice.setPurchaseOrderNumber(creditNote.getSupplierReference());
         invoice.setInvoiceDate(creditNote.getCreditDate());
         invoice.setTransactionDate(creditNote.getCreditDate());
         invoice.setDueDate(creditNote.getCreditDate());
         invoice.setPaid(false);
         invoice.setIsReturn(true);
         invoice.setInvoiceNumber(creditNote.getInvoiceNumber());
-        invoice.setDiscount(BigDecimal.ZERO);
-        invoice.setTax(BigDecimal.ZERO);
-        invoice.setInvoiceAmount(creditNote.getAmount().negate());
-        invoice.setInvoiceBalance(creditNote.getAmount().negate());
-        invoice.setNetAmount(creditNote.getAmount().negate());
+        invoice.setDiscount(creditNote.getTotalDiscount());
+        invoice.setTax(creditNote.getTotalVat());
+        invoice.setInvoiceAmount(creditNote.getTotalAmount().negate());
+        invoice.setInvoiceBalance(creditNote.getTotalAmount().negate());
+        invoice.setNetAmount(creditNote.getTotalAmount().negate());
         invoice.setStatus(PurchaseInvoiceStatus.Unpaid);
         invoice.setTransactionNumber(trdId);
+        invoice.setDocumentNumber(docNo);
 
         PurchaseInvoice savedInvoice = purchaseInvoiceRepository.save(invoice);
 
         if (!creditNote.getItems().isEmpty()) {
-            doStockReturns(store, creditNote);
+            doStockReturns(creditNote);
         }
-        toJournal(invoice, store);
+        Optional<PurchaseCreditNoteItemData> pcid = creditNote.getItems().stream().findFirst();
+        if(pcid.isPresent()) {
+            Store store = getStore(pcid.get().getStoreId());
+            toJournal(invoice, store);
+        }
         return savedInvoice;
     }
 
@@ -176,14 +185,19 @@ public class PurchaseInvoiceService {
         return purchaseInvoiceRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Purchase Invoice with Id {0} not found", id));
     }
-
+    public List<StockEntry> findPurchaseInvoiceItems(String referenceNumber, String docNumber){
+        if(docNumber!=null){
+            return stockEntryRepository.findStockEntriesByDeliveryNumber(docNumber);
+        }
+        return stockEntryRepository.findByMoveTypeAndReferenceNumber(MovementType.Purchase, referenceNumber);
+    }
     public PurchaseCreditNote findByNumberWithNoFoundDetection(String creditNoteNumber) {
         return purchaseCreditNoteRepository.findByNumber(creditNoteNumber)
                 .orElseThrow(() -> APIException.notFound("Purchase Invoice with creditNoteNumber {0} not found", creditNoteNumber));
     }
 
-    public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved, Pageable page) {
-        Specification<PurchaseInvoice> specs = PurchaseInvoiceSpecification.createSpecification(supplierId, invoiceNumber, paid, range, status, approved);
+    public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved, String query, PurchaseInvoice.Type invoiceType, Pageable page) {
+        Specification<PurchaseInvoice> specs = PurchaseInvoiceSpecification.createSpecification(supplierId, invoiceNumber, paid, range, status, approved, query,invoiceType);
         return purchaseInvoiceRepository.findAll(specs, page);
 
     }
@@ -234,25 +248,28 @@ public class PurchaseInvoiceService {
         return toSave;
     }
 
-    private void doStockReturns(Store store, PurchaseCreditNoteData creditNote) {
+    private void doStockReturns(PurchaseCreditNoteData creditNote) {
         creditNote.getItems().stream()
                 .forEach(st -> {
+                    Store store = getStore(st.getStoreId());
                     Item item = itemService.findItemEntityOrThrow(st.getItemId());
 
                     BigDecimal qty = BigDecimal.valueOf(st.getQuantity());
 
                     StockEntry stock = new StockEntry();
                     stock.setAmount(st.getAmount());
-                    stock.setDeliveryNumber(creditNote.getCreditNoteNumber());
+                    stock.setDeliveryNumber(creditNote.getDocumentNumber());
                     stock.setQuantity(qty.doubleValue());
                     stock.setItem(item);
                     stock.setMoveType(MovementType.Purchase);
                     stock.setPrice(st.getRate());
                     stock.setPurpose(MovementPurpose.Returns);
-                    stock.setReferenceNumber(creditNote.getCreditNoteNumber());
+                    stock.setReferenceNumber(creditNote.getInvoiceNumber());
                     stock.setStore(store);
                     stock.setTransactionDate(LocalDate.now());
                     stock.setTransactionNumber(creditNote.getTransactionId());
+                    stock.setDiscount(st.getDiscount());
+                    stock.setTax(st.getTax());
 
                     stockEntryRepository.save(stock);
 //                    inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Decrease, store, item, qty.doubleValue()));

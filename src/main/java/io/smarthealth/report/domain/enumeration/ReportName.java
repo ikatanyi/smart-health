@@ -98,6 +98,9 @@ public enum ReportName {
         Capitation_Invoice,
         /* */
         WalkingRegister,
-        PricelistSummary
+        PricelistSummary,
+        RequisitionRequest,
+        StockTransfer,
+        StockReturn
         /* */
 }

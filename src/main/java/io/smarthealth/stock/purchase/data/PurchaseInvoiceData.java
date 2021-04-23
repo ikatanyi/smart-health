@@ -42,6 +42,7 @@ public class PurchaseInvoiceData {
     private BigDecimal discount;
     private BigDecimal netAmount;
     private PurchaseInvoiceStatus status;
+    private String documentNumber;
     private boolean approved;
     private String approvedBy;
     private String createdBy;

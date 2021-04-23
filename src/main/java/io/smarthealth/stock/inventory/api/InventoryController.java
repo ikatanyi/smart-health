@@ -6,6 +6,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.stock.inventory.data.*;
+import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.service.InventoryService;
@@ -21,9 +22,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- *
  * @author Kelsas
  */
 @RestController
@@ -71,7 +72,7 @@ public class InventoryController {
     @PreAuthorize("hasAuthority('view_inventory')")
     public StockEntryData searchStockEntry(@PathVariable(value = "id") Long id) {
         StockEntryData stocks = service.getStockEntry(id).toData();
-        auditTrailService.saveAuditTrail("Inventory", "Viewed an inventory stock entry with id "+id);
+        auditTrailService.saveAuditTrail("Inventory", "Viewed an inventory stock entry with id " + id);
         return stocks;
     }
 
@@ -122,9 +123,38 @@ public class InventoryController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         List<StockMovement> list = service.getStockMovement(storeId, itemId, range);
-        auditTrailService.saveAuditTrail("Inventory", "Viewed inventory stock entries for item identified by item id "+itemId);
+        auditTrailService.saveAuditTrail("Inventory", "Viewed inventory stock entries for item identified by item id " + itemId);
         Pager<?> pagers = PaginationUtil.paginateList(list, "Item Flow Report", "", pageable);
         return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/inventory-entries/stock-transfers")
+    public ResponseEntity<Pager<StockEntryData>> getStockTransfers(
+            @RequestParam(value = "store_id", required = false) final Long storeId,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "status", required = false) List<StockEntry.Status> status,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        Page<StockTransferData> list = service.getStockTransfers(storeId, range, status, pageable);
+        Pager<StockEntryData> pager = (Pager<StockEntryData>) PaginationUtil.toPager(list, "Stock Transfers");
+        return ResponseEntity.ok(pager);
+    }
+
+    @PatchMapping("/inventory-entries/stock-transfers/{transferNo}")
+    public ResponseEntity<StockTransferData> updateStockTransfers(@PathVariable(value = "transferNo") String transferNo) {
+        StockTransferData data = service.receiveStockTransfer(transferNo);
+        return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("/inventory-entries/stock-transfers/{transferNo}")
+    public ResponseEntity<List<StockEntryData>> getStockTransferItems(@PathVariable(value = "transferNo") String transferNo) {
+        List<StockEntryData> data = service.getStockTransferItems(transferNo)
+                .stream().map(StockEntry::toData).collect(Collectors.toList());
+        return ResponseEntity.ok(data);
     }
 
 }

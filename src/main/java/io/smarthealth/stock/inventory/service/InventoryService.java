@@ -9,10 +9,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import io.smarthealth.stock.inventory.data.CreateStockEntry;
-import io.smarthealth.stock.inventory.data.StockEntryData;
-import io.smarthealth.stock.inventory.data.StockMovement;
-import io.smarthealth.stock.inventory.data.SupplierStockEntry;
+import io.smarthealth.stock.inventory.data.*;
 import io.smarthealth.stock.inventory.domain.Requisition;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.StockEntryRepository;
@@ -75,8 +72,9 @@ public class InventoryService {
         final String referenceNo = sequenceNumberService.next(1L, Sequences.StockTransferNumber.name());
 
         Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
-
+        Store destinStore = stockData.getDestinationStoreId()!=null ? storeService.getStore(stockData.getDestinationStoreId()).orElse(null) : null;
 //        BigDecimal costAmount = BigDecimal.ZERO;
+
         if (!stockData.getItems().isEmpty()) {
             stockData.getItems()
                     .stream()
@@ -98,15 +96,26 @@ public class InventoryService {
                         stock.setPurpose(stockData.getMovementPurpose());
                         stock.setReferenceNumber(referenceNo);
                         stock.setStore(store);
+                        stock.setDestinationStore(destinStore);
                         stock.setTransactionDate(stockData.getTransactionDate());
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(st.getUnit());
+                        stock.setDiscount(st.getDiscount());
+                        stock.setTax(st.getTax());
+
+                        if (stockData.getMovementPurpose() == MovementPurpose.Transfer) {
+                            stock.setCachedQuantity(st.getQuantity());
+                            stock.setStatus(StockEntry.Status.Active);
+
+                        }
 
 //                        stockEntryRepository.save(stock);
 //                        inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Decrease, store, item, qty.doubleValue()));
                         doStockEntry(InventoryEvent.Type.Decrease, stock, store, item, qty.doubleValue());
 
                         if (stockData.getMovementPurpose() == MovementPurpose.Transfer) {
+                            //TODO we need to hold this first and on receive is when I will
+
                             Store destinationStore = storeService.getStoreWithNoFoundDetection(stockData.getDestinationStoreId());
                             StockEntry receivingStock = new StockEntry();
                             receivingStock.setAmount(st.getAmount());
@@ -116,6 +125,7 @@ public class InventoryService {
                             receivingStock.setPrice(st.getPrice());
                             receivingStock.setPurpose(MovementPurpose.Receipt);
                             receivingStock.setQuantity(qty.doubleValue());
+                            receivingStock.setCachedQuantity(qty.doubleValue());
                             receivingStock.setStore(destinationStore);
                             receivingStock.setReferenceNumber(referenceNo);
                             receivingStock.setTransactionDate(stockData.getTransactionDate());
@@ -131,6 +141,7 @@ public class InventoryService {
             Optional<Requisition> requisition = requisitionService.findByRequsitionNumber(stockData.getReferenceNumber());
             if (requisition.isPresent()) {
                 Requisition r = requisition.get();
+
                  //TODO fix the non updating of requistion items
                 r.setStatus(RequisitionStatus.Processed);
                 requisitionService.saveRequisition(r);
@@ -183,6 +194,10 @@ public class InventoryService {
         stockData.setTransactionId(trdId);
         String dnote = stockData.getSupplierInvoiceNumber() != null ? stockData.getSupplierInvoiceNumber() : trdId;
         Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
+        String docNo = sequenceNumberService.next(1L, Sequences.PurchaseInvoiceNumber.name());
+
+        stockData.setDocumentNo(docNo);
+
         if (!stockData.getItems().isEmpty()) {
             stockData.getItems()
                     .stream()
@@ -205,6 +220,8 @@ public class InventoryService {
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(st.getUnit());
                         stock.setExpiryDate(st.getExpiryDate());
+                        stock.setBatchNo(stock.getBatchNo());
+                        stock.setDeliveryNumber(docNo);
                         stock.setBatchNo(st.getBatchNumber());
 
                         StockEntry savedEntry = stockEntryRepository.save(stock);
@@ -222,6 +239,7 @@ public class InventoryService {
         }
 
         if (stockData.getPurchaseType() == PurchaseType.Payable) {
+
             purchaseInvoiceService.createPurchaseInvoice(store, stockData);
         }
         if (stockData.getOrderNumber() != null) {
@@ -346,6 +364,41 @@ public class InventoryService {
                 .map((entry) -> entry.toData())
                 .collect(Collectors.toList());
     }
+    public Page<StockTransferData> getStockTransfers(Long storeId,DateRange range, List<StockEntry.Status> status, Pageable page){
+        if(storeId!=null && range!=null && status!=null){
+            return stockEntryRepository.findStockTransfers(range.getStartDate(),range.getEndDate(),storeId,status,page);
+        }
+        if(storeId!=null){
+            if(status!=null){
+                return stockEntryRepository.findStockTransfers(storeId,status,page);
+            }
+            return stockEntryRepository.findStockTransfers(storeId,page);
+        }
+        if(range!=null){
+            if(status!=null){
+                return stockEntryRepository.findStockTransfers(range.getStartDate(),range.getEndDate(),status,page);
+            }
+            return stockEntryRepository.findStockTransfers(range.getStartDate(),range.getEndDate(),page);
+        }
+        if(status!=null){
+            return stockEntryRepository.findStockTransfers(status,page);
+        }
+        return stockEntryRepository.findStockTransfers(page);
+    }
+    public List<StockEntry> getStockTransferItems(String transferNo){
+        return stockEntryRepository.findStockTransfersItems(transferNo);
+    }
+    //get the transfers only
+    @Transactional
+     public StockTransferData receiveStockTransfer(String transferNo){
+        stockEntryRepository.receiveStocks(transferNo);
+        return stockEntryRepository.findStockTransfers(transferNo);
+     }
+
+    @Transactional
+    public void reverseStockTransfer(String transferNo){
+        stockEntryRepository.reverseStockTransfer(transferNo);
+    }
 
 //    Page<StockMovement> getStockMovement(Long storeId, Long itemId, DateRange range, Pageable pageable) {
 //        Specification<StockEntry> spec = StockEntrySpecification.getStockMovement(storeId, itemId, range);
@@ -443,4 +496,6 @@ public class InventoryService {
     //        return adjstments;
     //    }
     //TODO:: Post the changes to the ledgerr
+
+
 }

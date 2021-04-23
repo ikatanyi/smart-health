@@ -11,10 +11,9 @@ import io.smarthealth.infrastructure.lang.EnglishNumberToWords;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.report.data.ReportData;
-import io.smarthealth.stock.inventory.data.ExpiryStock;
-import io.smarthealth.stock.inventory.data.InventoryItemData;
-import io.smarthealth.stock.inventory.data.StockAdjustmentData;
-import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.data.*;
+import io.smarthealth.stock.inventory.domain.Requisition;
+import io.smarthealth.stock.inventory.domain.RequisitionRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
@@ -74,7 +73,7 @@ public class StockReportService {
     private final PurchaseService purchaseService;
     private final InventoryService inventoryService;
     private final ItemService itemService;
-    
+    private final RequisitionRepository requisitionRepository;
 
     public void getSuppliers(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -177,7 +176,7 @@ public class StockReportService {
         String invoiceNumber = reportParam.getFirst("invoiceNumber");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         PurchaseInvoiceStatus status = EnumUtils.getEnum(PurchaseInvoiceStatus.class, reportParam.getFirst("status"));
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status,approved, Pageable.unpaged())
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status,approved, null, null, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((inv) -> {
@@ -352,6 +351,22 @@ public class StockReportService {
         reportService.generateReport(reportData, response);
     }
     
+    public void requisitionRequest(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String requisitionNo = reportParam.getFirst("requisitionNo");
+
+        Requisition requisition = requisitionRepository.findByRequestionNumber(requisitionNo).get();
+
+        List<RequisitionData> requisitionData = Arrays.asList(RequisitionData.map(requisition));
+
+        reportData.setData(requisitionData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/requisition/Requisition");
+        reportData.setReportName("Stock Requisition");
+        reportService.generateReport(reportData, response);
+    }
+
+
     public void InventoryReorderStock(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long storeId = null, itemId = null;
@@ -364,18 +379,18 @@ public class StockReportService {
             includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
         }
         List<InventoryItemData> inventoryItemData =new ArrayList<>();
-                inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
+        inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map(itm -> {
-                     Double reOrderCount = itemService.getItemReorderCount(itm.getItem().getItemCode(), itm.getStore().getId());
-                     if(itm.getAvailableStock() <= reOrderCount){
-                         InventoryItemData data = itm.toData();
-                         data.setReorderLevel(reOrderCount);
-                         inventoryItemData.add(data);
-                     }
-                     return itm.toData();
-                        });
+                    Double reOrderCount = itemService.getItemReorderCount(itm.getItem().getItemCode(), itm.getStore().getId());
+                    if(itm.getAvailableStock() <= reOrderCount){
+                        InventoryItemData data = itm.toData();
+                        data.setReorderLevel(reOrderCount);
+                        inventoryItemData.add(data);
+                    }
+                    return itm.toData();
+                });
 
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
@@ -383,6 +398,7 @@ public class StockReportService {
         reportData.setReportName("Inventory-Stock--Reorder-Statement");
         reportService.generateReport(reportData, response);
     }
+
 
     private PurchaseInvoiceStatus PurchaseInvoiceStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {

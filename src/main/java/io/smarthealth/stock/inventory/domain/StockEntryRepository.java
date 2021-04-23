@@ -1,17 +1,25 @@
 package io.smarthealth.stock.inventory.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.inventory.data.ExpiryStock;
 import io.smarthealth.stock.inventory.data.StockMovement;
+import io.smarthealth.stock.inventory.data.StockTransferData;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -48,5 +56,42 @@ public interface StockEntryRepository extends JpaRepository<StockEntry, Long>, J
     Double sumQuantities(Item item, Store store);
 
     List<StockEntry> findByMoveTypeAndReferenceNumber(MovementType type, String invoiceNo);
+
+    List<StockEntry> findStockEntriesByDeliveryNumber(String docNo);
+                                                                                                                                                                                                                                //    SELECT e FROM employees e LEFT  JOIN e.posts p GROUP BY e HAVING max(p.timestamp) < ? OR count(p) = 0"
+    @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' group by s.referenceNumber ")
+    Page<StockTransferData> findStockTransfers(Pageable pageable);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND s.status IN :status group by s.referenceNumber ")
+    Page<StockTransferData> findStockTransfers(@Param("status") Collection<StockEntry.Status> status, Pageable pageable);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND d.id = :storeId group by s.referenceNumber ")
+    Page<StockTransferData> findStockTransfers(@Param("storeId") Long storeId, Pageable pageable);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND s.transactionDate between :start and :end group by s.referenceNumber ")
+    Page<StockTransferData> findStockTransfers(LocalDate start,LocalDate end, Pageable pageable);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND s.transactionDate between :start and :end AND d.id = :storeId AND s.status IN :status group by s.referenceNumber ")
+    Page<StockTransferData> findStockTransfers(LocalDate start,LocalDate end, Long storeId,Collection<StockEntry.Status> status, Pageable pageable);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND s.transactionDate between :start and :end AND s.status IN :status group by s.referenceNumber ")
+    Page<StockTransferData> findStockTransfers(LocalDate start,LocalDate end, Collection<StockEntry.Status> status, Pageable pageable);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND d.id = :storeId AND s.status IN :status group by s.referenceNumber ")
+    Page<StockTransferData> findStockTransfers(Long storeId, Collection<StockEntry.Status> status, Pageable pageable);
+
+    @Query("SELECT s FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND s.referenceNumber = :transferNo ")
+    List<StockEntry> findStockTransfersItems(@Param("transferNo") String transferNo);
+
+    @Modifying
+    @Query("UPDATE StockEntry e SET e.receivedAt=current_timestamp , e.status = 'Received', e.cachedQuantity=0 WHERE  e.referenceNumber = :transferNo")
+    void receiveStocks(String transferNo);
+
+    @Modifying
+    @Query("UPDATE StockEntry e SET e.receivedAt=current_timestamp , e.status = 'Deleted', e.cachedQuantity=0 WHERE  e.referenceNumber = :transferNo")
+    void reverseStockTransfer(String transferNo);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND s.referenceNumber = :transferNo group by s.referenceNumber ")
+    StockTransferData findStockTransfers(String transferNo);
 
 }

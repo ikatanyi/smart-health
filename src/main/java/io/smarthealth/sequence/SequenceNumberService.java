@@ -163,5 +163,5 @@ public class SequenceNumberService {
 
         return new SequenceStatus(sequenceDefinition.getName(), sequenceDefinition.getFormat(), sequenceNumber.getNumber());
     }
-    
+
 }

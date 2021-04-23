@@ -9,6 +9,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * Stock Entry
@@ -45,6 +47,16 @@ public class StockEntryData {
     private String batchNo;
     private String createdBy;
     private String category;
+    private Double cachedQuantity;
+    private Long destinationStoreId;
+    private String destinationStore;
+    private StockEntry.Status status;
+    @JsonFormat(pattern = "MMM dd yyyy")
+    private LocalDate dateCreated;
+    @JsonFormat(pattern = "MMM dd yyyy")
+    private LocalDateTime lastUpdated;
+    private BigDecimal discount;
+    private BigDecimal tax;
 
     public static StockEntryData map(StockEntry stock) {
         StockEntryData data = new StockEntryData();
@@ -52,6 +64,10 @@ public class StockEntryData {
         if (stock.getStore() != null) {
             data.setStoreId(stock.getStore().getId());
             data.setStore(stock.getStore().getStoreName());
+        }
+        if(stock.getDestinationStore()!=null){
+            data.setDestinationStore(stock.getDestinationStore().getStoreName());
+            data.setDestinationStoreId(stock.getDestinationStore().getId());
         }
         if (stock.getItem() != null) {
             data.setItemId(stock.getItem().getId());
@@ -74,7 +90,12 @@ public class StockEntryData {
         data.setBatchNo(stock.getBatchNo());
         data.setExpiryDate(stock.getExpiryDate());
         data.setCreatedBy(stock.getCreatedBy());
-        
+        data.setCachedQuantity(stock.getCachedQuantity());
+        data.setDateCreated(stock.getTransactionDate());
+        data.setLastUpdated(stock.getReceivedAt());
+        data.setStatus(stock.getStatus());
+        data.setDiscount(stock.getDiscount());
+        data.setTax(stock.getTax());
 
         return data;
     }

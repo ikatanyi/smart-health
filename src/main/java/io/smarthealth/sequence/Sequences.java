@@ -33,5 +33,7 @@ public enum Sequences {
     SchemeCode,
     DischargeNumber,
     CashBillNumber,
-    ClaimNumber;
+    ClaimNumber,
+    PurchaseInvoiceNumber,
+    StockReturnNumber;
 }

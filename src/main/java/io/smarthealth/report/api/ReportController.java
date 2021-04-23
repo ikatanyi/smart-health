@@ -330,6 +330,9 @@ public class ReportController {
             case PricelistSummary:
                 reportExportService.pricelistSummary(queryParams, format, response);
                 break;
+            case RequisitionRequest:
+                stockReportService.requisitionRequest(queryParams,format,response);
+                break;
             default:
                 break;
         }

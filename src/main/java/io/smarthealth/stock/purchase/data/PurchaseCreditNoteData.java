@@ -29,5 +29,28 @@ public class PurchaseCreditNoteData {
     private LocalDate creditDate;
     private BigDecimal amount;
     private String reason;
+    private String supplierReference;
+    private String vatReference;
+    private String documentNumber;
     private List<PurchaseCreditNoteItemData> items = new ArrayList<>();
+
+    public BigDecimal getTotalAmount(){
+        return items.stream()
+                .map(PurchaseCreditNoteItemData::getTotal)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+    }
+
+    public BigDecimal getTotalDiscount(){
+        return items.stream()
+                .map(PurchaseCreditNoteItemData::getDiscount)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+    }
+    public BigDecimal getTotalVat(){
+        return items.stream()
+                .map(PurchaseCreditNoteItemData::getTax)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+    }
 }

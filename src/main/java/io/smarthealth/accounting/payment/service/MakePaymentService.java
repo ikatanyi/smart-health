@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -218,6 +219,7 @@ public class MakePaymentService {
                 items.add(new JournalEntryItem(acc, narration, payment.getAmount(), BigDecimal.ZERO));
                 descType = "Supplier's Payment";
                 creditTax = acc;
+                purchaseInvoiceRepository.save(createPaymentEntry(payment));
             }
             break;
             case Others: {
@@ -429,5 +431,29 @@ public class MakePaymentService {
     public Account findAccountByNumber(String identifier) {
         return accountRepository.findByIdentifier(identifier)
                 .orElseThrow(() -> APIException.notFound("Account with Account Number {0} not found", identifier));
+    }
+
+    private PurchaseInvoice createPaymentEntry(Payment payment){
+        Supplier supplier = getSupplier(payment.getPayeeId());
+        PurchaseInvoice inv = new PurchaseInvoice();
+        inv.setSupplier(supplier);
+        inv.setPaid(true);
+        inv.setInvoiceBalance(BigDecimal.ZERO);
+        inv.setTax(BigDecimal.ZERO);
+        inv.setStatus(PurchaseInvoiceStatus.Paid);
+        inv.setDiscount(BigDecimal.ZERO);
+        inv.setInvoiceNumber(payment.getReferenceNumber());
+        inv.setApprovalDate(payment.getPaymentDate());
+        inv.setApproved(true);
+        inv.setInvoiceDate(payment.getPaymentDate());
+        inv.setInvoiceBalance(BigDecimal.ZERO);
+        inv.setInvoiceAmount(payment.getAmount().negate());
+        inv.setIsReturn(false);
+        inv.setNetAmount(payment.getAmount().negate());
+        inv.setTransactionDate(payment.getPaymentDate());
+        inv.setTransactionNumber(payment.getTransactionNo());
+        inv.setType(PurchaseInvoice.Type.Payment);
+
+        return  inv;
     }
 }
