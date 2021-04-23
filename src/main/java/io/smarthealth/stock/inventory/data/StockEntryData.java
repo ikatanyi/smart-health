@@ -33,7 +33,8 @@ public class StockEntryData {
     private BigDecimal price;
     private BigDecimal amount;
     private String unit;
-
+    private BigDecimal totalExclusive;
+    private BigDecimal totalAmount;
     private String referenceNumber; //ref LPO,supplier, patient no
     private String deliveryNumber; //GRN| transaction reference
     private String transactionNumber; //auto generated ST-2019-00002
@@ -105,6 +106,12 @@ public class StockEntryData {
         data.setFormattedQuantity(stock.getQuantity()* -1);
         data.setFormattedTotal(stock.getItem().getCostRate().multiply(BigDecimal.valueOf(stock.getQuantity()* -1)));
         data.setFixedQuantity(stock.getQuantity());
+
+        data.setTotalExclusive(data.getFormattedTotal().subtract(data.discount));
+        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
+
+        data.setTotalExclusive(data.getFormattedTotal().subtract(data.discount));
+        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
 
         return data;
     }

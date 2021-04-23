@@ -66,23 +66,32 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="81">
+		<band height="65">
 			<staticText>
 				<reportElement x="0" y="0" width="80" height="20" uuid="b0e9b40e-9bfc-4f01-b1f2-81f1128a1d53">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<text><![CDATA[Date]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="20" width="80" height="20" uuid="8c7edb29-d291-4f66-9af8-9865324ce153">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<text><![CDATA[Order Status]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="41" width="80" height="20" uuid="5cedcd73-5a13-4f6d-8ea4-50ecaa51d4eb">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<text><![CDATA[Created By]]></text>
 			</staticText>
 			<line>
@@ -94,38 +103,62 @@
 				<reportElement x="375" y="41" width="80" height="20" uuid="8a8abdff-3639-4297-9c10-d795836a9d17">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<text><![CDATA[Destination Store]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="375" y="21" width="80" height="20" uuid="2de8bad3-a8c3-4f48-839a-54c5e378a68a">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<text><![CDATA[Source Store]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="375" y="1" width="80" height="20" uuid="d63d5364-26c1-40fa-8741-d45417cf6e27">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<text><![CDATA[Transfer No.]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="80" y="40" width="100" height="21" uuid="706a1987-7a99-42ea-9f15-e49ffbf38335"/>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{createdAt}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="455" y="40" width="95" height="21" uuid="968a436b-e2c6-4cbf-bd88-e8a55a4cbfa5"/>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{destinationStore}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="455" y="21" width="95" height="20" uuid="3de64b71-0996-484d-a4b4-4029392bfcb7"/>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{sourceStore}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="455" y="0" width="95" height="21" uuid="940a5083-ec11-4118-91c3-90694c9a7acb"/>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{transferNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="80" y="0" width="100" height="20" uuid="d99a66af-82c7-428d-b39b-5b5cbbf428ff"/>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{createdAt}]]></textFieldExpression>
 			</textField>
 		</band>

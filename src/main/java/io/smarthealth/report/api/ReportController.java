@@ -327,6 +327,9 @@ public class ReportController {
             case StockTransfer:
                 stockReportService.stockTransfer(queryParams, format, response);
                 break;
+            case StockReturn:
+                stockReportService.supplierReturns(queryParams,format,response);
+                break;
 
             default:
                 break;
