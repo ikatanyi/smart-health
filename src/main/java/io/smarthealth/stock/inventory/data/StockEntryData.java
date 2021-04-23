@@ -60,6 +60,7 @@ public class StockEntryData {
     private BigDecimal costPrice;
     private Double formattedQuantity;
     private BigDecimal formattedTotal;
+    private Double fixedQuantity;
 
     public static StockEntryData map(StockEntry stock) {
         StockEntryData data = new StockEntryData();
@@ -81,6 +82,7 @@ public class StockEntryData {
 
         data.setUnit(stock.getUnit());
         data.setQuantity(stock.getQuantity());
+        data.setFixedQuantity(stock.getQuantity());
         data.setPrice(stock.getPrice());
         data.setAmount(stock.getAmount());
         data.setReferenceNumber(stock.getReferenceNumber());
@@ -102,6 +104,7 @@ public class StockEntryData {
         data.setCostPrice(stock.getItem().getRate());
         data.setFormattedQuantity(stock.getQuantity()* -1);
         data.setFormattedTotal(stock.getItem().getCostRate().multiply(BigDecimal.valueOf(stock.getQuantity()* -1)));
+        data.setFixedQuantity(stock.getQuantity());
 
         return data;
     }

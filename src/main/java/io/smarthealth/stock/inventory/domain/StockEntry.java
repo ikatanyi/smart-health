@@ -113,6 +113,7 @@ public class StockEntry extends Auditable {
         data.setCostPrice(this.getItem().getRate());
         data.setFormattedQuantity(this.getQuantity()* -1);
         data.setFormattedTotal(this.getItem().getRate().multiply(BigDecimal.valueOf(this.getQuantity()* -1)));
+        data.setFixedQuantity(this.getQuantity());
 
         return data;
     }
