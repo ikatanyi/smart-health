@@ -3,23 +3,10 @@ package io.smarthealth.report.api;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.report.domain.enumeration.ReportName;
 import io.smarthealth.report.experiments.ReportExportService;
-import io.smarthealth.report.service.LabReportService;
-import io.smarthealth.report.service.PatientReportServices;
-import io.smarthealth.report.service.RadiologyReportService;
-import io.smarthealth.report.service.AccountReportService;
-import io.smarthealth.report.service.AdmissionReportService;
-import io.smarthealth.report.service.PaymentReportService;
-import io.smarthealth.report.service.PharmacyReportService;
-import io.smarthealth.report.service.ProcedureReportService;
-import io.smarthealth.report.service.StockReportService;
-import io.smarthealth.report.service.SupplierReportService;
+import io.smarthealth.report.service.*;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.io.IOException;
-import java.sql.SQLException;
-import javax.servlet.http.HttpServletResponse;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
@@ -27,6 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.SQLException;
 
 @Api
 @Slf4j
@@ -36,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ReportController {
 
-//    private final JasperReportsService reportService;
+    //    private final JasperReportsService reportService;
     private final AccountReportService reportService;
     private final LabReportService labReportService;
     private final RadiologyReportService radiologyReportService;
@@ -270,7 +261,7 @@ public class ReportController {
                 break;
             case Registered_Schemes:
                 reportService.getSchemeConfig(queryParams, format, response);
-                break;    
+                break;
             case Insurance_Diagnosis_Summary:
                 reportService.genDiagnosisStatement(queryParams, format, response);
                 break;
@@ -282,7 +273,7 @@ public class ReportController {
                 break;
             case Invoice_Aging_Summary:
                 reportService.getAgingSummary(queryParams, format, response);
-                break;  
+                break;
             case Purchase_Order_Statement:
                 stockReportService.getPurchaseOrderStatement(queryParams, format, response);
                 break;
@@ -331,12 +322,16 @@ public class ReportController {
                 reportExportService.pricelistSummary(queryParams, format, response);
                 break;
             case RequisitionRequest:
-                stockReportService.requisitionRequest(queryParams,format,response);
+                stockReportService.requisitionRequest(queryParams, format, response);
                 break;
+            case StockTransfer:
+                stockReportService.stockTransfer(queryParams, format, response);
+                break;
+
             default:
                 break;
         }
-        auditTrailService.saveAuditTrail("Reports", "Viewed report  "+report);
+        auditTrailService.saveAuditTrail("Reports", "Viewed report  " + report);
         return ResponseEntity.ok("success");
     }
 

@@ -366,6 +366,20 @@ public class StockReportService {
         reportService.generateReport(reportData, response);
     }
 
+    public void stockTransfer(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String transfer_no = reportParam.getFirst("transfer_no");
+
+        StockTransferReport stockTransfer = inventoryService.getStockTransferReport(transfer_no);
+        List<StockTransferReport> requisitionData = Arrays.asList(stockTransfer);
+
+        reportData.setData(requisitionData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/requisition/StockTransfer");
+        reportData.setReportName("Stock Transfers");
+        reportService.generateReport(reportData, response);
+    }
+
 
     public void InventoryReorderStock(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();

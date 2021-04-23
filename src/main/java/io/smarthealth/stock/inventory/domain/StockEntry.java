@@ -110,6 +110,10 @@ public class StockEntry extends Auditable {
         data.setDateCreated(this.getTransactionDate());
         data.setLastUpdated(this.getReceivedAt());
 
+        data.setCostPrice(this.getItem().getRate());
+        data.setFormattedQuantity(this.getQuantity()* -1);
+        data.setFormattedTotal(this.getItem().getRate().multiply(BigDecimal.valueOf(this.getQuantity()* -1)));
+
         return data;
     }
 

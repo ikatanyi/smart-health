@@ -57,6 +57,9 @@ public class StockEntryData {
     private LocalDateTime lastUpdated;
     private BigDecimal discount;
     private BigDecimal tax;
+    private BigDecimal costPrice;
+    private Double formattedQuantity;
+    private BigDecimal formattedTotal;
 
     public static StockEntryData map(StockEntry stock) {
         StockEntryData data = new StockEntryData();
@@ -96,6 +99,9 @@ public class StockEntryData {
         data.setStatus(stock.getStatus());
         data.setDiscount(stock.getDiscount());
         data.setTax(stock.getTax());
+        data.setCostPrice(stock.getItem().getRate());
+        data.setFormattedQuantity(stock.getQuantity()* -1);
+        data.setFormattedTotal(stock.getItem().getCostRate().multiply(BigDecimal.valueOf(stock.getQuantity()* -1)));
 
         return data;
     }
