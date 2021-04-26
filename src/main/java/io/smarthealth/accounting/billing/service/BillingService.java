@@ -1067,7 +1067,6 @@ public class BillingService {
         billItem.setBillingDate(LocalDate.now());
         billItem.setTransactionId(trdId);
         billItem.setItem(priceList.getItem());
-        billItem.setPaid(true);
         billItem.setPrice(sellingRate);
         billItem.setQuantity(NumberUtils.createDouble(String.valueOf(qty)));
         billItem.setAmount(sellingRate * qty);
@@ -1075,13 +1074,16 @@ public class BillingService {
         billItem.setBalance(sellingRate * qty);
         billItem.setServicePoint(priceList.getServicePoint().getName());
         billItem.setServicePointId(priceList.getServicePoint().getId());
-        billItem.setStatus(BillStatus.Paid);
+
         billItem.setMedicId(null);
         billItem.setBillPayMode(visit.getPaymentMethod());
         if(category == ItemCategory.Admission){
             billItem.setEntryType(BillEntryType.Debit);
+            billItem.setStatus(BillStatus.Draft);
         }else {
             billItem.setEntryType(BillEntryType.Credit);
+            billItem.setStatus(BillStatus.Paid);
+            billItem.setPaid(true);
         }
         patientbill.addBillItem(billItem);
 
