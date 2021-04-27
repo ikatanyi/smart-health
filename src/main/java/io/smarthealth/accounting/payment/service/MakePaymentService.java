@@ -453,6 +453,7 @@ public class MakePaymentService {
         inv.setTransactionDate(payment.getPaymentDate());
         inv.setTransactionNumber(payment.getTransactionNo());
         inv.setType(PurchaseInvoice.Type.Payment);
+        inv.setDocumentNumber(payment.getVoucherNo());
 
         return  inv;
     }

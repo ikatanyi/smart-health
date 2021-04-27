@@ -104,8 +104,8 @@ public class StockEntry extends Auditable {
         data.setCostCenter(this.getCostCenter());
         data.setCreatedBy(this.getCreatedBy());
         data.setStatus(this.getStatus());
-        data.setTax(this.getTax());
-        data.setDiscount(this.getDiscount());
+        data.setDiscount(this.getDiscount() !=null ? this.getDiscount() : BigDecimal.ZERO);
+        data.setTax(this.getTax() != null? this.getTax() : BigDecimal.ZERO);
 
         data.setDateCreated(this.getTransactionDate());
         data.setLastUpdated(this.getReceivedAt());
@@ -114,6 +114,12 @@ public class StockEntry extends Auditable {
         data.setFormattedQuantity(this.getQuantity()* -1);
         data.setFormattedTotal(this.getItem().getRate().multiply(BigDecimal.valueOf(this.getQuantity()* -1)));
         data.setFixedQuantity(this.getQuantity());
+
+        data.setTotalExclusive(data.getFormattedTotal().subtract(data.getDiscount()));
+        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
+
+        data.setTotalExclusive(data.getFormattedTotal().subtract(data.getDiscount()));
+        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
 
         return data;
     }
@@ -144,6 +150,8 @@ public class StockEntry extends Auditable {
         stock.setTransactionNumber(drug.getTransactionId());
         stock.setUnit(drug.getUnits());
         stock.setBatchNo(drug.getBatchNumber());
+        stock.setDiscount(BigDecimal.valueOf(drug.getDiscount()));
+        stock.setTax(BigDecimal.valueOf(drug.getTaxes()));
         return stock;
     }
     public LocalDateTime getLastUpdatedDateTime(){

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -19,7 +20,7 @@ public class PurchaseInvoiceSpecification {
         super();
     }
 
-    public static Specification<PurchaseInvoice> createSpecification(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved, String term, PurchaseInvoice.Type transactionType) {
+    public static Specification<PurchaseInvoice> createSpecification(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved, String term, List<PurchaseInvoice.Type> transactionType) {
         
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
@@ -52,8 +53,8 @@ public class PurchaseInvoiceSpecification {
                 predicates.add( cb.like(root.get("invoiceNumber"), likeExpression) );
             }
 
-             if(transactionType!=null){
-                 predicates.add(cb.equal(root.get("type"), transactionType));
+             if(transactionType!=null && !transactionType.isEmpty()){
+                 predicates.add(root.get("type").in(transactionType));
              }
              
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
