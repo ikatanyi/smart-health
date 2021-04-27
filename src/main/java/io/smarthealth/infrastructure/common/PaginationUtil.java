@@ -144,7 +144,16 @@ public final class PaginationUtil {
 
     public static Pageable createUnPaged(Integer page, Integer size) {
         if (page != null && size != null) {
+            page = page - 1;
             return PageRequest.of(page, size);
+        }
+        return Pageable.unpaged();
+    }
+
+    public static Pageable createUnPaged(Integer page, Integer size, Sort sort) {
+        if (page != null && size != null) {
+            page = page - 1;
+            return PageRequest.of(page, size, sort);
         }
         return Pageable.unpaged();
     }

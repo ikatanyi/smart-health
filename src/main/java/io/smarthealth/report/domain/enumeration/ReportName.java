@@ -101,6 +101,7 @@ public enum ReportName {
         PricelistSummary,
         RequisitionRequest,
         StockTransfer,
-        StockReturn
+        StockReturn,
+        SupplierInvoice,
         /* */
 }

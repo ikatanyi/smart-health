@@ -100,22 +100,24 @@ public class StockEntryData {
         data.setDateCreated(stock.getTransactionDate());
         data.setLastUpdated(stock.getReceivedAt());
         data.setStatus(stock.getStatus());
-        data.setDiscount(stock.getDiscount());
-        data.setTax(stock.getTax());
+        data.setDiscount(stock.getDiscount() !=null ? stock.getDiscount() : BigDecimal.ZERO);
+        data.setTax(stock.getTax() != null? stock.getTax() : BigDecimal.ZERO);
         data.setCostPrice(stock.getItem().getRate());
         data.setFormattedQuantity(stock.getQuantity()* -1);
         data.setFormattedTotal(stock.getItem().getCostRate().multiply(BigDecimal.valueOf(stock.getQuantity()* -1)));
         data.setFixedQuantity(stock.getQuantity());
 
-        data.setTotalExclusive(data.getFormattedTotal().subtract(data.discount));
+        data.setTotalExclusive(data.getFormattedTotal().subtract(data.getDiscount()));
         data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
 
-        data.setTotalExclusive(data.getFormattedTotal().subtract(data.discount));
+        data.setTotalExclusive(data.getFormattedTotal().subtract(data.getDiscount()));
         data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
 
         return data;
     }
-
+    private BigDecimal toDefault(BigDecimal val){
+        return val!=null ? val : BigDecimal.ZERO;
+    }
     /*
     Perpetual Inventory
         If perpetual inventory system is enabled, additional costs will be booked in "Expense Included In Valuation" account.

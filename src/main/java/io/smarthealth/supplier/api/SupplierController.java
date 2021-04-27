@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.supplier.data.SupplierBalance;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.data.SupplierStatement;
 import io.smarthealth.supplier.domain.Supplier;
@@ -117,5 +118,16 @@ public class SupplierController {
         List<SupplierStatement> list = service.getStatement(supplierId, range);
 
         return ResponseEntity.ok(PaginationUtil.paginateList(list, "Supplier Statement", "", pageable));
+    }
+
+    @GetMapping("/suppliers/balance")
+    public ResponseEntity<Pager<SupplierBalance>> getStatement(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Page<SupplierBalance> list = service.getSupplierBalances(pageable);
+        Pager<SupplierBalance> balances = (Pager<SupplierBalance>) PaginationUtil.toPager(list, "Supplier Balance");
+        return ResponseEntity.ok(balances);
     }
 }

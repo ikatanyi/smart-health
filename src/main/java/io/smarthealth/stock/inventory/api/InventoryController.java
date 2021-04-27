@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -90,7 +91,7 @@ public class InventoryController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = PaginationUtil.createPage(page, size, Sort.by(Sort.Direction.DESC, "transactionNumber"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<StockEntryData> list = service
                 .getStockEntries(storeId, itemId, referenceNumber, transactionId, deliveryNumber, purpose, type, range, pageable)
@@ -136,7 +137,7 @@ public class InventoryController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = PaginationUtil.createPage(page, size,Sort.by(Sort.Direction.DESC, "referenceNumber"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
         Page<StockTransferData> list = service.getStockTransfers(storeId, range, status, pageable);

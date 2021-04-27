@@ -100,8 +100,8 @@ public class InventoryService {
                         stock.setTransactionDate(stockData.getTransactionDate());
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(st.getUnit());
-                        stock.setDiscount(st.getDiscount());
-                        stock.setTax(st.getTax());
+                        stock.setDiscount(st.getDiscount() !=null ? st.getDiscount() : BigDecimal.ZERO);
+                        stock.setTax(st.getTax() !=null ? st.getTax() : BigDecimal.ZERO);
 
                         if (stockData.getMovementPurpose() == MovementPurpose.Transfer) {
                             stock.setCachedQuantity(st.getQuantity());
@@ -131,6 +131,9 @@ public class InventoryService {
                             receivingStock.setTransactionDate(stockData.getTransactionDate());
                             receivingStock.setTransactionNumber(trdId);
                             receivingStock.setUnit(st.getUnit());
+                            receivingStock.setDiscount(st.getDiscount() !=null ? st.getDiscount() : BigDecimal.ZERO);
+                            receivingStock.setTax(st.getTax() !=null ? st.getTax() : BigDecimal.ZERO);
+
                             doStockEntry(InventoryEvent.Type.Increase, receivingStock, destinationStore, item, qty.doubleValue());
 
                         }
@@ -223,6 +226,8 @@ public class InventoryService {
                         stock.setBatchNo(stock.getBatchNo());
                         stock.setDeliveryNumber(docNo);
                         stock.setBatchNo(st.getBatchNumber());
+                        stock.setTax(st.getTax());
+                        stock.setDiscount(st.getDiscount());
 
                         StockEntry savedEntry = stockEntryRepository.save(stock);
 

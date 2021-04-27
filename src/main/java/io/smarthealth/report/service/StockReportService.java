@@ -392,6 +392,20 @@ public class StockReportService {
         reportService.generateReport(reportData, response);
     }
 
+    public void supplierInvoice(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+
+        String document_no = reportParam.getFirst("doc_no");
+        SupplierInvoiceReport stockTransfer = purchaseInvoiceService.getSupplierInvoiceReport(document_no);
+        List<SupplierInvoiceReport> requisitionData = Arrays.asList(stockTransfer);
+
+        reportData.setData(requisitionData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/supplier/SupplierInvoice");
+        reportData.setReportName("Supplier Invoice");
+        reportService.generateReport(reportData, response);
+    }
+
     public void InventoryReorderStock(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long storeId = null, itemId = null;

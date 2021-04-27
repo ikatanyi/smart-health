@@ -108,7 +108,7 @@ public class PurchaseInvoiceController {
             @RequestParam(value = "approved", required = false) Boolean approved,
             @RequestParam(value = "invoice_no", required = false) String invoiceNumber,
             @RequestParam(value = "status", required = false) final PurchaseInvoiceStatus status,
-            @RequestParam(value = "invoiceType", required = false) final PurchaseInvoice.Type invoiceType,
+            @RequestParam(value = "invoiceType", required = false) final List<PurchaseInvoice.Type> invoiceType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "page", required = false) Integer page,

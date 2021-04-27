@@ -26,4 +26,5 @@ public interface PurchaseInvoiceRepository extends JpaRepository<PurchaseInvoice
     Page<PurchaseInvoice> findByStatus(PurchaseInvoiceStatus status, Pageable page);
 
     Optional<PurchaseInvoice> findByDocumentNumber(String documentNo);
+
 }
