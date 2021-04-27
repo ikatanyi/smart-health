@@ -218,6 +218,7 @@ public class ExcelExporterService {
 
 
     private void writeHeaderLine() {
+        workbook = new XSSFWorkbook();
         sheet = workbook.createSheet("Patients");
 
         Row row = sheet.createRow(0);
