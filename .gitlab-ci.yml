@@ -1,0 +1,43 @@
+stages: 
+  - build
+  - staging
+  - deploy
+
+build:
+  stage: build
+  tags:
+    - smarthealthv2
+  script:  
+    - mvn package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1d
+      
+deploy_dev:
+    stage: staging
+    tags:
+    - smarthealthv2
+    before_script:
+      #- export BUILD_NUMBER = $(grep "buildNumber=" "buildNumber.properties" | cut -d'=' -f2-)
+
+    script:
+        #- echo $BUILD_NUMBER
+        - sudo rsync -rav -e --stats target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
+        - sudo chmod 775 /var/log/smarthealth-app.log
+        - sudo service smarthealth-app restart
+       
+deploy_prod:
+    stage: deploy
+    tags:
+    - smarthealthv2
+    script:
+        - sshpass -V
+        - sshpass -p "$QA_SERVER_PASSWORD" sudo rsync -rav -e --stats target/smart-health-1.0.0.jar smart@192.180.4.135:/opt/smarthealth/latest/smart-health-1.0.0.jar
+        - sshpass -p "$QA_SERVER_PASSWORD" sudo service smarthealth-app restart
+    
+    only:
+        - master
+cache:
+  paths:
+    - ~.m2/repository/
