@@ -30,5 +30,6 @@ public enum GlobalConfigNum {
     DefaultCurrency,
     DiscountMaxPercentage,
     PatientDocuments,
-    CheckPatientBillLimit;
+    CheckPatientBillLimit,
+    CaptureLabConsumables;
 }
