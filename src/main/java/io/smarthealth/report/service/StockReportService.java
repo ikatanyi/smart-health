@@ -22,10 +22,7 @@ import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.service.ItemService;
-import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
-import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
-import io.smarthealth.stock.purchase.data.PurchaseOrderData;
-import io.smarthealth.stock.purchase.data.PurchaseOrderItemData;
+import io.smarthealth.stock.purchase.data.*;
 import io.smarthealth.stock.purchase.domain.PurchaseOrderItem;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
@@ -35,6 +32,7 @@ import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -366,6 +364,33 @@ public class StockReportService {
         reportService.generateReport(reportData, response);
     }
 
+    public void stockTransfer(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String transfer_no = reportParam.getFirst("transfer_no");
+
+        StockTransferReport stockTransfer = inventoryService.getStockTransferReport(transfer_no);
+        List<StockTransferReport> requisitionData = Arrays.asList(stockTransfer);
+
+        reportData.setData(requisitionData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/requisition/StockTransfer");
+        reportData.setReportName("Stock Transfers");
+        reportService.generateReport(reportData, response);
+    }
+
+    public void supplierReturns(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+
+        String document_no = reportParam.getFirst("doc_no");
+        SupplierInvoiceReport stockTransfer = purchaseInvoiceService.getSupplierInvoiceReport(document_no);
+        List<SupplierInvoiceReport> requisitionData = Arrays.asList(stockTransfer);
+
+        reportData.setData(requisitionData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/SupplierReturns");
+        reportData.setReportName("Supplier Stock Returns");
+        reportService.generateReport(reportData, response);
+    }
 
     public void InventoryReorderStock(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();

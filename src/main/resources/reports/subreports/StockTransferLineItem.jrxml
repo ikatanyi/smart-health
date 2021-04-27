@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="StockTransferLineItem" pageWidth="552" pageHeight="842" columnWidth="552" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isSummaryNewPage="true" uuid="d78394df-f5c3-4492-bc13-f74ab21537d2">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="451"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="535"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="destinationStore" class="java.lang.String">
+		<fieldDescription><![CDATA[destinationStore]]></fieldDescription>
+	</field>
+	<field name="purpose" class="io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose">
+		<fieldDescription><![CDATA[purpose]]></fieldDescription>
+	</field>
+	<field name="itemCode" class="java.lang.String">
+		<fieldDescription><![CDATA[itemCode]]></fieldDescription>
+	</field>
+	<field name="discount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[discount]]></fieldDescription>
+	</field>
+	<field name="expiryDate" class="java.time.LocalDate">
+		<fieldDescription><![CDATA[expiryDate]]></fieldDescription>
+	</field>
+	<field name="lastUpdated" class="java.time.LocalDateTime">
+		<fieldDescription><![CDATA[lastUpdated]]></fieldDescription>
+	</field>
+	<field name="dateCreated" class="java.time.LocalDate">
+		<fieldDescription><![CDATA[dateCreated]]></fieldDescription>
+	</field>
+	<field name="referenceNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[referenceNumber]]></fieldDescription>
+	</field>
+	<field name="price" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[price]]></fieldDescription>
+	</field>
+	<field name="deliveryNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[deliveryNumber]]></fieldDescription>
+	</field>
+	<field name="amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[amount]]></fieldDescription>
+	</field>
+	<field name="batchNo" class="java.lang.String">
+		<fieldDescription><![CDATA[batchNo]]></fieldDescription>
+	</field>
+	<field name="item" class="java.lang.String">
+		<fieldDescription><![CDATA[item]]></fieldDescription>
+	</field>
+	<field name="issuedTo" class="java.lang.String">
+		<fieldDescription><![CDATA[issuedTo]]></fieldDescription>
+	</field>
+	<field name="quantity" class="java.lang.Double">
+		<fieldDescription><![CDATA[quantity]]></fieldDescription>
+	</field>
+	<field name="costCenter" class="java.lang.String">
+		<fieldDescription><![CDATA[costCenter]]></fieldDescription>
+	</field>
+	<field name="transactionNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[transactionNumber]]></fieldDescription>
+	</field>
+	<field name="tax" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[tax]]></fieldDescription>
+	</field>
+	<field name="store" class="java.lang.String">
+		<fieldDescription><![CDATA[store]]></fieldDescription>
+	</field>
+	<field name="storeId" class="java.lang.Long">
+		<fieldDescription><![CDATA[storeId]]></fieldDescription>
+	</field>
+	<field name="transactionDate" class="java.time.LocalDate">
+		<fieldDescription><![CDATA[transactionDate]]></fieldDescription>
+	</field>
+	<field name="moveType" class="io.smarthealth.stock.inventory.domain.enumeration.MovementType">
+		<fieldDescription><![CDATA[moveType]]></fieldDescription>
+	</field>
+	<field name="cachedQuantity" class="java.lang.Double">
+		<fieldDescription><![CDATA[cachedQuantity]]></fieldDescription>
+	</field>
+	<field name="destinationStoreId" class="java.lang.Long">
+		<fieldDescription><![CDATA[destinationStoreId]]></fieldDescription>
+	</field>
+	<field name="itemId" class="java.lang.Long">
+		<fieldDescription><![CDATA[itemId]]></fieldDescription>
+	</field>
+	<field name="unit" class="java.lang.String">
+		<fieldDescription><![CDATA[unit]]></fieldDescription>
+	</field>
+	<field name="createdBy" class="java.lang.String">
+		<fieldDescription><![CDATA[createdBy]]></fieldDescription>
+	</field>
+	<field name="category" class="java.lang.String">
+		<fieldDescription><![CDATA[category]]></fieldDescription>
+	</field>
+	<field name="status" class="io.smarthealth.stock.inventory.domain.StockEntry.Status">
+		<fieldDescription><![CDATA[status]]></fieldDescription>
+	</field>
+	<field name="formattedQuantity" class="java.lang.Double">
+		<fieldDescription><![CDATA[formattedQuantity]]></fieldDescription>
+	</field>
+	<field name="formattedTotal" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[formattedTotal]]></fieldDescription>
+	</field>
+	<field name="costPrice" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[costPrice]]></fieldDescription>
+	</field>
+	<variable name="TotalCost" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{formattedTotal}]]></variableExpression>
+	</variable>
+	<variable name="LineTotal" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{price}.multiply( java.math.BigDecimal.valueOf($F{quantity}) )]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="18" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="40" y="3" width="60" height="15" uuid="360f5b63-33a2-42aa-8316-c258a2b6ce78">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="3" width="225" height="15" uuid="b9773fa7-6fa1-4c10-8a7d-77ef35645fe5">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="325" y="2" width="60" height="15" uuid="ed291eaa-8302-4dcc-a0f7-278b4ec11da2">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="3" width="95" height="15" uuid="0c6608a2-611c-48c9-a2bf-173baff0cdf4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="1" width="550" height="1" uuid="ef9cf587-e6db-4690-8ad3-4894a191db77">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+			</line>
+			<line>
+				<reportElement x="0" y="16" width="550" height="1" uuid="9e7a044b-ef7a-4316-862f-0b039cb6c22c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement x="0" y="3" width="40" height="15" uuid="cc387c6c-c765-4c98-87ec-5c30e536eeac">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="385" y="0" width="70" height="15" uuid="b95e5c96-9f9a-4057-a7fc-48f780703ff9">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Price]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="100" y="0" width="225" height="14" uuid="a0d74a17-3ed2-4b16-a1b1-7e74837163a9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="0" width="60" height="13" uuid="489ccc5f-6614-4fa5-aa23-c0ffcf536928"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{itemCode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="325" y="0" width="60" height="14" uuid="e465a5c9-5598-4e9a-b46d-d3557ac9bec7">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{formattedQuantity}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Column" pattern="#,###.00">
+				<reportElement x="455" y="0" width="95" height="14" uuid="04a1859f-2d69-4097-a504-0993cd880294">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{formattedTotal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="41" height="13" uuid="3f8c0218-dfbf-4c78-8c3e-01f8a34bb252">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{PAGE_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,###.00">
+				<reportElement x="385" y="-1" width="70" height="14" uuid="48fe45b7-28d2-440d-ba71-cb7677fce806">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{costPrice}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

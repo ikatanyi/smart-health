@@ -352,4 +352,14 @@ public class PurchaseInvoiceService {
         return purchaseInvoiceRepository.saveAll(lists);
 
     }
+
+    public SupplierInvoiceReport getSupplierInvoiceReport(String documentNo){
+        Optional<PurchaseInvoice> invoice = purchaseInvoiceRepository.findByDocumentNumber(documentNo);
+
+        List<StockEntry> stockEntries = stockEntryRepository.findStockEntriesByDeliveryNumber(documentNo);
+        if(invoice.isPresent()){
+            return new SupplierInvoiceReport(invoice.get(),stockEntries);
+        }
+        return new SupplierInvoiceReport();
+    }
 }

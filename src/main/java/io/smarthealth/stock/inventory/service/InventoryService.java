@@ -395,6 +395,13 @@ public class InventoryService {
         return stockEntryRepository.findStockTransfers(transferNo);
      }
 
+    public StockTransferReport getStockTransferReport(String transferNo){
+        StockTransferData data = stockEntryRepository.findStockTransfers(transferNo);
+        StockTransferReport report = new StockTransferReport(data);
+        report.addItems(getStockTransferItems(transferNo));
+        return report;
+    }
+
     @Transactional
     public void reverseStockTransfer(String transferNo){
         stockEntryRepository.reverseStockTransfer(transferNo);

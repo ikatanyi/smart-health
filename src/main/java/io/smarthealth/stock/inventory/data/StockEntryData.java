@@ -33,7 +33,8 @@ public class StockEntryData {
     private BigDecimal price;
     private BigDecimal amount;
     private String unit;
-
+    private BigDecimal totalExclusive;
+    private BigDecimal totalAmount;
     private String referenceNumber; //ref LPO,supplier, patient no
     private String deliveryNumber; //GRN| transaction reference
     private String transactionNumber; //auto generated ST-2019-00002
@@ -57,6 +58,10 @@ public class StockEntryData {
     private LocalDateTime lastUpdated;
     private BigDecimal discount;
     private BigDecimal tax;
+    private BigDecimal costPrice;
+    private Double formattedQuantity;
+    private BigDecimal formattedTotal;
+    private Double fixedQuantity;
 
     public static StockEntryData map(StockEntry stock) {
         StockEntryData data = new StockEntryData();
@@ -78,6 +83,7 @@ public class StockEntryData {
 
         data.setUnit(stock.getUnit());
         data.setQuantity(stock.getQuantity());
+        data.setFixedQuantity(stock.getQuantity());
         data.setPrice(stock.getPrice());
         data.setAmount(stock.getAmount());
         data.setReferenceNumber(stock.getReferenceNumber());
@@ -96,6 +102,16 @@ public class StockEntryData {
         data.setStatus(stock.getStatus());
         data.setDiscount(stock.getDiscount());
         data.setTax(stock.getTax());
+        data.setCostPrice(stock.getItem().getRate());
+        data.setFormattedQuantity(stock.getQuantity()* -1);
+        data.setFormattedTotal(stock.getItem().getCostRate().multiply(BigDecimal.valueOf(stock.getQuantity()* -1)));
+        data.setFixedQuantity(stock.getQuantity());
+
+        data.setTotalExclusive(data.getFormattedTotal().subtract(data.discount));
+        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
+
+        data.setTotalExclusive(data.getFormattedTotal().subtract(data.discount));
+        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
 
         return data;
     }

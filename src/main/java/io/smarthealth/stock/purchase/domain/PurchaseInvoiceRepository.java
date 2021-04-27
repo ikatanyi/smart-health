@@ -24,4 +24,6 @@ public interface PurchaseInvoiceRepository extends JpaRepository<PurchaseInvoice
     Optional<PurchaseInvoice> findByInvoiceForSupplier(@Param("inv") String invNo, @Param("supperId") Long supperId);
     
     Page<PurchaseInvoice> findByStatus(PurchaseInvoiceStatus status, Pageable page);
+
+    Optional<PurchaseInvoice> findByDocumentNumber(String documentNo);
 }

@@ -17,6 +17,7 @@ import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
 import io.smarthealth.stock.purchase.data.PurchaseOrderItemData;
+import io.smarthealth.stock.purchase.data.SupplierInvoiceReport;
 import io.smarthealth.stock.purchase.domain.*;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.domain.specification.PurchaseOrderSpecification;
