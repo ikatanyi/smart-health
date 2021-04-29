@@ -147,7 +147,9 @@ public class StockEntry extends Auditable {
         stock.setIssuedTo(drug.getOtherReference());
         stock.setStore(store);
         stock.setTransactionDate(drug.getDispensedDate());
-        stock.setTransactionNumber(drug.getTransactionId());
+        if(drug.getBillItem()!=null){
+            stock.setTransactionNumber(drug.getBillItem().getTransactionId());
+        }
         stock.setUnit(drug.getUnits());
         stock.setBatchNo(drug.getBatchNumber());
         stock.setDiscount(BigDecimal.valueOf(drug.getDiscount()));

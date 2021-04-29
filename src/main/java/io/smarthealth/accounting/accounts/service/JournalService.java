@@ -97,6 +97,7 @@ public class JournalService {
     }
 
     private String bookJournalEntry(Long journalId) {
+        System.out.println("Journal Id "+journalId);
         final Optional<JournalEntry> optionalJournalEntry = findJournalById(journalId);
 
         if (!optionalJournalEntry.isPresent()) {
@@ -110,8 +111,9 @@ public class JournalService {
         journal.getItems()
                 .stream()
                 .forEach(je -> {
+                    System.out.println("Je "+je.getDescription());
                     final Account accountEntity = je.getAccount();// accountService.findByAccountNumberOrThrow(je.getAccountNumber());
-//                    System.out.println("accountEntity "+accountEntity.getName());
+                    System.out.println("accountEntity "+accountEntity.toString());
                     final BigDecimal amount;
                     switch (accountEntity.getType()) {
                         case ASSET:

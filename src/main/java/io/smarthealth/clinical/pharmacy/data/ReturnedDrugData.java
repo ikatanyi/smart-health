@@ -28,4 +28,5 @@ public class ReturnedDrugData implements Serializable {
     private String reason;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate returnDate;
+    private Long patientBillItemId;
 }
