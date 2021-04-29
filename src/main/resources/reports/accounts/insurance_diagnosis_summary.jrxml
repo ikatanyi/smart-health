@@ -96,7 +96,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Date]]></text>
+				<text><![CDATA[Visit Date]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="19" width="228" height="13" uuid="2128f471-bc78-4bea-b26b-955f270cde40"/>

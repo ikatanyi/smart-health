@@ -6,23 +6,21 @@
 package io.smarthealth.clinical.pharmacy.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.infrastructure.lang.Constants;
+
 import java.io.Serializable;
 import java.time.LocalDate;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
+
 import lombok.Data;
 
 /**
- *
  * @author Kelsas
- */ 
+ */
 @Data
 public class DispensedDrugData implements Serializable {
-// What was I thinking this could have just extended bill items
+    // What was I thinking this could have just extended bill items
     private Long id;
     private Long storeId;
     private String storeName;
@@ -32,7 +30,8 @@ public class DispensedDrugData implements Serializable {
 
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate dispensedDate;
-    private String transactionId;
+
+
     private Long drugId;
     private String drug;
     private String prescriptionNo;
@@ -52,7 +51,7 @@ public class DispensedDrugData implements Serializable {
     private String returnReason;
     private LocalDate returnDate;
     private Double returnedQuantity;
-     private Double qtyBalance;
+    private Double qtyBalance;
     private String otherReference;
     private Boolean walkinFlag = Boolean.FALSE;
     private String batchNumber;
@@ -61,4 +60,6 @@ public class DispensedDrugData implements Serializable {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
+    private Long patientBillItemId;
+    private String transactionId;
 }
