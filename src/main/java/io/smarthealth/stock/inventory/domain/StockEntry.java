@@ -152,8 +152,8 @@ public class StockEntry extends Auditable {
         }
         stock.setUnit(drug.getUnits());
         stock.setBatchNo(drug.getBatchNumber());
-        stock.setDiscount(BigDecimal.valueOf(drug.getDiscount()));
-        stock.setTax(BigDecimal.valueOf(drug.getTaxes()));
+        stock.setDiscount(drug.getDiscount()!=null ? BigDecimal.valueOf(drug.getDiscount()) : BigDecimal.ZERO);
+        stock.setTax(drug.getTaxes()!=null ? BigDecimal.valueOf(drug.getTaxes()) : BigDecimal.ZERO);
         return stock;
     }
     public LocalDateTime getLastUpdatedDateTime(){
