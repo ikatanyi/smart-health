@@ -247,7 +247,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Item Movement	]]></text>
+				<text><![CDATA[Item Movement	Report]]></text>
 			</staticText>
 			<line>
 				<reportElement positionType="Float" x="0" y="0" width="552" height="1" forecolor="#6666FF" uuid="51c15655-6202-4aed-8e36-9c455d843b8a"/>

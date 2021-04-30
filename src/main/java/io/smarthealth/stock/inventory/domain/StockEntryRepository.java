@@ -3,10 +3,7 @@ package io.smarthealth.stock.inventory.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.stock.inventory.data.ExpiryStock;
-import io.smarthealth.stock.inventory.data.ItemValuation;
-import io.smarthealth.stock.inventory.data.StockMovement;
-import io.smarthealth.stock.inventory.data.StockTransferData;
+import io.smarthealth.stock.inventory.data.*;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
@@ -100,5 +97,9 @@ public interface StockEntryRepository extends JpaRepository<StockEntry, Long>, J
 
     @Query("SELECT new io.smarthealth.stock.inventory.data.ItemValuation(p.itemCode, p.itemName, p.category, p.active, SUM(s.quantity),p.costRate) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id WHERE p.itemType ='Inventory' AND s.store.id = :storeId AND s.transactionDate <= :asAt GROUP BY p.id")
     List<ItemValuation> getItemValuation(Long storeId, LocalDate asAt);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.referenceNumber, s.moveType, s.purpose, s.issuedTo,s.quantity ) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id WHERE p.itemType ='Inventory' AND s.transactionDate between :start and :end")
+    Page<ItemMovement> getItemMovement(LocalDate start, LocalDate end, Pageable page);
+
 
 }

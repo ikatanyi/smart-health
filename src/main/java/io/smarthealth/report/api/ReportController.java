@@ -335,6 +335,10 @@ public class ReportController {
                 break;
             case ItemValuation:
                 stockReportService.getItemValuation(queryParams,format,response);
+                break;
+            case ItemMovement:
+                stockReportService.getItemMovement(queryParams, format, response);
+                break;
             default:
                 break;
         }

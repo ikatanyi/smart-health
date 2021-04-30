@@ -103,6 +103,7 @@ public enum ReportName {
         StockTransfer,
         StockReturn,
         SupplierInvoice,
-        ItemValuation
+        ItemValuation,
+        ItemMovement
         /* */
 }

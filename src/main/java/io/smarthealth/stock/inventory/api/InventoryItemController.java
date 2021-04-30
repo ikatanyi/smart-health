@@ -3,13 +3,11 @@ package io.smarthealth.stock.inventory.api;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
-import io.smarthealth.stock.inventory.data.CreateInventoryItem;
-import io.smarthealth.stock.inventory.data.InventoryItemData;
-import io.smarthealth.stock.inventory.data.ItemDTO;
-import io.smarthealth.stock.inventory.data.ItemValuation;
+import io.smarthealth.stock.inventory.data.*;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.item.domain.Item;
@@ -140,5 +138,20 @@ public class InventoryItemController {
             @RequestParam(value = "storeId", required = false) final Long storeId) {
         List<ItemValuation> itesm = service.getItemValuations(storeId, date);
         return ResponseEntity.ok(itesm);
+    }
+
+    @GetMapping("/inventoryItem/movement")
+    public ResponseEntity<Pager<ItemMovement>> getItemMovement(
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        Page<ItemMovement> lists = service.getItemMovements(range,pageable);
+
+        Pager<ItemMovement> pager = (Pager<ItemMovement>) PaginationUtil.toPager(lists,"Stock Movement Report");
+          return ResponseEntity.ok(pager);
     }
 }

@@ -103,8 +103,10 @@ public class StockEntryData {
         data.setDiscount(stock.getDiscount() !=null ? stock.getDiscount() : BigDecimal.ZERO);
         data.setTax(stock.getTax() != null? stock.getTax() : BigDecimal.ZERO);
         data.setCostPrice(stock.getItem().getRate());
-        data.setFormattedQuantity(stock.getQuantity()* -1);
-        data.setFormattedTotal(stock.getItem().getCostRate().multiply(BigDecimal.valueOf(stock.getQuantity()* -1)));
+
+        double qty = stock.getPurpose() == MovementPurpose.Returns ? stock.getQuantity()* -1 : stock.getQuantity();
+        data.setFormattedQuantity(qty);
+        data.setFormattedTotal(stock.getPrice().multiply(BigDecimal.valueOf(qty)));
         data.setFixedQuantity(stock.getQuantity());
 
         data.setTotalExclusive(data.getFormattedTotal().subtract(data.getDiscount()));
