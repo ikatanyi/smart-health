@@ -262,8 +262,9 @@ public class AdmissionReportService {
         }
         i = 1;
         for (PatientProcedureTestData data : proceduresData) {
-            if (!data.getGeneralFeeItem())
+            if (!data.getGeneralFeeItem()) {
                 procedures = procedures.concat(String.valueOf(i++) + ". ").concat(StringUtils.clean(data.getProcedureName())).concat("\n");
+            }
         }
         reportData.getFilters().put("pharmacyData", drugs);
         reportData.getFilters().put("diagnosis", diagnosis);

@@ -33,4 +33,6 @@ public class Prescription extends DoctorRequest {
         this.setDrug(Boolean.TRUE);
     }
 
+
+
 }

@@ -240,7 +240,8 @@ public class PatientReportServices {
         Integer maxAge = Integer.getInteger(reportParam.getFirst("maxAge"));
         ReportData reportData = new ReportData();
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
+//        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = Pageable.unpaged();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
         List<PatientTestsData> diagnosisData = diagnosisService.fetchAllDiagnosis(visitNumber, patientNumber, range, gender, minAge, maxAge, pageable)
