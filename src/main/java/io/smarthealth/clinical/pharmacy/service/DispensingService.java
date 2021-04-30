@@ -103,34 +103,35 @@ public class DispensingService {
             drugRequest.getDrugItems()
                     .stream()
                     .map(drugData -> {
-                        DispensedDrug drugs = new DispensedDrug();
+                        DispensedDrug dispensedDrug = new DispensedDrug();
                         Item item = billingService.getItemByCode(drugData.getItemCode());
 
-                        drugs.setPatient(patient);
-                        drugs.setDrug(item);
-                        drugs.setStore(store);
-                        drugs.setDispensedDate(drugRequest.getDispenseDate());
-                        drugs.setTransactionId(drugRequest.getTransactionId());
-                        drugs.setQtyIssued(drugData.getQuantity());
-                        drugs.setPrice(drugData.getPrice());
-                        drugs.setAmount((drugData.getPrice() * drugData.getQuantity()));
-                        drugs.setUnits(drugData.getUnit());
-                        drugs.setDoctorName(drugData.getDoctorName());
-                        drugs.setPaid(false);
-                        drugs.setIsReturn(Boolean.FALSE);
-                        drugs.setReturnedQuantity(0D);
-                        drugs.setCollected(true);
-                        drugs.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
-                        drugs.setCollectedBy("");
-                        drugs.setInstructions(drugData.getInstructions());
-                        drugs.setOtherReference(drugRequest.getPatientNumber() + " " + drugRequest.getPatientName());
-                        drugs.setWalkinFlag(drugRequest.getIsWalkin());
-                        drugs.setBatchNumber(drugData.getBatchNumber());
-                        drugs.setDeliveryNumber(drugData.getBatchNumber());
-                        drugs.setVisit(visit);
-                        drugs.setBillNumber(drugRequest.getBillNumber());
+                        dispensedDrug.setPatient(patient);
+                        dispensedDrug.setDrug(item);
+                        dispensedDrug.setStore(store);
+                        dispensedDrug.setDispensedDate(drugRequest.getDispenseDate());
+                        dispensedDrug.setTransactionId(drugRequest.getTransactionId());
+                        dispensedDrug.setQtyIssued(drugData.getQuantity());
+                        dispensedDrug.setPrice(drugData.getPrice());
+                        dispensedDrug.setAmount((drugData.getPrice() * drugData.getQuantity()));
+                        dispensedDrug.setUnits(drugData.getUnit());
+                        dispensedDrug.setDoctorName(drugData.getDoctorName());
+                        dispensedDrug.setPaid(false);
+                        dispensedDrug.setIsReturn(Boolean.FALSE);
+                        dispensedDrug.setReturnedQuantity(0D);
+                        dispensedDrug.setCollected(true);
+                        dispensedDrug.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
+                        dispensedDrug.setCollectedBy("");
+                        dispensedDrug.setInstructions(drugData.getInstructions());
+                        dispensedDrug.setOtherReference(drugRequest.getPatientNumber() + " " + drugRequest.getPatientName());
+                        dispensedDrug.setWalkinFlag(drugRequest.getIsWalkin());
+                        dispensedDrug.setBatchNumber(drugData.getBatchNumber());
+                        dispensedDrug.setDeliveryNumber(drugData.getBatchNumber());
+                        dispensedDrug.setVisit(visit);
+                        dispensedDrug.setBillNumber(drugRequest.getBillNumber());
+                        //dispensedDrug.setBillItem(patientBillItem);
 
-                        DispensedDrug savedDrug = dispensedDrugRepository.saveAndFlush(drugs);
+                        DispensedDrug savedDrug = dispensedDrugRepository.saveAndFlush(dispensedDrug);
                         doStockEntries(savedDrug.getId());
                         fulfillDocRequest(drugData.getRequestId());
                         return savedDrug;
@@ -295,22 +296,22 @@ public class DispensingService {
 
                         dispensedDrugRepository.save(drugs);
 
-                        //update billing details
-                        PatientBillItem patientBillItem =
-                                billingService.findBillItemById(drugData.getPatientBillItemId());
-
-                        if (!patientBillItem.isFinalized()) {
-                            Double newQuantity = (patientBillItem.getQuantity() - drugData.getQuantity());
-                            patientBillItem.setQuantity(newQuantity);
-                            patientBillItem.setAmount((newQuantity * patientBillItem.getPrice()));
-                            patientBillItem.setBalance((patientBillItem.getBalance()-(patientBillItem.getPrice() - drugData.getQuantity())));
-                            billItemRepository.save(patientBillItem);
-
-                            PatientBill patientBill = patientBillItem.getPatientBill();
-                            patientBill.setAmount((patientBill.getAmount()-(patientBillItem.getPrice() - drugData.getQuantity())));
-                            patientBill.setBalance((patientBill.getBalance()-(patientBillItem.getPrice() - drugData.getQuantity())));
-                            billingService.update(patientBill);
-                        }
+//                        //update billing details
+//                        PatientBillItem patientBillItem =
+//                                billingService.findBillItemById(drugData.getPatientBillItemId());
+//
+//                        if (!patientBillItem.isFinalized()) {
+//                            Double newQuantity = (patientBillItem.getQuantity() - drugData.getQuantity());
+//                            patientBillItem.setQuantity(newQuantity);
+//                            patientBillItem.setAmount((newQuantity * patientBillItem.getPrice()));
+//                            patientBillItem.setBalance((patientBillItem.getBalance() - (patientBillItem.getPrice() - drugData.getQuantity())));
+//                            billItemRepository.save(patientBillItem);
+//
+//                            PatientBill patientBill = patientBillItem.getPatientBill();
+//                            patientBill.setAmount((patientBill.getAmount() - (patientBillItem.getPrice() - drugData.getQuantity())));
+//                            patientBill.setBalance((patientBill.getBalance() - (patientBillItem.getPrice() - drugData.getQuantity())));
+//                            billingService.update(patientBill);
+//                        }
                     });
 
         }

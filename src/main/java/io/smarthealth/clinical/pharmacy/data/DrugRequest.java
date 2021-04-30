@@ -37,5 +37,8 @@ public class DrugRequest {
     @Enumerated(EnumType.STRING)
     private BillStatus status;
 
+    private Long patientBillItemId;
+
+
     private List<DrugItemRequest> drugItems = new ArrayList<>();
 }

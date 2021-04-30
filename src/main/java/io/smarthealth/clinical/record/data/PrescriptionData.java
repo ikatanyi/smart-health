@@ -50,7 +50,6 @@ public class PrescriptionData extends DoctorRequestData {
     private Long id;
 
     public static PrescriptionData map(Prescription p) {
-        System.out.println("P to string "+p.toString());
         PrescriptionData pd = new PrescriptionData();
         pd.setAsNeeded(p.getAsNeeded());
         pd.setAsNeededCondition(p.getAsNeededCondition());
