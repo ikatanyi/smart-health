@@ -15,6 +15,7 @@ import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -28,9 +29,11 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.item.domain.Item;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.support.PagedListHolder;
@@ -43,7 +46,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author Kennedy.Imbenzi
  */
 @Service
@@ -119,7 +121,7 @@ public class DoctorRequestService implements DateConverter {
     }
 
     public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable, Boolean activeVisit, final String term, DateRange range) {
-        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, activeVisit, term,null, range);
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, activeVisit, term, null, range);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
@@ -131,19 +133,20 @@ public class DoctorRequestService implements DateConverter {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
     }
-    public Page<VisitOrderDTO> getDoctorOrderSummary(RequestType requestType, DateRange range, Pageable pageable){
-        if(requestType!=null && range!=null){
-            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(),requestType,pageable);
-        }else if(requestType!=null && range == null){
-            return doctorRequestRepository.findDoctorCashRequests(requestType,pageable);
-        }else if(range!=null && requestType == null){
-            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(),pageable);
-        }else {
+
+    public Page<VisitOrderDTO> getDoctorOrderSummary(RequestType requestType, DateRange range, Pageable pageable) {
+        if (requestType != null && range != null) {
+            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(), requestType, pageable);
+        } else if (requestType != null && range == null) {
+            return doctorRequestRepository.findDoctorCashRequests(requestType, pageable);
+        } else if (range != null && requestType == null) {
+            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(), pageable);
+        } else {
             return doctorRequestRepository.findDoctorCashRequests(pageable);
         }
     }
 
-    public List<VisitOrderItemDTO> getDoctorOrderSummaryItems(String visitNumber){
+    public List<VisitOrderItemDTO> getDoctorOrderSummaryItems(String visitNumber) {
         return doctorRequestRepository.findDoctorCashRequestsItems(visitNumber);
     }
 
@@ -190,13 +193,13 @@ public class DoctorRequestService implements DateConverter {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
     public boolean voidRequest(Long id) {
         try {
 //            fulfillDocRequest(id);
             DoctorRequest req = doctorRequestRepository.findById(id).orElse(null);
             if (req != null) {
-                if(req.getFulfillerStatus()!= FullFillerStatusType.Fulfilled)
+                if (req.getFulfillerStatus() != FullFillerStatusType.Fulfilled)
                     req.setVoided(Boolean.TRUE);
                 req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
                 req.setNotes("Voided for a reason");
@@ -236,7 +239,11 @@ public class DoctorRequestService implements DateConverter {
 
         requestItem.setRequestItemId(d.getId());
         if (d.getRequestType().equals(DoctorRequestData.RequestType.Pharmacy)) {
-            requestItem.setPrescriptionData(PrescriptionData.map(prescriptionRepository.findPresriptionByRequestId(d.getId())));
+            Prescription prescription = prescriptionRepository.findPresriptionByRequestId(d.getId());
+            if (prescription != null) {
+                PrescriptionData data = PrescriptionData.map(prescription);
+                requestItem.setPrescriptionData(data);
+            }
         }
         requestItem.setOrderNo(d.getOrderNumber());
         requestItem.setOrderDate(d.getOrderDate());
