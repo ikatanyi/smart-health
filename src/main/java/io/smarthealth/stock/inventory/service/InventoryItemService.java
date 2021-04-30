@@ -9,10 +9,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.InventoryStockData;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import io.smarthealth.stock.inventory.data.CreateInventoryItem;
-import io.smarthealth.stock.inventory.data.ExpiryStock;
-import io.smarthealth.stock.inventory.data.InventoryItemData;
-import io.smarthealth.stock.inventory.data.ItemDTO;
+import io.smarthealth.stock.inventory.data.*;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
 import io.smarthealth.stock.inventory.domain.StockEntry;
@@ -307,6 +304,7 @@ public class InventoryItemService {
         return toSave;
     }
 
+
     @Async
     public void doUpdateBalance(Long itemId, Long storeId) {
         Item item = null;
@@ -337,5 +335,13 @@ public class InventoryItemService {
             }
         }
 
+    }
+
+    public List<ItemValuation> getItemValuations(Long storeId, LocalDate date){
+        LocalDate asAt = date !=null ? date : LocalDate.now();
+        if(storeId!=null){
+            return  stockEntryRepository.getItemValuation(storeId,asAt);
+        }
+        return stockEntryRepository.getItemValuation(asAt);
     }
 }

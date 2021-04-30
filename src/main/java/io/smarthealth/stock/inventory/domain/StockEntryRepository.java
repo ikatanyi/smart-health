@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.inventory.data.ExpiryStock;
+import io.smarthealth.stock.inventory.data.ItemValuation;
 import io.smarthealth.stock.inventory.data.StockMovement;
 import io.smarthealth.stock.inventory.data.StockTransferData;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
@@ -93,5 +94,11 @@ public interface StockEntryRepository extends JpaRepository<StockEntry, Long>, J
 
     @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND s.referenceNumber = :transferNo group by s.referenceNumber ")
     StockTransferData findStockTransfers(String transferNo);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemValuation(p.itemCode, p.itemName, p.category, p.active, SUM(s.quantity),p.costRate) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id WHERE p.itemType ='Inventory' AND s.transactionDate <= :asAt GROUP BY p.id")
+    List<ItemValuation> getItemValuation(LocalDate asAt);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemValuation(p.itemCode, p.itemName, p.category, p.active, SUM(s.quantity),p.costRate) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id WHERE p.itemType ='Inventory' AND s.store.id = :storeId AND s.transactionDate <= :asAt GROUP BY p.id")
+    List<ItemValuation> getItemValuation(Long storeId, LocalDate asAt);
 
 }

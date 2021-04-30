@@ -5,12 +5,17 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.accounting.billing.data.SummaryBill;
+import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.EnglishNumberToWords;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.report.data.ReportData;
+import io.smarthealth.report.data.accounts.DailyBillingData;
 import io.smarthealth.stock.inventory.data.*;
 import io.smarthealth.stock.inventory.domain.Requisition;
 import io.smarthealth.stock.inventory.domain.RequisitionRepository;
@@ -34,6 +39,8 @@ import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -500,6 +507,22 @@ public class StockReportService {
         
         return reportData;
     }
-    
+
+    public void getItemValuation(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+        String date = reportParam.getFirst("asAt");
+        LocalDate asAt = date!=null ? LocalDate.parse(date) : null;
+        Long storeId = reportParam.getFirst("storeId")!=null ? Long.valueOf(reportParam.getFirst("storeId")) : null;
+        ReportData reportData = new ReportData();
+        reportData.getFilters().put("asAt", asAt);
+        reportData.getFilters().put("storeId", storeId);
+
+        List<ItemValuation> items = inventoryItemService.getItemValuations(storeId, asAt);
+        reportData.setData(items);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/ItemValuation");
+        reportData.setReportName("Item Valuation");
+        reportService.generateReport(reportData, response);
+    }
     
 }

@@ -412,6 +412,7 @@ public class InventoryService {
         stockEntryRepository.reverseStockTransfer(transferNo);
     }
 
+
 //    Page<StockMovement> getStockMovement(Long storeId, Long itemId, DateRange range, Pageable pageable) {
 //        Specification<StockEntry> spec = StockEntrySpecification.getStockMovement(storeId, itemId, range);
 //        Double balance = 0D;

@@ -1,12 +1,15 @@
 package io.smarthealth.stock.inventory.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.stock.inventory.data.CreateInventoryItem;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.ItemDTO;
+import io.smarthealth.stock.inventory.data.ItemValuation;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.item.domain.Item;
@@ -21,11 +24,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author Kelsas
  */
 @RestController
@@ -129,5 +132,13 @@ public class InventoryItemController {
     ) {
         service.doUpdateBalance(itemId, storeId);
         return ResponseEntity.accepted().build();
+    }
+
+    @GetMapping("/inventoryItem/valuation")
+    public ResponseEntity<List<ItemValuation>> getItemValuations(
+            @RequestParam(value = "asAt", required = false) final @JsonFormat(pattern = Constants.DATE_PATTERN) LocalDate date,
+            @RequestParam(value = "storeId", required = false) final Long storeId) {
+        List<ItemValuation> itesm = service.getItemValuations(storeId, date);
+        return ResponseEntity.ok(itesm);
     }
 }

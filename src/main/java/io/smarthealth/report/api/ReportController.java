@@ -333,7 +333,8 @@ public class ReportController {
             case SupplierInvoice:
                 stockReportService.supplierInvoice(queryParams,format,response);
                 break;
-
+            case ItemValuation:
+                stockReportService.getItemValuation(queryParams,format,response);
             default:
                 break;
         }
