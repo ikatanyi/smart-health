@@ -267,7 +267,7 @@ public class PurchaseInvoiceService {
                     Store store = getStore(st.getStoreId());
                     Item item = itemService.findItemEntityOrThrow(st.getItemId());
 
-                    BigDecimal qty = BigDecimal.valueOf(st.getQuantity());
+                    BigDecimal qty = st.getQuantity()!=null ? BigDecimal.valueOf(st.getQuantity()) : BigDecimal.ONE;
 
                     StockEntry stock = new StockEntry();
                     stock.setAmount(st.getRate().multiply(qty));

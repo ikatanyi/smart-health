@@ -111,15 +111,17 @@ public class StockEntry extends Auditable {
         data.setLastUpdated(this.getReceivedAt());
 
         data.setCostPrice(this.getItem().getRate());
-        data.setFormattedQuantity(this.getQuantity()* -1);
-        data.setFormattedTotal(this.getItem().getRate().multiply(BigDecimal.valueOf(this.getQuantity()* -1)));
+        BigDecimal val = BigDecimal.valueOf(this.getQuantity());
+        double qty = (val.signum() == -1 ? val.negate() : val).doubleValue();
+        data.setFormattedQuantity(qty);
         data.setFixedQuantity(this.getQuantity());
 
-        data.setTotalExclusive(data.getFormattedTotal().subtract(data.getDiscount()));
-        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
-
-        data.setTotalExclusive(data.getFormattedTotal().subtract(data.getDiscount()));
-        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
+        BigDecimal amt = this.getPrice().multiply(BigDecimal.valueOf(qty));
+        BigDecimal disc =this.getDiscount()!=null ? this.getDiscount() : BigDecimal.ZERO;
+        BigDecimal tx =this.getTax()!=null ? this.getTax() : BigDecimal.ZERO;
+        data.setFormattedTotal(amt);
+        data.setTotalExclusive(amt.subtract(disc));
+        data.setTotalAmount((amt.subtract(disc)).add(tx));
 
         return data;
     }

@@ -57,6 +57,7 @@ import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -522,6 +523,20 @@ public class StockReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/ItemValuation");
         reportData.setReportName("Item Valuation");
+        reportService.generateReport(reportData, response);
+    }
+
+    public void getItemMovement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        ReportData reportData = new ReportData();
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+
+        Page<ItemMovement> items = inventoryItemService.getItemMovements(range, Pageable.unpaged());
+        reportData.setData(items.getContent());
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/StockMovement");
+        reportData.setReportName("Item Movement");
         reportService.generateReport(reportData, response);
     }
     

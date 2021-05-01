@@ -103,15 +103,20 @@ public class StockEntryData {
         data.setDiscount(stock.getDiscount() !=null ? stock.getDiscount() : BigDecimal.ZERO);
         data.setTax(stock.getTax() != null? stock.getTax() : BigDecimal.ZERO);
         data.setCostPrice(stock.getItem().getRate());
-        data.setFormattedQuantity(stock.getQuantity()* -1);
-        data.setFormattedTotal(stock.getItem().getCostRate().multiply(BigDecimal.valueOf(stock.getQuantity()* -1)));
+
+        //double qty = (stock.getPurpose() == MovementPurpose.Returns || stock.getPurpose() == MovementPurpose.Transfer) ? stock.getQuantity()* -1 : stock.getQuantity();
+        BigDecimal val = BigDecimal.valueOf(stock.getQuantity());
+
+        double qty = (val.signum() == -1 ? val.negate() : val).doubleValue();
+        data.setFormattedQuantity(qty);
         data.setFixedQuantity(stock.getQuantity());
 
-        data.setTotalExclusive(data.getFormattedTotal().subtract(data.getDiscount()));
-        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
-
-        data.setTotalExclusive(data.getFormattedTotal().subtract(data.getDiscount()));
-        data.setTotalAmount(data.getTotalExclusive().add(data.getTax()));
+        BigDecimal amt = stock.getPrice().multiply(BigDecimal.valueOf(qty));
+        BigDecimal disc =stock.getDiscount()!=null ? stock.getDiscount() : BigDecimal.ZERO;
+        BigDecimal tx =stock.getTax()!=null ? stock.getTax() : BigDecimal.ZERO;
+        data.setFormattedTotal(amt);
+        data.setTotalExclusive(amt.subtract(disc));
+        data.setTotalAmount((amt.subtract(disc)).add(tx));
 
         return data;
     }

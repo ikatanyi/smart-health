@@ -264,9 +264,9 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{costPrice}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
 			</textField>
-			<textField evaluationTime="Column" pattern="#,###.00">
+			<textField pattern="#,###.00">
 				<reportElement x="501" y="0" width="50" height="14" uuid="04a1859f-2d69-4097-a504-0993cd880294">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>

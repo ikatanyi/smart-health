@@ -7,6 +7,8 @@ import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.InventoryStockData;
+import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.DateUtility;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.*;
@@ -344,4 +346,10 @@ public class InventoryItemService {
         }
         return stockEntryRepository.getItemValuation(asAt);
     }
+    public Page<ItemMovement> getItemMovements(DateRange period, Pageable page){
+        LocalDate startDate = (period == null ? DateUtility.getStartOfCurrentMonth() : period.getStartDate());
+        LocalDate endDate = (period == null ? DateUtility.getEndOfCurrentMonth() : period.getEndDate());
+         return stockEntryRepository.getItemMovement(startDate,endDate, page);
+    }
+
 }
