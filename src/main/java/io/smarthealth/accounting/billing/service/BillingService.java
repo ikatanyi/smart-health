@@ -330,6 +330,11 @@ public class BillingService {
                 .orElseThrow(() -> APIException.notFound("Bill Item with Id {0} not found", id));
     }
 
+    public PatientBillItem findBillItemByPatientBillAndItem(final PatientBill patientBill, final Item item) {
+        return billItemRepository.findByPatientBillAndItem(patientBill, item)
+                .orElseThrow(() -> APIException.notFound("Bill item not found"));
+    }
+
     public PatientBillItem findBillItemByPatientBill(String billNumber) {
         Optional<PatientBill> patientBill = findByBillNumber(billNumber);
 //        if (patientBill.isPresent()) {

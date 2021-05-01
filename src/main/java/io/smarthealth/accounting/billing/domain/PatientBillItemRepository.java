@@ -3,6 +3,8 @@ package io.smarthealth.accounting.billing.domain;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import java.util.List;
 import java.util.Optional;
+
+import io.smarthealth.stock.item.domain.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,6 +23,8 @@ public interface PatientBillItemRepository extends JpaRepository<PatientBillItem
     List<PatientBillItem> getVisitBillsByStatus(@Param("status") BillStatus status, @Param("visitNo") String visitNo);
 
     Optional<PatientBillItem> findByPatientBill(PatientBill patientBill);
+
+    Optional<PatientBillItem> findByPatientBillAndItem(final PatientBill patientBill, final Item item);
 
     List<PatientBillItem> findByTransactionId(String transactionId);
 

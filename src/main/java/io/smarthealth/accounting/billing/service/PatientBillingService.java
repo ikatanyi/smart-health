@@ -215,7 +215,7 @@ public class PatientBillingService {
         //Check the current configuration if pay first then do not dispense just create the bill and allow to be dispensed on receipting
         PatientBill savedBill = patientBillRepository.save(patientBill);
 
-        dispensingService.dispenseItem(drugRequest, store);
+        dispensingService.dispenseItem(drugRequest, store,savedBill);
 
         return patientBill;
     }
