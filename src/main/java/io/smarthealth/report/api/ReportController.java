@@ -328,16 +328,18 @@ public class ReportController {
                 stockReportService.stockTransfer(queryParams, format, response);
                 break;
             case StockReturn:
-                stockReportService.supplierReturns(queryParams,format,response);
+                stockReportService.supplierReturns(queryParams, format, response);
                 break;
             case SupplierInvoice:
-                stockReportService.supplierInvoice(queryParams,format,response);
+                stockReportService.supplierInvoice(queryParams, format, response);
                 break;
             case ItemValuation:
-                stockReportService.getItemValuation(queryParams,format,response);
+                stockReportService.getItemValuation(queryParams, format, response);
                 break;
             case ItemMovement:
                 stockReportService.getItemMovement(queryParams, format, response);
+            case LabReagentReport:
+                stockReportService.getLabReagentReport(queryParams, format, response);
                 break;
             default:
                 break;
