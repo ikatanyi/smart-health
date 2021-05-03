@@ -34,6 +34,7 @@ import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.smarthealth.stock.purchase.service.PurchaseService;
+import io.smarthealth.supplier.data.SupplierBalanceAging;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
@@ -561,5 +562,16 @@ public class StockReportService {
         JasperPrint jasperPrint = reportRepository.generateJasperPrint(template, params);
         jasperReportService.export(jasperPrint, format, template, response);
     }
+    public void getSupplierAgingBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
+//        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        ReportData reportData = new ReportData();
+//        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        Page<SupplierBalanceAging> ages = supplierService.getSupplierAgingBalances(Pageable.unpaged());
+        reportData.setData(ages.getContent());
+        reportData.setFormat(format);
+        reportData.setTemplate("/supplier/SupplierAgingBalance");
+        reportData.setReportName("Supplier Aging Balance");
+        reportService.generateReport(reportData, response);
+    }
 }

@@ -18,6 +18,7 @@ import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.supplier.data.SupplierBalance;
+import io.smarthealth.supplier.data.SupplierBalanceAging;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.data.SupplierStatement;
 import io.smarthealth.supplier.domain.Supplier;
@@ -164,5 +165,9 @@ public class SupplierService {
     }
     public Page<SupplierBalance> getSupplierBalances(Pageable page){
         return supplierRepository.findSupplierBalance(page);
+    }
+
+    public Page<SupplierBalanceAging> getSupplierAgingBalances(Pageable page){
+        return supplierRepository.findSupplierAgingBalance(page);
     }
 }

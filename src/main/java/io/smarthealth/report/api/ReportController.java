@@ -341,6 +341,9 @@ public class ReportController {
             case LabReagentReport:
                 stockReportService.getLabReagentReport(queryParams, format, response);
                 break;
+            case SupplierAgingBalance:
+                stockReportService.getSupplierAgingBalance(queryParams,format,response);
+                break;
             default:
                 break;
         }

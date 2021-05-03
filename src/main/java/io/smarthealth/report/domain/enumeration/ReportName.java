@@ -104,6 +104,7 @@ public enum ReportName {
     SupplierInvoice,
     ItemValuation,
     ItemMovement,
-    LabReagentReport
+    LabReagentReport,
+    SupplierAgingBalance
     /* */
 }
