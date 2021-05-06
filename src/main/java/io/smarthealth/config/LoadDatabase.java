@@ -5,6 +5,9 @@
  */
 package io.smarthealth.config;
 
+import io.smarthealth.administration.config.domain.GlobalConfigNum;
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.sequence.SequenceDefinition;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
@@ -28,8 +31,9 @@ import java.util.Optional;
 @Slf4j
 public class LoadDatabase {
 
+
     @Bean
-    CommandLineRunner initProducts(ItemRepository repo, SequenceNumberService sequenceNumberService) {
+    CommandLineRunner initProducts(ItemRepository repo, SequenceNumberService sequenceNumberService, ConfigService configService) {
         return args -> { 
         
         
@@ -73,6 +77,19 @@ public class LoadDatabase {
 
             sequenceNumberService.create(1L, Sequences.PurchaseInvoiceNumber.name(), "SIV%07d",1L);
             sequenceNumberService.create(1L, Sequences.StockReturnNumber.name(), "CN%05d",1L);
+
+            if(!configService.findByName(GlobalConfigNum.ShowStockBalancePurchaseOrder.name()).isPresent()){
+                GlobalConfiguration conf = new GlobalConfiguration();
+                conf.setDescription("Display Current Stock Balances on Purchase Order Printout");
+                conf.setEnabled(true);
+                conf.setFieldType("Boolean");
+                conf.setGroup("System");
+                conf.setName(GlobalConfigNum.ShowStockBalancePurchaseOrder.name());
+                conf.setValue("0");
+
+                configService.createConfigs(conf);
+            }
+
         };
     }
     //

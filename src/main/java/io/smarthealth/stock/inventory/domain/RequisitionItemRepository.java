@@ -17,6 +17,6 @@ public interface RequisitionItemRepository extends JpaRepository<RequisitionItem
 
     @Transactional
     @Modifying
-    @Query("update RequisitionItem i SET i.receivedQuantity = :qty where i.requistion.id = :requisitionId and i.id = :id")
+    @Query("update RequisitionItem i SET i.receivedQuantity = (i.receivedQuantity+ :qty) where i.requistion.id = :requisitionId and i.id = :id")
     void updateRequisitionReceivedQuantity(double qty, Long requisitionId, Long id);
 }

@@ -16,6 +16,7 @@ public class RequisitionItemData {
     private String item;
     private double quantity;
     private double receivedQuantity;
+    private double quantityBalance;
     private double price;
     private double total;
     private String uom;
@@ -31,6 +32,7 @@ public class RequisitionItemData {
         data.setPrice(item.getPrice());
         data.setQuantity(item.getQuantity());
         data.setReceivedQuantity(item.getReceivedQuantity());
+        data.setQuantityBalance(item.getQuantity()-item.getReceivedQuantity());
 
         return data;
     }

@@ -7,6 +7,9 @@ package io.smarthealth.report.service;
 
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.administration.config.domain.GlobalConfigNum;
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -87,6 +90,8 @@ public class StockReportService {
     private final RequisitionRepository requisitionRepository;
     private final ReportRepository reportRepository;
     private final JasperReportsService jasperReportService;
+    private final ConfigService configService;
+
 
 
     public void getSuppliers(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
@@ -131,7 +136,14 @@ public class StockReportService {
     public void getPurchaseOrder(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String orderNo = reportParam.getFirst("orderNo");
+        Boolean showBalance = Boolean.FALSE;
+        Optional<GlobalConfiguration> conf = configService.findByName(GlobalConfigNum.ShowStockBalancePurchaseOrder.name());
+        if(conf.isPresent()){
+            showBalance = conf.get().getValue().equals("1");
+            System.err.println("after changing ... "+showBalance);
+        }
 
+        System.err.println("show baalnce "+showBalance);
         PurchaseOrderData purchaseOrderData = purchaseService.findByOrderNumberOrThrow(orderNo).toData();
         System.out.println("purchaseOrderData.getPurchaseOrderItems() " + purchaseOrderData.getPurchaseOrderItems().size());
         for (PurchaseOrderItemData item : purchaseOrderData.getPurchaseOrderItems()) {
@@ -140,6 +152,7 @@ public class StockReportService {
             System.out.println("Count " + count);
         }
         reportData.getFilters().put("category", "Supplier");
+        reportData.getFilters().put("showBalance", showBalance);
         Optional<Supplier> supplier = supplierService.getSupplierById(purchaseOrderData.getSupplierId());
         if (supplier.isPresent()) {
             reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
