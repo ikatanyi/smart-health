@@ -10,9 +10,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.*;
-import io.smarthealth.stock.inventory.domain.Requisition;
-import io.smarthealth.stock.inventory.domain.StockEntry;
-import io.smarthealth.stock.inventory.domain.StockEntryRepository;
+import io.smarthealth.stock.inventory.domain.*;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.domain.enumeration.PurchaseType;
@@ -61,7 +59,10 @@ public class InventoryService {
 
     private final SequenceNumberService sequenceNumberService;
     private final JournalService journalService;
-    private final RequisitionService requisitionService;
+//    private final RequisitionService requisitionService;
+    private final RequisitionItemRepository requisitionItemRepository;
+    private final RequisitionRepository requisitionRepository;
+
 
     private final InventorySpringEventPublisher inventoryEventSender;
 
@@ -74,8 +75,10 @@ public class InventoryService {
         Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
         Store destinStore = stockData.getDestinationStoreId()!=null ? storeService.getStore(stockData.getDestinationStoreId()).orElse(null) : null;
 //        BigDecimal costAmount = BigDecimal.ZERO;
+        Optional<Requisition> requisition =requisitionRepository.findByRequestionNumber(stockData.getReferenceNumber());
 
         if (!stockData.getItems().isEmpty()) {
+            boolean isPartialReceived = false;
             stockData.getItems()
                     .stream()
                     .forEach(st -> {
@@ -135,19 +138,19 @@ public class InventoryService {
                             receivingStock.setTax(st.getTax() !=null ? st.getTax() : BigDecimal.ZERO);
 
                             doStockEntry(InventoryEvent.Type.Increase, receivingStock, destinationStore, item, qty.doubleValue());
-
+                            if(requisition.isPresent()){
+                                 requisitionItemRepository.updateRequisitionReceivedQuantity(st.getQuantity(),requisition.get().getId(),st.getId());
+                            }
                         }
 
                     });
             //update requisition status
             //find requisition by request number
-            Optional<Requisition> requisition = requisitionService.findByRequsitionNumber(stockData.getReferenceNumber());
-            if (requisition.isPresent()) {
-                Requisition r = requisition.get();
-
-                 //TODO fix the non updating of requistion items
-                r.setStatus(RequisitionStatus.Processed);
-                requisitionService.saveRequisition(r);
+            Optional<Requisition> req =requisitionRepository.findByRequestionNumber(stockData.getReferenceNumber());
+            if (req.isPresent()) {
+                Requisition r = req.get();
+                r.updateStatus();
+                requisitionRepository.save(r);
             }
         }
 

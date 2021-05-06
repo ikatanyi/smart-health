@@ -245,6 +245,7 @@
 				<reportElement x="492" y="0" width="60" height="13" uuid="824a6a95-9f58-449f-b60f-076e9d2d7a2b">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<printWhenExpression><![CDATA[$V{grandTotal}==true]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right">
 					<font fontName="Arial" size="8"/>

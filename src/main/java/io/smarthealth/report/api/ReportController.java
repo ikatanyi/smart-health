@@ -338,6 +338,7 @@ public class ReportController {
                 break;
             case ItemMovement:
                 stockReportService.getItemMovement(queryParams, format, response);
+                break;
             case LabReagentReport:
                 stockReportService.getLabReagentReport(queryParams, format, response);
                 break;
@@ -346,6 +347,7 @@ public class ReportController {
                 break;
             default:
                 break;
+                //TODO throw error no report selected
         }
         auditTrailService.saveAuditTrail("Reports", "Viewed report  " + report);
         return ResponseEntity.ok("success");

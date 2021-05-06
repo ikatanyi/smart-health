@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,6 +53,20 @@ public class SupplierController {
 
         SupplierData result = service.createSupplier(supplierData);
 
+        Pager<SupplierData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Supplier created successful");
+        pagers.setContent(result);
+        auditTrailService.saveAuditTrail("Suppliers", "Created a supplier " + result.getSupplierName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
+
+    @PutMapping("/suppliers/{id}")
+    @PreAuthorize("hasAuthority('create_suppliers')")
+    public ResponseEntity<?> updateSupplier(@PathVariable(value = "id") Long id, @Valid @RequestBody SupplierData supplierData) {
+
+        SupplierData result = service.updateSupplier(id, supplierData);
         Pager<SupplierData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Supplier created successful");

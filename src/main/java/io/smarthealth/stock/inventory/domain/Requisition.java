@@ -57,4 +57,15 @@ public class Requisition extends Auditable {
             requistionLines.add(bill);
         });
     }
+
+    public void updateStatus(){
+        boolean isPartial = false;
+        for(RequisitionItem i : this.getRequistionLines()){
+            if(i.getQuantity() > i.getReceivedQuantity()){
+                 isPartial = true;
+                 break;
+            }
+        }
+        this.setStatus(isPartial ? RequisitionStatus.PartialProcessed : RequisitionStatus.Processed);
+    }
 }

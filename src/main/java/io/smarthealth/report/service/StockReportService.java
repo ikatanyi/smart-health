@@ -25,6 +25,7 @@ import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.service.ItemService;
@@ -539,10 +540,18 @@ public class StockReportService {
     public void getItemMovement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        Long itemId = reportParam.getFirst("itemId") != null ? Long.valueOf(reportParam.getFirst("itemId")) : null;
         ReportData reportData = new ReportData();
+        String itemName = null;
+        if(itemId!=null) {
+            Item item = itemService.findById(itemId).orElse(null);
+            itemName = item!=null ? item.getItemName() : null;
+        }
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("itemId", itemName);
 
-        Page<ItemMovement> items = inventoryItemService.getItemMovements(range, Pageable.unpaged());
+        Page<ItemMovement> items = inventoryItemService.getItemMovements(itemId,range, Pageable.unpaged());
+
         reportData.setData(items.getContent());
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/StockMovement");

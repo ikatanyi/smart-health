@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -69,7 +70,7 @@ public class RequisitionController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createUnPaged(page, size);
+        Pageable pageable = PaginationUtil.createPage(page, size, Sort.by("id").descending());
 
         Page<RequisitionData> list = service.getRequisitions(status, pageable)
                 .map(u -> RequisitionData.map(u));
