@@ -220,8 +220,6 @@ public class DoctorRequestController {
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {
-            System.out.println("Visit number " + v.getVisitNumber());
-            System.out.println("Patient number " + patientNo);
             Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable, null, null, null);
             System.out.println("pageList " + pageList.getContent().size());
             int count = 0;

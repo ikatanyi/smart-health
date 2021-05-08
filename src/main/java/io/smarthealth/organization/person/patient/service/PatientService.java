@@ -33,6 +33,7 @@ import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.domain.specification.PatientSpecification;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.sql.Connection;
@@ -47,6 +48,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -69,7 +71,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- *
  * @author Simon.waweru
  */
 @Service
@@ -130,7 +131,7 @@ public class PatientService {
         return patientRepository.findById(id).orElseThrow(() -> APIException.notFound("Person identified by id {0} no found", id));
     }
 
-//    public String generatePatientNumber() {
+    //    public String generatePatientNumber() {
 //        int nextPatient = patientRepository.maxId() + 1;
 //        return String.valueOf("PAT" + nextPatient);
 //    }
@@ -440,6 +441,7 @@ public class PatientService {
             throw APIException.conflict("Duplicate Patient Number {0}", patientNumber);
         }
     }
+
     public Optional<Patient> findPatientByPatientNumber(String patientNumber) {
         return patientRepository.findByPatientNumber(patientNumber);
     }

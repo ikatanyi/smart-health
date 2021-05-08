@@ -26,7 +26,7 @@ public class PayerMemberData {
     private String relation;
     private LocalDate dob;
     private boolean status;
-    private double limitAmount;
+    private Double limitAmount;
     private String schemeCode;
     
     public static PayerMemberData map(PayerMember member) {
