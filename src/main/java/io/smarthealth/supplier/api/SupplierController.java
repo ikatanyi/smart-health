@@ -5,26 +5,28 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.supplier.data.SupplierBalance;
+import io.smarthealth.supplier.data.SupplierBalanceAging;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.data.SupplierStatement;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.domain.SupplierMetadata;
 import io.smarthealth.supplier.service.SupplierService;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.List;
+
 /**
- *
  * @author Kelsas
  */
 @RestController
@@ -55,7 +57,21 @@ public class SupplierController {
         pagers.setCode("0");
         pagers.setMessage("Supplier created successful");
         pagers.setContent(result);
-        auditTrailService.saveAuditTrail("Suppliers", "Created a supplier "+result.getSupplierName());
+        auditTrailService.saveAuditTrail("Suppliers", "Created a supplier " + result.getSupplierName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
+
+    @PutMapping("/suppliers/{id}")
+    @PreAuthorize("hasAuthority('create_suppliers')")
+    public ResponseEntity<?> updateSupplier(@PathVariable(value = "id") Long id, @Valid @RequestBody SupplierData supplierData) {
+
+        SupplierData result = service.updateSupplier(id, supplierData);
+        Pager<SupplierData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Supplier created successful");
+        pagers.setContent(result);
+        auditTrailService.saveAuditTrail("Suppliers", "Created a supplier " + result.getSupplierName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -65,7 +81,7 @@ public class SupplierController {
     public SupplierData getSupplier(@PathVariable(value = "id") Long code) {
         Supplier supplier = service.getSupplierById(code)
                 .orElseThrow(() -> APIException.notFound("Supplier with id {0} not found.", code));
-        auditTrailService.saveAuditTrail("Suppliers", "Created a supplier "+supplier.getSupplierName());
+        auditTrailService.saveAuditTrail("Suppliers", "Created a supplier " + supplier.getSupplierName());
         return supplier.toData();
     }
 
@@ -121,13 +137,24 @@ public class SupplierController {
     }
 
     @GetMapping("/suppliers/balance")
-    public ResponseEntity<Pager<SupplierBalance>> getStatement(
+    public ResponseEntity<Pager<SupplierBalance>> getSupplierBalances(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<SupplierBalance> list = service.getSupplierBalances(pageable);
         Pager<SupplierBalance> balances = (Pager<SupplierBalance>) PaginationUtil.toPager(list, "Supplier Balance");
+        return ResponseEntity.ok(balances);
+    }
+
+    @GetMapping("/suppliers/balance/aging")
+    public ResponseEntity<Pager<SupplierBalanceAging>> getSupplierAgingBalance(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Page<SupplierBalanceAging> list = service.getSupplierAgingBalances(pageable);
+        Pager<SupplierBalanceAging> balances = (Pager<SupplierBalanceAging>) PaginationUtil.toPager(list, "Supplier Balance");
         return ResponseEntity.ok(balances);
     }
 }

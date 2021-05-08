@@ -98,8 +98,16 @@ public interface StockEntryRepository extends JpaRepository<StockEntry, Long>, J
     @Query("SELECT new io.smarthealth.stock.inventory.data.ItemValuation(p.itemCode, p.itemName, p.category, p.active, SUM(s.quantity),p.costRate) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id WHERE p.itemType ='Inventory' AND s.store.id = :storeId AND s.transactionDate <= :asAt GROUP BY p.id")
     List<ItemValuation> getItemValuation(Long storeId, LocalDate asAt);
 
-    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.referenceNumber, s.moveType, s.purpose, s.issuedTo,s.quantity ) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id WHERE p.itemType ='Inventory' AND s.transactionDate between :start and :end")
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.transactionNumber, s.moveType, s.purpose, s.issuedTo,s.quantity, r.storeName, r2.storeName ) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id LEFT JOIN Store r on r.id = s.store.id left join Store r2 on r2.id = s.destinationStore.id WHERE p.itemType ='Inventory' ")
+    Page<ItemMovement> getItemMovement(Pageable page);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.transactionNumber, s.moveType, s.purpose, s.issuedTo,s.quantity, r.storeName, r2.storeName) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id LEFT JOIN Store r on r.id = s.store.id left join Store r2 on r2.id = s.destinationStore.id WHERE p.itemType ='Inventory' AND p.id = :itemId ")
+    Page<ItemMovement> getItemMovement(Long itemId, Pageable page);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.transactionNumber, s.moveType, s.purpose, s.issuedTo,s.quantity, r.storeName, r2.storeName ) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id LEFT JOIN Store r on r.id = s.store.id left join Store r2 on r2.id = s.destinationStore.id WHERE p.itemType ='Inventory' AND s.transactionDate between :start and :end  ")
     Page<ItemMovement> getItemMovement(LocalDate start, LocalDate end, Pageable page);
 
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.transactionNumber, s.moveType, s.purpose, s.issuedTo,s.quantity, r.storeName, r2.storeName) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id LEFT JOIN Store r on r.id = s.store.id left join Store r2 on r2.id = s.destinationStore.id WHERE p.itemType ='Inventory' AND p.id = :itemId AND s.transactionDate between :start and :end ")
+    Page<ItemMovement> getItemMovement(Long itemId, LocalDate start, LocalDate end, Pageable page);
 
 }

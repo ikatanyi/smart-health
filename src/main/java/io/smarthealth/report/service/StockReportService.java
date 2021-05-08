@@ -7,6 +7,9 @@ package io.smarthealth.report.service;
 
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.administration.config.domain.GlobalConfigNum;
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -25,6 +28,7 @@ import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.service.ItemService;
@@ -34,6 +38,7 @@ import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.smarthealth.stock.purchase.service.PurchaseService;
+import io.smarthealth.supplier.data.SupplierBalanceAging;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
@@ -85,6 +90,8 @@ public class StockReportService {
     private final RequisitionRepository requisitionRepository;
     private final ReportRepository reportRepository;
     private final JasperReportsService jasperReportService;
+    private final ConfigService configService;
+
 
 
     public void getSuppliers(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
@@ -129,7 +136,14 @@ public class StockReportService {
     public void getPurchaseOrder(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String orderNo = reportParam.getFirst("orderNo");
+        Boolean showBalance = Boolean.FALSE;
+        Optional<GlobalConfiguration> conf = configService.findByName(GlobalConfigNum.ShowStockBalancePurchaseOrder.name());
+        if(conf.isPresent()){
+            showBalance = conf.get().getValue().equals("1");
+            System.err.println("after changing ... "+showBalance);
+        }
 
+        System.err.println("show baalnce "+showBalance);
         PurchaseOrderData purchaseOrderData = purchaseService.findByOrderNumberOrThrow(orderNo).toData();
         System.out.println("purchaseOrderData.getPurchaseOrderItems() " + purchaseOrderData.getPurchaseOrderItems().size());
         for (PurchaseOrderItemData item : purchaseOrderData.getPurchaseOrderItems()) {
@@ -138,6 +152,7 @@ public class StockReportService {
             System.out.println("Count " + count);
         }
         reportData.getFilters().put("category", "Supplier");
+        reportData.getFilters().put("showBalance", showBalance);
         Optional<Supplier> supplier = supplierService.getSupplierById(purchaseOrderData.getSupplierId());
         if (supplier.isPresent()) {
             reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
@@ -538,10 +553,18 @@ public class StockReportService {
     public void getItemMovement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        Long itemId = reportParam.getFirst("itemId") != null ? Long.valueOf(reportParam.getFirst("itemId")) : null;
         ReportData reportData = new ReportData();
+        String itemName = null;
+        if(itemId!=null) {
+            Item item = itemService.findById(itemId).orElse(null);
+            itemName = item!=null ? item.getItemName() : null;
+        }
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("itemId", itemName);
 
-        Page<ItemMovement> items = inventoryItemService.getItemMovements(range, Pageable.unpaged());
+        Page<ItemMovement> items = inventoryItemService.getItemMovements(itemId,range, Pageable.unpaged());
+
         reportData.setData(items.getContent());
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/StockMovement");
@@ -561,5 +584,16 @@ public class StockReportService {
         JasperPrint jasperPrint = reportRepository.generateJasperPrint(template, params);
         jasperReportService.export(jasperPrint, format, template, response);
     }
+    public void getSupplierAgingBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
+//        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        ReportData reportData = new ReportData();
+//        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        Page<SupplierBalanceAging> ages = supplierService.getSupplierAgingBalances(Pageable.unpaged());
+        reportData.setData(ages.getContent());
+        reportData.setFormat(format);
+        reportData.setTemplate("/supplier/SupplierAgingBalance");
+        reportData.setReportName("Supplier Aging Balance");
+        reportService.generateReport(reportData, response);
+    }
 }

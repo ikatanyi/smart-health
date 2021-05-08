@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -142,14 +143,15 @@ public class InventoryItemController {
 
     @GetMapping("/inventoryItem/movement")
     public ResponseEntity<Pager<ItemMovement>> getItemMovement(
+            @RequestParam(value = "itemId", required = false) Long itemId,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = PaginationUtil.createPage(page, size, Sort.by("s.transactionDate").descending());
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Page<ItemMovement> lists = service.getItemMovements(range,pageable);
+        Page<ItemMovement> lists = service.getItemMovements(itemId, range,pageable);
 
         Pager<ItemMovement> pager = (Pager<ItemMovement>) PaginationUtil.toPager(lists,"Stock Movement Report");
           return ResponseEntity.ok(pager);

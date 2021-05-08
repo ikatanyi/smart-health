@@ -55,7 +55,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="18" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Credit Note]]></text>
+				<text><![CDATA[Return Note]]></text>
 			</staticText>
 		</band>
 	</title>

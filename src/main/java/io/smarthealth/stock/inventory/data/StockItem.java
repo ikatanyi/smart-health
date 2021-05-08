@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  */
 @Data
 public class StockItem implements Serializable {
-
+    private Long id;
     private Long itemId;
     private String itemCode;
     private String item;
