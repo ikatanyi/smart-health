@@ -82,7 +82,7 @@ public class PricelistService {
         if (data.getDefaultPrice() != null && data.getDefaultPrice()) {
             priceList.setSellingRate(data.getSellingRate());
         } else {
-            priceList.setSellingRate(BigDecimal.ZERO);
+            priceList.setSellingRate(data.getSellingRate());
         }
         priceList.setServicePoint(servicePoint);
 
