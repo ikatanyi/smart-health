@@ -13,7 +13,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table( name = "patient_identification",
-        uniqueConstraints = { @UniqueConstraint( columnNames = { "patient_id", "a_value" } ) } )
+        uniqueConstraints = { @UniqueConstraint( columnNames = { "patient_id", "a_type" } ) } )
 public class PatientIdentifier extends Identifiable {
 
     @ManyToOne

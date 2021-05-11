@@ -111,7 +111,7 @@ public class InventoryItemController {
 
     @GetMapping("/inventoryItem/{itemCode}/item-count")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
-    public Integer getInventoryItemCount(@PathVariable(value = "itemCode") String itemCode) {
+    public Integer getAvailableStockPerItem(@PathVariable(value = "itemCode") String itemCode) {
         auditTrailService.saveAuditTrail("Inventory", "viewed inventory item count for item identified by " + itemCode);
         return service.getItemCount(itemCode);
     }

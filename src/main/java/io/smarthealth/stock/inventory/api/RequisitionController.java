@@ -2,6 +2,7 @@ package io.smarthealth.stock.inventory.api;
 
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
@@ -13,7 +14,6 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +23,6 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- *
  * @author Kelsas
  */
 @Slf4j
@@ -50,7 +49,7 @@ public class RequisitionController {
         pagers.setCode("0");
         pagers.setMessage("Requisition created successful");
         pagers.setContent(result);
-        auditTrailService.saveAuditTrail("Inventory", "Created an inventory requistion "+result.getRequestionNo());
+        auditTrailService.saveAuditTrail("Inventory", "Created an inventory requistion " + result.getRequestionNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -59,7 +58,7 @@ public class RequisitionController {
     @PreAuthorize("hasAuthority('view_requisition')")
     public RequisitionData getRequisition(@PathVariable(value = "id") Long code) {
         Requisition po = service.findOneWithNoFoundDetection(code);
-        auditTrailService.saveAuditTrail("Inventory", "Viewed an inventory requistion identified by id "+code);
+        auditTrailService.saveAuditTrail("Inventory", "Viewed an inventory requistion identified by id " + code);
         return RequisitionData.map(po);
     }
 
@@ -67,12 +66,12 @@ public class RequisitionController {
     @PreAuthorize("hasAuthority('view_requisition')")
     public ResponseEntity<?> getAllRequisitions(
             @RequestParam(value = "status", required = false) List<RequisitionStatus> status,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
-
-        Pageable pageable = PaginationUtil.createPage(page, size, Sort.by("id").descending());
-
-        Page<RequisitionData> list = service.getRequisitions(status, pageable)
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Pageable pageable = PaginationUtil.createUnPaged(page, size);
+        Page<RequisitionData> list = service.getRequisitions(status, range, pageable)
                 .map(u -> RequisitionData.map(u));
 
         Pager<List<RequisitionData>> pagers = new Pager();

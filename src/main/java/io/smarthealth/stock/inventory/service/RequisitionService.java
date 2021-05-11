@@ -1,6 +1,7 @@
 package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
@@ -87,8 +88,8 @@ public class RequisitionService {
                 .orElseThrow(() -> APIException.notFound("Requisition with Id {0} not found", id));
     }
 
-    public Page<Requisition> getRequisitions(List<RequisitionStatus> status, Pageable page) {
-        Specification<Requisition> spec = RequisitionSpecification.createSpecification(status);
+    public Page<Requisition> getRequisitions(List<RequisitionStatus> status, DateRange dateRange, Pageable page) {
+        Specification<Requisition> spec = RequisitionSpecification.createSpecification(status, dateRange);
         return requisitionRepository.findAll(spec,page);
     }
 
