@@ -70,6 +70,9 @@ public class ReportController {
             case Invoice:
                 paymentReportService.getInvoice(queryParams, format, response);
                 break;
+            case InvoiceSummary:
+                paymentReportService.getInvoiceSummary(queryParams, format, response);
+                break;
             case Patient_File:
                 patientReportService.getPatientFile(queryParams, format, response);
                 break;

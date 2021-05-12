@@ -10,6 +10,7 @@ import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.data.ShiftPayment;
 import io.smarthealth.accounting.cashier.service.CashierService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.statement.InvoiceSummary;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.data.PettyCashPaymentData;
@@ -149,6 +150,7 @@ public class PaymentReportService {
         GlobalConfiguration config = configService.getByNameOrThrow("CapitationItemAmountDisplay");
         Boolean showCapitationItem = config.getValue().equals("1");
         reportData.getFilters().put("showCapitationItem", showCapitationItem);
+        //rebate inbo
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
 
         System.err.println("Hapa>> " + invoiceData);
@@ -161,6 +163,29 @@ public class PaymentReportService {
         reportData.setData(Arrays.asList(invoiceData));
         reportData.setTemplate("/accounts/invoice");
         reportData.setReportName("invoice");
+        reportData.setFormat(format);
+        reportService.generateReport(reportData, response);
+    }
+    public void getInvoiceSummary(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+        String invoiceNo = reportParam.getFirst("invoiceNo");
+
+        ReportData reportData = new ReportData();
+        GlobalConfiguration config = configService.getByNameOrThrow("CapitationItemAmountDisplay");
+        Boolean showCapitationItem = config.getValue().equals("1");
+        reportData.getFilters().put("showCapitationItem", showCapitationItem);
+        //rebate inbo
+        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
+
+        Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
+        if (admission.isPresent()) {
+            reportData.getFilters().put("inPatient", true);
+            reportData.getFilters().put("dischargeDate", admission.get().getDischargeDate());
+            reportData.getFilters().put("admissionDate", admission.get().getAdmissionDate());
+        }
+        reportData.setData(Arrays.asList(InvoiceSummary.of(invoiceData)));
+        reportData.setTemplate("/accounts/InvoiceSummary");
+        reportData.setReportName("Invoice Summary");
         reportData.setFormat(format);
         reportService.generateReport(reportData, response);
     }
