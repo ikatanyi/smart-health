@@ -97,6 +97,7 @@ public class PaymentDetails extends Auditable {
     private Scheme excessAmountScheme;
 
     private String authorizationCode;
+    private Double tempRunningLimit;
 
     @Override
     public String toString() {

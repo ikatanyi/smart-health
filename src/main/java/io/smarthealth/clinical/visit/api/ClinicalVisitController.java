@@ -274,7 +274,7 @@ public class ClinicalVisitController {
             //get the scheme
             if (schemeId != null) {
                 Scheme scheme = schemeService.fetchSchemeById(schemeId);
-                if(scheme.getPayer().getPriceBook()!=null) {
+                if (scheme.getPayer().getPriceBook() != null) {
                     pb = Optional.of(scheme.getPayer().getPriceBook()).orElse(null);
                 }
             }
@@ -491,6 +491,8 @@ public class ClinicalVisitController {
     public ResponseEntity<?> fetchpaymentModeByVisit(@PathVariable("visitNo") String visitNo) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         PaymentDetails pde = paymentDetailsService.fetchPaymentDetailsByVisit(visit);
+        System.out.println("Pde "+pde.getLimitAmount());
+        System.out.println("Pde "+pde.getTempRunningLimit());
         Pager<PaymentDetailsData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment Mode");
