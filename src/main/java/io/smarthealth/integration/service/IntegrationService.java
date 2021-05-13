@@ -63,9 +63,9 @@ public class IntegrationService {
         List<PatientDiagnosis> diagnosis = diagnosisService.fetchAllDiagnosis(invoice.getVisit().getVisitNumber(),null,null, Pageable.unpaged()).getContent();
         String diagString = "[";
         for(PatientDiagnosis diagn:diagnosis){
-            diagString.concat(diagn.getDiagnosis().getCode()).concat(",");
+            diagString=  diagString.concat(diagn.getDiagnosis().getCode()).concat(",");
         }
-        diagString.concat("]");
+        diagString = diagString.concat("]");
         cardData.setDiagnosis(diagString);
         if(copay.isPresent()){
             ServiceData service = new ServiceData();
