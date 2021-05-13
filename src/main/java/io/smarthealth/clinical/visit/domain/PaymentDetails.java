@@ -88,6 +88,7 @@ public class PaymentDetails extends Auditable {
     private Scheme excessAmountScheme;
 
     private String authorizationCode;
+    private Double tempRunningLimit;
 
     private BigDecimal preauthRequestedAmount;
     private BigDecimal preauthApprovedAmount;

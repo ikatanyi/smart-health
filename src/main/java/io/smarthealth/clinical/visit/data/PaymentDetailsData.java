@@ -7,14 +7,15 @@ import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+
 import lombok.Data;
 
 /**
- *
  * @author simz
  */
 @Data
@@ -37,11 +38,11 @@ public class PaymentDetailsData {
     private Long priceBookId;
     @ApiModelProperty(hidden = true)
     private String priceBookName;
-    
+
     @ApiModelProperty(hidden = true)
     @Enumerated(EnumType.STRING)
     private CoPayType coPayCalcMethod;
-    
+
     @ApiModelProperty(hidden = true)
     private double coPayValue;
     private PaymentMethod paymentMethod;
@@ -58,6 +59,8 @@ public class PaymentDetailsData {
     private Boolean excessAmountEnabled;
     private String idNumber;
     private String authorizationCode;
+    private Double tempRunningLimit;
+
 
     private BigDecimal preauthRequestedAmount;
     private BigDecimal preauthApprovedAmount; // new limit/capitation amount
@@ -66,7 +69,7 @@ public class PaymentDetailsData {
     private LocalDate preauthDate;
 
     public static PaymentDetailsData map(PaymentDetails e) {
-        if(e == null ) return null;
+        if (e == null) return null;
 
         PaymentDetailsData d = new PaymentDetailsData();
         d.setComments(e.getComments());
@@ -93,6 +96,8 @@ public class PaymentDetailsData {
         d.setHasCapitation(e.isHasCapitation());
         d.setCapitationAmount(e.getCapitationAmount());
         d.setRunningLimit(e.getRunningLimit());
+        System.out.println("e.getTempRunningLimit() "+e.getTempRunningLimit());
+        d.setTempRunningLimit(e.getTempRunningLimit());
         d.setLimitEnabled(e.getLimitEnabled());
         d.setIdNumber(e.getIdNo());
         d.setAuthorizationCode(e.getAuthorizationCode());

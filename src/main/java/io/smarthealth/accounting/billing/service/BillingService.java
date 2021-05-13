@@ -293,6 +293,7 @@ public class BillingService {
             PaymentDetails pdd = pd.get();
             double newRunningLimit = (pdd.getRunningLimit() - amountToBill);
             pdd.setRunningLimit(newRunningLimit);
+            pdd.setTempRunningLimit(newRunningLimit);
 
             if (newRunningLimit <= amountToBill) {
                 pdd.setLimitReached(Boolean.TRUE);
