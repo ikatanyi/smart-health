@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_without_LineItems_subreport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9475d90f-4bc3-492f-b99e-9861c828c69b">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="409"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<parameter name="capitationWithout" class="java.lang.Boolean"/>
+	<parameter name="dateWithout" class="java.lang.Object"/>
+	<parameter name="amountWithout" class="java.math.BigDecimal"/>
+	<parameter name="showCapitationItemWithout" class="java.lang.Boolean"/>
+	<field name="item" class="java.lang.String"/>
+	<field name="quantity" class="java.lang.Double"/>
+	<field name="price" class="java.math.BigDecimal"/>
+	<field name="discount" class="java.math.BigDecimal"/>
+	<field name="tax" class="java.math.BigDecimal"/>
+	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="servicePoint" class="java.lang.String"/>
+	<field name="date" class="java.lang.Object"/>
+	<variable name="total" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{servicePoint}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():$F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<columnHeader>
+		<band height="18">
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="0" y="0" width="167" height="18" forecolor="#000000" backcolor="#FFFFFF" uuid="3f38c91f-561d-49c1-87ac-925b89902337">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[Service Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="488" y="0" width="65" height="18" forecolor="#000000" backcolor="#FFFFFF" uuid="77f0eb94-54c5-4385-ad66-12174acf28e7">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="423" y="0" width="65" height="18" forecolor="#000000" backcolor="#FFFFFF" uuid="774359b5-0b9a-4338-9438-918141ba8b74">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rate]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="167" y="0" width="203" height="18" forecolor="#000000" backcolor="#FFFFFF" uuid="c0123b24-8d07-40a4-9c35-d5e3faf2a1aa">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="370" y="0" width="53" height="18" forecolor="#000000" backcolor="#FFFFFF" uuid="5537c53d-a554-4204-93fe-9d6a2ce62ea4"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="0" y="0" width="167" height="15" uuid="c03f057a-dad3-486f-bc76-0692ef26937c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{servicePoint}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="167" y="0" width="203" height="15" uuid="c8c0fd8d-b5af-4df5-8ca7-8b0e4413f1c8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement x="370" y="0" width="53" height="15" uuid="f9582ba0-636b-43d7-8827-74fc551fbb2e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="423" y="0" width="65" height="15" uuid="20c53067-d5ae-424e-9714-ed7243ef2d4a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{capitationWithout}.equals( true )&&$P{showCapitationItemWithout}.equals( false )?new BigDecimal(0):$F{price}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;(#,##0.00)">
+				<reportElement x="488" y="0" width="65" height="15" uuid="fb4c66a6-83e6-424a-90b2-39e50c176c59">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="20"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{capitationWithout}.equals( true )&&$P{showCapitationItemWithout}.equals( false )?new BigDecimal(0):
+$F{servicePoint}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():
+$F{amount}.equals( null )?new BigDecimal(0):$F{amount}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="167" height="16" uuid="b1ddd2fb-d2e4-4507-8b26-9aa99e403137">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="167" y="0" width="203" height="16" uuid="b18d83b5-ebee-4e4e-92f4-896aefcb3920">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="370" y="0" width="53" height="16" uuid="5d3559cf-ef42-4d4c-9bb0-2ec0915f2007">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="423" y="0" width="65" height="16" uuid="2c3f5f0d-30ba-4ea1-8b80-55ba55c7d086">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="488" y="0" width="65" height="16" uuid="7b4df51e-6187-4ecf-bb89-5117329987b9">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="3">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="77" height="2" uuid="82650670-c77b-4ae7-b6ef-3ac978ad31c6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="77" y="0" width="90" height="2" uuid="1350537d-1882-411c-8c6e-393fa5280cfe">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="167" y="0" width="203" height="2" uuid="10f2d101-e36c-49c8-8bb6-9e06dcc5ad58">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="370" y="0" width="53" height="2" uuid="c171df51-ed9c-4808-a74b-56efeb322e9b">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="423" y="0" width="65" height="2" uuid="7f2c3483-b123-4c84-a954-b1f5f26c95d7">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="488" y="0" width="65" height="2" uuid="67372226-b0ec-453d-8e19-31752e5cf82d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+			</frame>
+		</band>
+	</columnFooter>
+</jasperReport>

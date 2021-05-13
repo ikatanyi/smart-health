@@ -89,6 +89,17 @@ public class LoadDatabase {
 
                 configService.createConfigs(conf);
             }
+            if(!configService.findByName(GlobalConfigNum.ShowInvoiceDate.name()).isPresent()){
+                GlobalConfiguration conf = new GlobalConfiguration();
+                conf.setDescription("Enabling dates on Inpatient Invoices");
+                conf.setEnabled(true);
+                conf.setFieldType("Boolean");
+                conf.setGroup("System");
+                conf.setName(GlobalConfigNum.ShowInvoiceDate.name());
+                conf.setValue("1");
+
+                configService.createConfigs(conf);
+            }
 
         };
     }

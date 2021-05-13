@@ -24,6 +24,7 @@ import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
+import io.smarthealth.administration.config.domain.GlobalConfigNum;
 import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -153,12 +154,15 @@ public class PaymentReportService {
         //rebate inbo
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
 
-        System.err.println("Hapa>> " + invoiceData);
         Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
         if (admission.isPresent()) {
+            GlobalConfiguration gconfig = configService.getByNameOrThrow(GlobalConfigNum.ShowInvoiceDate.name());
+            Boolean showInvoiceDate = gconfig.getValue().equals("1");
+
             reportData.getFilters().put("inPatient", true);
             reportData.getFilters().put("dischargeDate", admission.get().getDischargeDate());
             reportData.getFilters().put("admissionDate", admission.get().getAdmissionDate());
+            reportData.getFilters().put("showInvoiceDate", showInvoiceDate);
         }
         reportData.setData(Arrays.asList(invoiceData));
         reportData.setTemplate("/accounts/invoice");

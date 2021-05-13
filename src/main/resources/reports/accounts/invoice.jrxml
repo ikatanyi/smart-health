@@ -21,6 +21,9 @@
 	<parameter name="admissionDate" class="java.lang.Object"/>
 	<parameter name="dischargeDate" class="java.lang.Object"/>
 	<parameter name="inPatient" class="java.lang.Boolean"/>
+	<parameter name="showInvoiceDate" class="java.lang.Boolean" isForPrompting="false">
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -313,6 +316,7 @@
 	</title>
 	<detail>
 		<band height="11" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{showInvoiceDate}.equals( true )]]></printWhenExpression>
 			<subreport isUsingCache="true">
 				<reportElement x="0" y="0" width="555" height="11" uuid="4fb7f8d0-65c0-4be1-86ff-bd6d8d263878"/>
 				<subreportParameter name="date">
@@ -332,10 +336,33 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_LineItems_subreport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
+		<band height="11" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[$P{showInvoiceDate}.equals( false )]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="554" height="11" uuid="e33790dd-b244-4000-9f56-b0180cdfd5fe">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<subreportParameter name="capitationWithout">
+					<subreportParameterExpression><![CDATA[$F{capitation}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dateWithout">
+					<subreportParameterExpression><![CDATA[$F{visitDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="amountWithout">
+					<subreportParameterExpression><![CDATA[$F{amount}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="showCapitationItemWithout">
+					<subreportParameterExpression><![CDATA[$P{showCapitationItem}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoiceItems})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_without_LineItems_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
 		<band height="11">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<subreport>
-				<reportElement x="0" y="0" width="552" height="10" uuid="c0753517-f4fb-47b4-b06e-00c442f1b939">
+				<reportElement x="0" y="0" width="556" height="10" uuid="c0753517-f4fb-47b4-b06e-00c442f1b939">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
