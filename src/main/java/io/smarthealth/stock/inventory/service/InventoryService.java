@@ -170,6 +170,14 @@ public class InventoryService {
 //        inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
         inventoryEventSender.publishInventoryEvent(type, store, item, qty);
     }
+    public void doStockEntry(InventoryEvent.Type type, Store store, Item item, Double qty) {
+        StockEntry stock = new StockEntry();
+
+
+        stockEntryRepository.save(stock);
+//        inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
+        inventoryEventSender.publishInventoryEvent(type, store, item, qty);
+    }
 
     private JournalEntry toJournal(Store store, LocalDate date, String trdId, BigDecimal amount) {
         if (store.getExpenseAccount() == null) {

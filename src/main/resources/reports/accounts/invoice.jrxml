@@ -298,7 +298,7 @@
 				</textElement>
 				<text><![CDATA[Preauth Code]]></text>
 			</staticText>
-			<textField pattern="#,##0.00">
+			<textField isBlankWhenNull="true">
 				<reportElement x="270" y="179" width="60" height="14" uuid="72ca5b8f-a783-423c-bc72-ba247d4949a2">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
