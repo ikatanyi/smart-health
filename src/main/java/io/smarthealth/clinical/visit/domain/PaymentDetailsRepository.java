@@ -8,6 +8,7 @@ package io.smarthealth.clinical.visit.domain;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -21,4 +22,6 @@ public interface PaymentDetailsRepository extends JpaRepository<PaymentDetails, 
 
     Optional<PaymentDetails> findFirstByPatientOrderByIdDesc(final Patient patient);
 
+    @Query("SELECT p FROM PaymentDetails p where p.visit.visitNumber = :visitId")
+    Optional<PaymentDetails> findByVisitNumber(String visitId);
 }

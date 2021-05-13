@@ -206,5 +206,16 @@ public class BillingV2Controller {
     }
     
     //create rebate for the patient
-    
+    @PutMapping("/billing/{visitNumber}")
+    @PreAuthorize("hasAuthority('edit_billV2')")
+    public ResponseEntity<?> updateBills(@PathVariable(value = "visitNumber") String visitNumber,
+                                         @Valid @RequestBody List<BillItemData> billItems) {
+
+        List<BillItemData> bills = service.updatePatientBills(visitNumber, billItems)
+                .stream()
+                .map(x -> x.toData())
+                .collect(Collectors.toList());
+        auditTrailService.saveAuditTrail("Billing", "Billing adjustments for the visit. "+visitNumber);
+        return ResponseEntity.ok(bills);
+    }
 }

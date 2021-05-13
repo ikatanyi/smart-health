@@ -2,6 +2,7 @@ package io.smarthealth.accounting.invoice.domain;
 
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.InvoiceReceipt;
 import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -73,8 +74,9 @@ public class Invoice extends Auditable {
     private Boolean awaitingSmart = Boolean.FALSE;
     @Column(name = "is_capitation_invoice")
     private Boolean capitation = Boolean.FALSE;
-    //@Column(name = "is_rebate")
-    //private Boolean rebate = Boolean.FALSE;
+    @Column(name = "is_rebate")
+    private Boolean rebate = Boolean.FALSE;
+    private String preauthCode;
     @Transient
     private BigDecimal invoiceAmount; //temporarly holding for orginal invoice amount
 
@@ -188,9 +190,16 @@ public class Invoice extends Auditable {
         data.setAmountDue(data.getTotalAmount().subtract((data.getPaid().add(data.getCopay()))));
 
         data.setCapitation(this.capitation);
+        data.setRebate(this.rebate);
+        data.setPreauthCode(this.preauthCode);
 
-
-
+//        if(this.rebate){
+//
+//            InvoiceItemData inv = new InvoiceItemData();
+//            inv.setInvoiceDate(this.date);
+//            inv.setServicePoint("Rebate");
+//            inv.setQuantity();
+//        }
         return data;
     }
 

@@ -144,7 +144,14 @@ public class InvoiceService {
                     Boolean isCapitation = Boolean.FALSE;
                     if (config.isPresent() && config.get().isCapitationEnabled()) {
                         //if this is a capitation invoice we going to mess this shit up
-                        invoiceAmount = config.get().getCapitationAmount();
+                        if (paymentDetails.isPresent()) {
+                            PaymentDetails pd = paymentDetails.get();
+                            if(pd.isHasCapitation()){
+                                invoiceAmount = pd.getCapitationAmount();
+                            }
+                        }else {
+                            invoiceAmount = config.get().getCapitationAmount();
+                        }
                         discount = BigDecimal.ZERO;
                         isCapitation = Boolean.TRUE;
                     }
@@ -172,6 +179,7 @@ public class InvoiceService {
                     invoice.setVisit(visit);
                     if (paymentDetails.isPresent()) {
                         invoice.setIdNumber(paymentDetails.get().getIdNo()); // ?? am not sure
+                        invoice.setPreauthCode(paymentDetails.get().getPreauthCode());
                     }
 
                     if (config.isPresent()) {
@@ -286,6 +294,7 @@ public class InvoiceService {
         invoice.setTax(BigDecimal.ZERO);
         invoice.setTransactionNo(trxId);
         invoice.setVisit(visit);
+        invoice.setRebate(Boolean.TRUE);
         Invoice savedInvoice = saveInvoice(invoice);
        //
         patientBillingService.createReceiptItem(visit.getPatient().getPatientNumber(), visit.getPatient().getFullName(),visit.getVisitNumber(),savedInvoice.getAmount().doubleValue(),ItemCategory.NHIF_Rebate,false,savedInvoice.getNumber());

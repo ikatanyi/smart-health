@@ -81,7 +81,6 @@ public class InvoiceSummary {
         List<InvoiceSummaryItem> items =new ArrayList<>();
         Map<String, Double> map = data.getInvoiceItems()
                 .stream()
-                .filter(x -> x.)
                 .collect(Collectors.groupingBy(InvoiceItemData::getServicePoint, Collectors.summingDouble(i -> i.getQuantity()*i.getPrice().doubleValue())));
         map.forEach((k, v) -> {
             items.add(new InvoiceSummaryItem(k,BigDecimal.valueOf(v)));

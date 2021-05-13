@@ -14,7 +14,9 @@ import io.smarthealth.accounting.billing.service.PatientBillingService;
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
+import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -168,4 +170,13 @@ public class PatientBillingController {
           return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
      }
 
+     @PostMapping("/patient-billing/preauth")
+     public ResponseEntity<PaymentDetailsData> createPreauth(@Valid @RequestBody PreAuthData data) {
+          PaymentDetails paymentDetails = service.createPreauthDetails(data);
+          if(paymentDetails!=null) {
+               return ResponseEntity.status(HttpStatus.CREATED).body(PaymentDetailsData.map(paymentDetails));
+          }else{
+               throw APIException.badRequest("Preauthorization not Successfully created");
+          }
+     }
 }

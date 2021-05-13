@@ -833,7 +833,7 @@ public class BillingService {
                     if (x.getBalance() > 0 && (x.getStatus() == BillStatus.Draft)) {
                         bills.add(x.toBillItem());
                     } else if (x.getStatus() == BillStatus.Paid && x.isFinalized() == false) {
-                        if(x.getItem().getCategory() != ItemCategory.Receipt) {
+                        if (x.getItem().getCategory() != ItemCategory.Receipt) {
                             paidBills.add(x.toBillItem());
                         }
                         //only return receipts
@@ -1036,6 +1036,30 @@ public class BillingService {
         return bills;
     }
 
+    @Transactional
+    public List<PatientBillItem> updatePatientBills(String visitNumber, List<BillItemData> billItems) {
+        List<PatientBillItem> currentBills = billItemRepository.getByVisitNumber(visitNumber);
+        currentBills.stream()
+                .map(x -> {
+                    x.setStatus(BillStatus.Canceled);
+                    return x;
+                }).forEach(b -> billItemRepository.save(b));
+
+       List<PatientBillItem> items= billItems.stream()
+                .map(x ->{
+                    PatientBillItem item = billItemRepository.findById(x.getId()).get();
+                    item.setQuantity(x.getQuantity());
+                    item.setStatus(x.getStatus());
+                    item.setAmount(x.getAmount());
+                    item.setBalance(x.getAmount());
+                    return item;
+                })
+               .collect(Collectors.toList());
+
+        return billItemRepository.saveAll(items);
+
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createFee(String admissionNumber, ItemCategory category, Integer qty) {
         Double sellingRate = 0.0;
@@ -1082,10 +1106,10 @@ public class BillingService {
 
         billItem.setMedicId(null);
         billItem.setBillPayMode(visit.getPaymentMethod());
-        if(category == ItemCategory.Admission){
+        if (category == ItemCategory.Admission) {
             billItem.setEntryType(BillEntryType.Debit);
             billItem.setStatus(BillStatus.Draft);
-        }else {
+        } else {
             billItem.setEntryType(BillEntryType.Credit);
             billItem.setStatus(BillStatus.Paid);
             billItem.setPaid(true);

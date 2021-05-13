@@ -93,6 +93,7 @@ public class PatientBillingService {
     private final ConfigService configurationService;
     private final StoreRepository storeRepository;
     private final DispensingService dispensingService;
+    private final PreAuthorizationService preAuthorizationService;
 
     private static Specification<PatientBillItem> findPatientBillItemsWith(String visitNo, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType) {
         return (root, query, builder) -> {
@@ -900,8 +901,6 @@ public class PatientBillingService {
     private PatientBillItem createBillItem(BillReceiptedItem billReceiptedItem) {
         Item item = getItemById(billReceiptedItem.getPricelistItemId());
 
-
-
         PatientBillItem savedItem = new PatientBillItem();
         savedItem.setPrice(billReceiptedItem.getPrice());
         savedItem.setQuantity(billReceiptedItem.getQuantity());
@@ -953,5 +952,9 @@ public class PatientBillingService {
         return billItemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill Item with Id {0} not found", id));
     }
+   public PaymentDetails createPreauthDetails(PreAuthData data){
+        return preAuthorizationService.createPreAuthorization(data);
+   }
+   //update the patient bills
 
 }
