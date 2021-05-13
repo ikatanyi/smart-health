@@ -3,6 +3,8 @@ package io.smarthealth.clinical.pharmacy.domain;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DispensedDrugRepository extends JpaRepository<DispensedDrug, Long>, JpaSpecificationExecutor<DispensedDrug> {
+
+    Optional<DispensedDrug> findDispensedDrugByBillItem(PatientBillItem item);
 
     @Modifying
     @Query("UPDATE DispensedDrug d SET d.paid=true WHERE d.id=:id")

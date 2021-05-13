@@ -1,12 +1,15 @@
 package io.smarthealth.clinical.visit.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
+import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
@@ -59,6 +62,12 @@ public class PaymentDetailsData {
     private Double tempRunningLimit;
 
 
+    private BigDecimal preauthRequestedAmount;
+    private BigDecimal preauthApprovedAmount; // new limit/capitation amount
+    private String preauthCode;
+    @JsonFormat(pattern = Constants.DATE_PATTERN)
+    private LocalDate preauthDate;
+
     public static PaymentDetailsData map(PaymentDetails e) {
         if (e == null) return null;
 
@@ -92,6 +101,11 @@ public class PaymentDetailsData {
         d.setLimitEnabled(e.getLimitEnabled());
         d.setIdNumber(e.getIdNo());
         d.setAuthorizationCode(e.getAuthorizationCode());
+        d.setPreauthApprovedAmount(e.getPreauthApprovedAmount());
+        d.setPreauthCode(e.getPreauthCode());
+        d.setPreauthRequestedAmount(e.getPreauthRequestedAmount());
+        d.setPreauthDate(e.getPreauthDate());
+
         return d;
     }
 

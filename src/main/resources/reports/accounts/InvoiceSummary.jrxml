@@ -4,6 +4,8 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="478"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="508"/>
 	<style name="headerStyles" mode="Opaque" forecolor="#0000FF" backcolor="#FF0033"/>
 	<scriptlet name="Helper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -21,50 +23,84 @@
 	<parameter name="admissionDate" class="java.lang.Object"/>
 	<parameter name="dischargeDate" class="java.lang.Object"/>
 	<parameter name="inPatient" class="java.lang.Boolean"/>
-	<parameter name="showInvoiceDate" class="java.lang.Boolean" isForPrompting="false">
-		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
-	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
+	<field name="notes" class="java.lang.String">
+		<fieldDescription><![CDATA[notes]]></fieldDescription>
+	</field>
+	<field name="scheme" class="java.lang.String">
+		<fieldDescription><![CDATA[scheme]]></fieldDescription>
+	</field>
+	<field name="authorizationCode" class="java.lang.String">
+		<fieldDescription><![CDATA[authorizationCode]]></fieldDescription>
+	</field>
+	<field name="dueDate" class="java.time.LocalDate">
+		<fieldDescription><![CDATA[dueDate]]></fieldDescription>
+	</field>
+	<field name="visitNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[visitNumber]]></fieldDescription>
+	</field>
+	<field name="payerId" class="java.lang.Long">
+		<fieldDescription><![CDATA[payerId]]></fieldDescription>
+	</field>
+	<field name="memberName" class="java.lang.String">
+		<fieldDescription><![CDATA[memberName]]></fieldDescription>
+	</field>
+	<field name="schemeId" class="java.lang.Long">
+		<fieldDescription><![CDATA[schemeId]]></fieldDescription>
+	</field>
+	<field name="payer" class="java.lang.String">
+		<fieldDescription><![CDATA[payer]]></fieldDescription>
+	</field>
+	<field name="number" class="java.lang.String">
+		<fieldDescription><![CDATA[number]]></fieldDescription>
+	</field>
+	<field name="terms" class="java.lang.String">
+		<fieldDescription><![CDATA[terms]]></fieldDescription>
+	</field>
 	<field name="patientNumber" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
+		<fieldDescription><![CDATA[patientNumber]]></fieldDescription>
+	</field>
+	<field name="visitDate" class="java.time.LocalDate">
+		<fieldDescription><![CDATA[visitDate]]></fieldDescription>
+	</field>
+	<field name="copay" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[copay]]></fieldDescription>
+	</field>
+	<field name="capitation" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[capitation]]></fieldDescription>
 	</field>
 	<field name="patientName" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
+		<fieldDescription><![CDATA[patientName]]></fieldDescription>
 	</field>
-	<field name="scheme" class="java.lang.String"/>
-	<field name="payer" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
+	<field name="invoiceDate" class="java.time.LocalDate">
+		<fieldDescription><![CDATA[invoiceDate]]></fieldDescription>
 	</field>
-	<field name="amount" class="java.math.BigDecimal"/>
-	<field name="balance" class="java.math.BigDecimal"/>
-	<field name="invoiceItems" class="java.util.Collection"/>
-	<field name="terms" class="java.lang.String"/>
-	<field name="number" class="java.lang.String"/>
-	<field name="dueDate" class="java.lang.Object"/>
-	<field name="memberNumber" class="java.lang.String"/>
-	<field name="memberName" class="java.lang.String"/>
-	<field name="tax" class="java.math.BigDecimal"/>
-	<field name="discount" class="java.math.BigDecimal"/>
-	<field name="visitDate" class="java.lang.Object"/>
-	<field name="invoicePayments" class="java.util.List"/>
-	<field name="createdBy" class="java.lang.String"/>
-	<field name="status" class="java.lang.Object"/>
-	<field name="state" class="java.lang.String"/>
-	<field name="capitation" class="java.lang.Boolean"/>
-	<field name="authorizationCode" class="java.lang.String"/>
-	<field name="copay" class="java.math.BigDecimal"/>
-	<field name="totalAmount" class="java.math.BigDecimal"/>
-	<field name="paid" class="java.math.BigDecimal"/>
-	<field name="amountDue" class="java.math.BigDecimal"/>
-	<field name="preauthCode" class="java.lang.String"/>
+	<field name="invoiceSummaryItemList" class="java.util.List">
+		<fieldDescription><![CDATA[invoiceSummaryItemList]]></fieldDescription>
+	</field>
+	<field name="visitType" class="java.lang.String">
+		<fieldDescription><![CDATA[visitType]]></fieldDescription>
+	</field>
+	<field name="amountDue" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[amountDue]]></fieldDescription>
+	</field>
+	<field name="totalAmount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[totalAmount]]></fieldDescription>
+	</field>
+	<field name="memberNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[memberNumber]]></fieldDescription>
+	</field>
+	<field name="createdBy" class="java.lang.String">
+		<fieldDescription><![CDATA[createdBy]]></fieldDescription>
+	</field>
+	<field name="paid" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[paid]]></fieldDescription>
+	</field>
 	<variable name="Price_1" class="java.lang.Double" resetType="Column" calculation="Sum">
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
-	</variable>
-	<variable name="bal" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
 	</variable>
 	<variable name="receipt_amount" class="java.math.BigDecimal">
 		<variableExpression><![CDATA[]]></variableExpression>
@@ -73,18 +109,8 @@
 	<variable name="total" class="java.math.BigDecimal">
 		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
 	</variable>
-	<background>
-		<band height="802" splitType="Stretch">
-			<image onErrorType="Blank">
-				<reportElement mode="Transparent" x="40" y="104" width="306" height="151" uuid="378db843-ff47-44bf-bcf4-e4377c5e5ca8">
-					<printWhenExpression><![CDATA[$F{state}.equals( "Paid" )]]></printWhenExpression>
-				</reportElement>
-				<imageExpression><![CDATA[$P{PIC_DIR}+"paid-image.png"]]></imageExpression>
-			</image>
-		</band>
-	</background>
 	<title>
-		<band height="198">
+		<band height="181">
 			<line>
 				<reportElement positionType="Float" x="2" y="21" width="552" height="1" uuid="b384c05c-cf32-45c7-b4b4-32132cee5059"/>
 				<graphicElement>
@@ -96,7 +122,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font fontName="SansSerif" size="14" isBold="true"/>
 				</textElement>
-				<text><![CDATA[FINAL INVOICE]]></text>
+				<text><![CDATA[Invoice Summary]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="335" y="96" width="78" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
@@ -268,106 +294,15 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{authorizationCode}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="0" y="179" width="130" height="14" uuid="6eee5021-4403-4b1b-9d4c-dc4eda935cc1">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[$F{capitation}.equals( true )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Capitation Invoice Amount]]></text>
-			</staticText>
-			<textField pattern="#,##0.00">
-				<reportElement x="130" y="179" width="60" height="14" uuid="d270a906-e6f2-4188-8122-a6c3b13e640a">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{capitation}.equals( true )]]></printWhenExpression>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="200" y="179" width="70" height="14" uuid="b8cfe92f-b4a8-4b91-ae7c-3bfe3680fda6">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<printWhenExpression><![CDATA[$F{capitation}.equals( true )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Preauth Code]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="270" y="179" width="60" height="14" uuid="72ca5b8f-a783-423c-bc72-ba247d4949a2">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<printWhenExpression><![CDATA[$F{capitation}.equals( true )]]></printWhenExpression>
-				</reportElement>
-				<textElement textAlignment="Left">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{preauthCode}]]></textFieldExpression>
-			</textField>
 		</band>
 	</title>
 	<detail>
-		<band height="11" splitType="Stretch">
-			<printWhenExpression><![CDATA[$P{showInvoiceDate}.equals( true )]]></printWhenExpression>
-			<subreport isUsingCache="true">
-				<reportElement x="0" y="0" width="555" height="11" uuid="4fb7f8d0-65c0-4be1-86ff-bd6d8d263878"/>
-				<subreportParameter name="date">
-					<subreportParameterExpression><![CDATA[$F{visitDate}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="amount">
-					<subreportParameterExpression><![CDATA[$F{amount}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="capitation">
-					<subreportParameterExpression><![CDATA[$F{capitation}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="showCapitationItem">
-					<subreportParameterExpression><![CDATA[$P{showCapitationItem}]]></subreportParameterExpression>
-				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoiceItems})]]></dataSourceExpression>
-				<returnValue subreportVariable="total" toVariable="total"/>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_LineItems_subreport.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
-		<band height="11" splitType="Stretch">
-			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<printWhenExpression><![CDATA[$P{showInvoiceDate}.equals( false )]]></printWhenExpression>
-			<subreport>
-				<reportElement x="0" y="0" width="554" height="11" uuid="e33790dd-b244-4000-9f56-b0180cdfd5fe">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<subreportParameter name="capitationWithout">
-					<subreportParameterExpression><![CDATA[$F{capitation}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="dateWithout">
-					<subreportParameterExpression><![CDATA[$F{visitDate}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="amountWithout">
-					<subreportParameterExpression><![CDATA[$F{amount}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="showCapitationItemWithout">
-					<subreportParameterExpression><![CDATA[$P{showCapitationItem}]]></subreportParameterExpression>
-				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoiceItems})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_without_LineItems_subreport.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
-		<band height="11">
+		<band height="18">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<subreport>
-				<reportElement x="0" y="0" width="556" height="10" uuid="c0753517-f4fb-47b4-b06e-00c442f1b939">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</reportElement>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoicePayments})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_LineItems_summary.jasper"]]></subreportExpression>
+				<reportElement x="0" y="0" width="554" height="17" uuid="2fd4f981-a8c6-44d3-bf63-d0cf0dd64640"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoiceSummaryItemList})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "InvoiceSummaryItems.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
@@ -541,7 +476,7 @@
 				<textElement textAlignment="Right">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{capitation}.equals( true ) ? $F{amount} : $F{amountDue}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{amountDue}]]></textFieldExpression>
 			</textField>
 		</band>
 	</lastPageFooter>

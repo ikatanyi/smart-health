@@ -17,6 +17,7 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 
@@ -301,8 +302,7 @@ public class DispensingService {
                         dispensedDrugRepository.save(drugs);
 
                         //update billing details
-                        PatientBillItem patientBillItem =
-                                billingService.findBillItemById(drugData.getPatientBillItemId());
+                        PatientBillItem patientBillItem = billingService.findBillItemById(drugData.getPatientBillItemId());
 
                         if (!patientBillItem.isFinalized()) {
                             Double newQuantity = (patientBillItem.getQuantity() - drugData.getQuantity());
@@ -422,5 +422,14 @@ public class DispensingService {
     public List<DispensedDrug> findDispensedDrugs(Long drugId, String visitNo, LocalDate date, String transNo) {
         return dispensedDrugRepository.findDispensedDrug(drugId, visitNo, date, transNo);
     }
+    public void updateStockEntry(Item item, Store store, Double qty){
+        if(item.getCategory() == ItemCategory.Drug){
+            //update the dispensed drug
+
+        }else{
+            //affect the store only
+        }
+    }
+
 
 }
