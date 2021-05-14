@@ -220,6 +220,7 @@ public class ClinicalVisitController {
                 pd.setCapitationAmount(conf.getCapitationAmount());
             }
             pd.setRunningLimit(visitData.getPayment().getLimitAmount());
+            pd.setTempRunningLimit(visitData.getPayment().getLimitAmount());
             pd.setPatient(patient);
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay

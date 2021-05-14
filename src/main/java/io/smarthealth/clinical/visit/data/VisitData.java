@@ -8,26 +8,30 @@ import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
+
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
+
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 
 /**
- *
  * @author Simon.waweru
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class VisitData {
 
+    private Long visitId;
     private String visitNumber;
     @NotBlank
     private String patientNumber;
@@ -72,6 +76,16 @@ public class VisitData {
     private Long itemToBill;
     private int triageCategory;
 
+    //payment details
+    private String schemeName;
+    private String payerName;
+    private Long schemeId;
+    private Long payerId;
+    private Double tempRunningLimit;
+    private Double runningLimit;
+    private Long priceBookId;
+
+
     public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();
         visitEntity.setScheduled(visitDTO.getScheduled());
@@ -88,6 +102,7 @@ public class VisitData {
 
     public static VisitData map(Visit visitEntity) {
         VisitData visitDTO = new VisitData();
+        visitDTO.setVisitId(visitEntity.getId());
         visitDTO.setScheduled(visitEntity.getScheduled());
         visitDTO.setStartDatetime(visitEntity.getStartDatetime());
         visitDTO.setStatus(visitEntity.getStatus());
@@ -110,6 +125,19 @@ public class VisitData {
         if (visitEntity.getClinic() != null) {
             visitDTO.setClinic(visitEntity.getClinic().getClinicName());
         }
+
+        if (visitEntity.getPaymentMethod().equals(PaymentMethod.Insurance)) {
+            if (visitEntity.getPaymentDetails() != null) {
+                visitDTO.setSchemeName(visitEntity.getPaymentDetails().getScheme().getSchemeName());
+                visitDTO.setSchemeId(visitEntity.getPaymentDetails().getScheme().getId());
+                visitDTO.setPriceBookId(visitEntity.getPaymentDetails().getScheme().getPayer().getPriceBook().getId());
+                visitDTO.setPayerId(visitEntity.getPaymentDetails().getPayer().getId());
+                visitDTO.setPayerName(visitEntity.getPaymentDetails().getPayer().getPayerName());
+                visitDTO.setRunningLimit(visitEntity.getPaymentDetails().getRunningLimit());
+                visitDTO.setTempRunningLimit(visitEntity.getPaymentDetails().getTempRunningLimit());
+            }
+        }
+
         return visitDTO;
     }
 
