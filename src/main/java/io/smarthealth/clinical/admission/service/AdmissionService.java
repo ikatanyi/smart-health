@@ -20,6 +20,7 @@ import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -120,6 +121,13 @@ public class AdmissionService {
             return contact;
         }).collect(Collectors.toList());
         a.setEmergencyContacts(EcList);
+       Optional<CareTeamData> hp = d.getCareTeam().stream().filter(x -> x.getRole() == CareTeamRole.Admitting)
+                .findFirst();
+       if(hp.isPresent()){
+           Employee admittingDoctor = employeeService.findEmployeeById(hp.get().getMedicId());
+           a.setHealthProvider(admittingDoctor);
+       }
+
         Admission savedAdmissions = admissionRepository.save(a);
         System.out.println("d.getPaymentMethod() " + d.getPaymentMethod());
         //payment data

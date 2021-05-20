@@ -76,5 +76,6 @@ public class InvoiceData {
     private String preauthCode;
     @Column(name = "is_rebate")
     private Boolean rebate = Boolean.FALSE;
-
+    @JsonFormat(pattern = Constants.DATE_PATTERN)
+    private LocalDate dischargeDate;
 }

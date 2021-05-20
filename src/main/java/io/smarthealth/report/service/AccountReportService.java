@@ -735,6 +735,11 @@ public class AccountReportService {
     public void getPatientPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
+        String visitType = reportParam.getFirst("visitType");
+        VisitEnum.VisitType visitType1=visitTypeStatusToEnum(visitType);
+        if(visitType.equals("All")){
+            visitType = null;
+        }
         String payee = reportParam.getFirst("payee");
         String transactionNo = reportParam.getFirst("transactionNo");
         Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
@@ -745,7 +750,7 @@ public class AccountReportService {
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, visitType1, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -766,6 +771,8 @@ public class AccountReportService {
             data.setShiftNo(receipt.getShiftNo());
             data.setTransactionDate(receipt.getTransactionDate());
             data.setCreatedBy(receipt.getCreatedBy());
+            data.setVisitType(receipt.getVisitType());
+
             if (receipt.getPrepayment()) {
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
             }
@@ -833,6 +840,7 @@ public class AccountReportService {
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("visitType", visitType);
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/departmental_mode_report");
@@ -1310,7 +1318,15 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Invoice Status");
     }
-
+    private VisitEnum.VisitType visitTypeStatusToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("") || status.equals("All")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(VisitEnum.VisitType.class, status)) {
+            return VisitEnum.VisitType.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Visit Type");
+    }
     private AccountType AccountTypeToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;

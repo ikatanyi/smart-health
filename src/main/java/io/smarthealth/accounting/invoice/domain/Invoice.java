@@ -200,6 +200,8 @@ public class Invoice extends Auditable {
 //            inv.setServicePoint("Rebate");
 //            inv.setQuantity();
 //        }
+
+         data.setDischargeDate(this.visit.getStopDatetime() !=null  ? this.visit.getStopDatetime().toLocalDate() : this.visit.getStartDatetime().toLocalDate());
         return data;
     }
 

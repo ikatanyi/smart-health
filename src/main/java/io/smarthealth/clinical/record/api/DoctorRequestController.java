@@ -3,11 +3,15 @@ package io.smarthealth.clinical.record.api;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.admission.domain.CareTeam;
+import io.smarthealth.clinical.admission.domain.CareTeamRole;
+import io.smarthealth.clinical.admission.domain.repository.CareTeamRepository;
 import io.smarthealth.clinical.record.data.*;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -18,6 +22,8 @@ import io.smarthealth.infrastructure.utility.ListToPage;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.notification.service.NotificationEventPublisher;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.domain.EmployeeRepository;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
@@ -76,6 +82,10 @@ public class DoctorRequestController {
 
     private final ServicePointService servicePointService;
 
+    private final EmployeeRepository employeeRepository;
+
+    private final CareTeamRepository careTeamRepository;
+
     @Transactional
     @PostMapping("/visit/{visitNo}/doctor-request")
     @PreAuthorize("hasAuthority('create_doctorrequest')")
@@ -85,12 +95,14 @@ public class DoctorRequestController {
             @RequestBody @Valid final List<DoctorRequestData> docRequestData
     ) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-
-        Optional<User> user = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
+            //TODO I had to hack this one too
+        String admNo = visit.getVisitType() ==  VisitEnum.VisitType.Inpatient ? visitNumber : null;
+        User user = getRequestingUser(admNo);
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
         List<DoctorRequestData.RequestType> requestType = new ArrayList<>();
         for (DoctorRequestData data : docRequestData) {
+//
             DoctorRequest doctorRequest = DoctorRequestData.map(data);
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
             //validate if already requested
@@ -108,7 +120,7 @@ public class DoctorRequestController {
             doctorRequest.setItemRate(item.getRate().doubleValue());
             doctorRequest.setPatient(visit.getPatient());
             doctorRequest.setVisit(visit);
-            doctorRequest.setRequestedBy(user.get());
+            doctorRequest.setRequestedBy(user);
             doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(FullFillerStatusType.Unfulfilled);
             doctorRequest.setFulfillerComment(FullFillerStatusType.Unfulfilled.name());
@@ -350,8 +362,7 @@ public class DoctorRequestController {
             waitingRequest.setItem(new ArrayList<>());
             waitingRequests.add(waitingRequest);
         }
-        System.out.println("Page" + page);
-        System.out.println("size" + size);
+
         if (page != null) {
             page = page - 1;
         }
@@ -468,4 +479,21 @@ public class DoctorRequestController {
         return ResponseEntity.ok(list);
     }
 
+    //Helper method to default doctors requests
+    //a hack to get admitting doctor to be default for IP Requests
+    private User getRequestingUser(String visitId){
+        Optional<User> optUser = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
+        User user = optUser.get();
+        if(visitId == null){
+            return user;
+        }
+        //this is scenario for IP
+        Optional<CareTeam> careTeam = careTeamRepository.findCareTeamByAdmission_AdmissionNoAndCareRole(visitId, CareTeamRole.Admitting);
+        if(careTeam.isPresent()){
+            if(careTeam.isPresent()){
+                return careTeam.get().getMedic().getLoginAccount() !=null ?careTeam.get().getMedic().getLoginAccount() : user;
+            }
+        }
+        return user;
+    }
 }

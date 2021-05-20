@@ -28,6 +28,8 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
 
 import java.util.ArrayList;

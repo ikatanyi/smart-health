@@ -81,7 +81,7 @@ public class InventoryItemService {
                 .findByItemAndStore(item, store)
                 .orElse(InventoryItem.create(store, item));
 
-        inventoryItem.setAvailableStock(balance);
+        inventoryItem.setAvailableStock(balance!=null ? balance : 0D);
         inventoryItemRepository.save(inventoryItem);
     }
 

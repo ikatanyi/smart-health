@@ -12,6 +12,7 @@ import io.smarthealth.accounting.pettycash.domain.repository.PettyCashItemsRepos
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashRequestsRepository;
 import io.smarthealth.accounting.pettycash.domain.specification.PettyCashRequestSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.DateFormatUtil;
 import io.smarthealth.organization.facility.domain.Employee;
 import java.util.List;
@@ -53,8 +54,8 @@ public class PettyCashRequestsService {
         return pettyCashItemsRepository.findById(id).orElseThrow(()-> APIException.notFound("Item identified by id {0} not found", id));
     }
 
-    public Page<PettyCashRequests> findPettyCashRequests(final String requestNo, final Employee employee, final PettyCashStatus status, final Pageable pageable) {
-        Specification<PettyCashRequests> s = PettyCashRequestSpecification.createSpecification(requestNo, employee, status);
+    public Page<PettyCashRequests> findPettyCashRequests(final String requestNo, final Employee employee, final PettyCashStatus status, DateRange range, final Pageable pageable) {
+        Specification<PettyCashRequests> s = PettyCashRequestSpecification.createSpecification(requestNo, employee, status, range);
         return cashRequestsRepository.findAll(s, pageable);
     }
 

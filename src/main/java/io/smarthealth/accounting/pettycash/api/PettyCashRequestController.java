@@ -21,6 +21,7 @@ import io.smarthealth.approval.domain.ModuleApprovers;
 import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
 import io.smarthealth.approval.service.ApprovalConfigService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -28,6 +29,8 @@ import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import io.swagger.annotations.Api;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
@@ -98,6 +101,7 @@ public class PettyCashRequestController {
         cashRequest.setStatus(PettyCashStatus.Pending);
         cashRequest.setTotalAmount(totalAmount);
         cashRequest.setRequestedBy(employee);
+//        cashRequest.setRequestDate(LocalDate.now());
 
         cashRequest.setRequestNo(pettyCashRequestsService.generatepettyCashRequestNo());
         PettyCashRequests cr = pettyCashRequestsService.createCashRequests(cashRequest);
@@ -176,9 +180,12 @@ public class PettyCashRequestController {
     @PreAuthorize("hasAuthority('view_pettyCashRequest')")
     public ResponseEntity<?> fetchPettyCashRequests(
             @RequestParam(value = "requestNo", required = false) final String requestNo,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "status", required = false) final PettyCashStatus status,
             Pageable pageable) {
-        Page<PettyCashRequestsData> list = pettyCashRequestsService.findPettyCashRequests(requestNo, null, status, pageable).map(r -> PettyCashRequestsData.map(r));
+
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Page<PettyCashRequestsData> list = pettyCashRequestsService.findPettyCashRequests(requestNo, null, status, range, pageable).map(r -> PettyCashRequestsData.map(r));
         Pager<List<PettyCashRequestsData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

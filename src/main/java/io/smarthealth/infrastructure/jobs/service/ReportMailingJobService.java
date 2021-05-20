@@ -9,10 +9,16 @@ import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.jobs.annotation.CronTarget;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import io.smarthealth.notification.data.NoticeType;
+import io.smarthealth.notification.data.NotificationData;
+import io.smarthealth.notification.service.NotificationEventPublisher;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoiceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionException;
@@ -45,6 +51,8 @@ public class ReportMailingJobService {
     private final EmailService mailService;
     private final AutomatedNotificationRepository automatedNotificationRepository;
     private final PatientQueueService patientQueueService;
+    private final PurchaseInvoiceRepository purchaseInvoiceRepository;
+    private final NotificationEventPublisher notificationEventPublisher;
 
     @CronTarget(jobName = JobName.EXECUTE_REPORT_MAILING_JOBS)
     public void executeReportMailingJobs() throws JobExecutionException {
@@ -112,6 +120,33 @@ public class ReportMailingJobService {
                 } catch (SQLException | JRException | IOException ex) {
                     log.error("shit has happen {} ", ex.getMessage());
                 }
+            }
+        }
+    }
+
+    @CronTarget(jobName = JobName.SUPPLIER_INVOICE_PAYMENT_DUE)
+    public void executeSupplierDueNotification() throws JobExecutionException {
+        List<PurchaseInvoice> invoices = purchaseInvoiceRepository.findPurchaseInvoiceByDueDate(LocalDate.now());
+        Optional<AutomatedNotification> recipients = automatedNotificationRepository.findByNotificationType(NotificationType.SupplierInvoiceDuePayment);
+
+        if (recipients.isPresent()) {
+            AutomatedNotification users = recipients.get();
+            if (users.isActive()) {
+                users.getUsers().forEach(user -> {
+                    invoices.stream()
+                            .map(inv -> {
+                                return NotificationData.builder()
+                                        .datetime(LocalDateTime.now())
+                                        .description(String.format("Supplier Invoice %s Amount %s is due for payment. Due Date %s ", inv.getInvoiceNumber(), inv.getInvoiceBalance().toString(), inv.getDueDate().format(DateTimeFormatter.ISO_DATE)))
+                                        .isRead(false)
+                                        .noticeType(NoticeType.SupplierInvoiceDue)
+                                        .username(user.getUsername())
+                                        .reference(String.valueOf(inv.getId()))
+                                        .build();
+                            })
+                            .forEach(not -> notificationEventPublisher.publishUserNotificationEvent(not));
+
+                });
             }
         }
     }

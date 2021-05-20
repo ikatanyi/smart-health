@@ -4,6 +4,7 @@ import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.payment.data.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -45,6 +46,7 @@ public class ReportReceiptData {
     private ShiftStatus status;
     private String currency;
     private String createdBy;
+    private VisitEnum.VisitType visitType;
     
     private BigDecimal lab = BigDecimal.ZERO;
     private BigDecimal pharmacy = BigDecimal.ZERO;

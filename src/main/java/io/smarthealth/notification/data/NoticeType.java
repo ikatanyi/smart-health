@@ -6,6 +6,7 @@ package io.smarthealth.notification.data;
  */
 public enum NoticeType {
     LaboratoryResults("Lab Results"),
+    SupplierInvoiceDue("Supplier Invoice Payment"),
     RadiologyResults("Radiology Results");
     private final String label;
 

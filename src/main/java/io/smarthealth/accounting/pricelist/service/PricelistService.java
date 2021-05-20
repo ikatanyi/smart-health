@@ -50,7 +50,6 @@ public class PricelistService {
             if (priceList.size() > 0) {
                 throw APIException.conflict("Pricelist for the service {0} already exists ", items.getItem().getItemName());
             }
-
         }
 
         Optional<PriceList> priceList = repository.findByItemAndServicePoint(items.getItem(), items.getServicePoint());

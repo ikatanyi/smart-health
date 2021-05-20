@@ -365,14 +365,14 @@ public class StockReportService {
                 .map((u) -> u.toData())
                 .collect(Collectors.toList());
 
-        List<JRSortField> sortList = new ArrayList<>();
-        JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("category");
-        sortField.setOrder(SortOrderEnum.ASCENDING);
-        sortField.setType(SortFieldTypeEnum.FIELD);
-        sortList.add(sortField);
+//        List<JRSortField> sortList = new ArrayList<>();
+//        JRDesignSortField sortField = new JRDesignSortField();
+//        sortField.setName("category");
+//        sortField.setOrder(SortOrderEnum.ASCENDING);
+//        sortField.setType(SortFieldTypeEnum.FIELD);
+//        sortList.add(sortField);
 
-        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+       // reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/stock_purchase");

@@ -84,6 +84,9 @@ public class AdmissionData {
     private String formattedAge;
     private String dischargeNo;
 
+    private String payerName;
+    private String schemeName;
+
     private List<CareTeamData> careTeam = new ArrayList<>();
     private List<EmergencyContactData> emergencyContactData = new ArrayList();
 

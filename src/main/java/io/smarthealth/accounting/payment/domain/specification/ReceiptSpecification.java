@@ -5,6 +5,7 @@ import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import io.smarthealth.accounting.payment.domain.ReceiptTransaction;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -16,7 +17,7 @@ public class ReceiptSpecification {
         super();
     }
 
-    public static Specification<Receipt> createSpecification(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePoint, Long cashierId, DateRange range, Boolean prepaid) {
+    public static Specification<Receipt> createSpecification(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePoint, Long cashierId, DateRange range, Boolean prepaid, VisitEnum.VisitType visitType) {
 
         return (root, query, cb) -> {
 
@@ -50,7 +51,10 @@ public class ReceiptSpecification {
                         cb.between(root.get("transactionDate"), range.getStartDateTime(), range.getEndDateTime())
                 );
             }
-
+            //visitType
+            if (visitType != null) {
+                predicates.add(cb.equal(root.get("visitType"), visitType));
+            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

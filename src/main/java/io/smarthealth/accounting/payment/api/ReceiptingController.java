@@ -6,6 +6,7 @@ import io.smarthealth.accounting.payment.data.*;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -126,6 +127,7 @@ public class ReceiptingController {
             @RequestParam(value = "receipt_no", required = false) final String receiptNo,
             @RequestParam(value = "transaction_no", required = false) final String transactionNo,
             @RequestParam(value = "shift_no", required = false) final String shiftNo,
+            @RequestParam(value = "visitType", required = false) final VisitEnum.VisitType visitType,
             @RequestParam(value = "cashier_id", required = false) final Long cashier,
             @RequestParam(value = "service_point_id", required = false) final Long servicePointId,
             @RequestParam(value = "date_range", required = false) final String dateRange,
@@ -136,7 +138,7 @@ public class ReceiptingController {
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, servicePointId, range,prepaid, pageable)
+        Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, servicePointId, range,prepaid,visitType, pageable)
                 .map(x -> x.toData());
 
         auditTrailService.saveAuditTrail("Receipts", "Viewed all payment receipts ");

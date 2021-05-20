@@ -11,6 +11,7 @@ import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.billing.service.PatientBillingService;
 import io.smarthealth.accounting.cashier.data.CashierShift;
@@ -28,6 +29,7 @@ import io.smarthealth.accounting.pricelist.domain.PriceListRepository;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -114,6 +116,8 @@ public class ReceiptingService {
 //        List<PatientBillItem> billedItems = billingService.validatedBilledItem(data);
         List<PatientBillItem> billedItems = patientBillingService.allocateBillPayment(data);
         //this I am going to surface them out and have the right de
+
+
         billedItems.stream()
                 .forEach(item -> {
                     if (item.getItem().getCategory() == ItemCategory.CoPay) {
@@ -144,6 +148,15 @@ public class ReceiptingService {
                             .filter(x -> x.getAmount() != null)
                             .collect(Collectors.toList())
             );
+        }
+        //TODO this is a quick hack
+        Optional<PatientBillItem> pbi = billedItems.stream().filter(x -> x.getEntryType() == BillEntryType.Debit).findFirst();
+        if(pbi.isPresent()){
+            if(pbi.get().getPatientBill().getVisit()!= null){
+                receipt.setVisitType(pbi.get().getPatientBill().getVisit().getVisitType());
+            }else{
+                receipt.setVisitType(VisitEnum.VisitType.Outpatient);
+            }
         }
 
         Receipt savedReceipt = repository.save(receipt); //save the payment
@@ -237,8 +250,8 @@ public class ReceiptingService {
         return savedReceipt;
     }
 
-    public Page<Receipt> getPayments(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePointId, Long cashierId, DateRange range, Boolean prepaid, Pageable page) {
-        Specification<Receipt> spec = ReceiptSpecification.createSpecification(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid);
+    public Page<Receipt> getPayments(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePointId, Long cashierId, DateRange range, Boolean prepaid, VisitEnum.VisitType visitType, Pageable page) {
+        Specification<Receipt> spec = ReceiptSpecification.createSpecification(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, visitType);
         return repository.findAll(spec, page);
     }
 

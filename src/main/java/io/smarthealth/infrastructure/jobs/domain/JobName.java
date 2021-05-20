@@ -14,7 +14,8 @@ public enum JobName {
     AUTO_CHECK_OUT_PATIENT("Auto Checking Out of Patient Expired Visit"),
     EXECUTE_REPORT_MAILING_JOBS("Execute Report Mailing Jobs"),
     EXECUTE_REPORT_REORDER_LEVEL_JOBS("Execute Reorder Level Jobs"),
-    ACCOUNTING_RUNNING_BALANCE_UPDATE("Update Accounting Running Balances");
+    ACCOUNTING_RUNNING_BALANCE_UPDATE("Update Accounting Running Balances"),
+    SUPPLIER_INVOICE_PAYMENT_DUE("Supplier Invoice Payment Due Alert");
 
     private final String name;
 

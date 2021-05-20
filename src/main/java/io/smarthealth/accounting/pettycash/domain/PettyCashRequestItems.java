@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 /**
  *
  * @author Simon.waweru
@@ -26,7 +28,7 @@ public class PettyCashRequestItems extends Identifiable {
     private int quantity;
     private double amount;
     private String narration;
-    
+    private LocalDate requestDate;
     @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_request_items_request_no"))
     private PettyCashRequests requestNo;

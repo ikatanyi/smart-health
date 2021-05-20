@@ -43,7 +43,7 @@ public class PettyCashRequestsData {
     private PettyCashStatus status;
 
     private Double approvedAmount;
-    
+//    private LocalDate requestDate;
     @ApiModelProperty(hidden = true)
     private List<PettyCashRequestItemsData> requestItemsData;
     
@@ -55,6 +55,7 @@ public class PettyCashRequestsData {
         data.setStatus(r.getStatus());
         data.setTotalAmount(r.getTotalAmount());
         data.setRequestedBy(r.getRequestedBy().getFullName());
+//        data.setRequestDate(r.getRequestDate());
         data.setRequesterDept(r.getRequestedBy().getDepartment().getName());
         data.setCreatedOn(LocalDate.from(r.getCreatedOn().atZone(ZoneId.systemDefault())));
         data.setApprovedAmount(r.getApprovedAmount()!=null? r.getApprovedAmount() : r.getTotalAmount());

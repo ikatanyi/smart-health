@@ -22,7 +22,10 @@ import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
+import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
+import io.smarthealth.clinical.visit.domain.PaymentDetailsRepository;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
@@ -44,6 +47,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -69,6 +73,7 @@ public class AdmissionReportService {
     private final BillingService billingService;
     private final VisitService visitService;
     private final InvoiceService invoiceService;
+    private final PaymentDetailsRepository paymentDetailsRepository;
 
     public void getAdmittedPatients(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -94,11 +99,22 @@ public class AdmissionReportService {
                 .map((adm) -> {
                     AdmissionData admissionData1 = AdmissionData.map(adm);
                     CareTeam ct = careTeamService.fetchCareTeamByAdmissionNumberAndCareRole(adm.getAdmissionNo(), CareTeamRole.Admitting);
-                    if (ct != null)
+                    if (ct != null) {
                         admissionData1.setAdmittingDoctor(ct.getMedic().getFullName());
+                    }
+                    Optional<PaymentDetails> paymentDetails = paymentDetailsRepository.findByVisitNumber(adm.getAdmissionNo());
+                    if(paymentDetails.isPresent()){
+                        PaymentDetails d = paymentDetails.get();
+                        admissionData1.setPayerName(d.getPayer().getPayerName());
+                        admissionData1.setSchemeName(d.getScheme().getSchemeName());
+                    }else{
+                        admissionData1.setPayerName("-");
+                        admissionData1.setSchemeName("-");
+                    }
                     return admissionData1;
                 })
                 .collect(Collectors.toList());
+
 
         reportData.getFilters().put("range", DateRange.getReportPeriod(DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"))));
         reportData.setData(admissionData);

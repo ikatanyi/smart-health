@@ -285,7 +285,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{PAGE_COUNT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,###.00">
 				<reportElement x="400" y="0" width="50" height="13" uuid="48fe45b7-28d2-440d-ba71-cb7677fce806">

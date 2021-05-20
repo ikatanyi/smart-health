@@ -2,6 +2,7 @@ package io.smarthealth.accounting.payment.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.cashier.data.ShiftData;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,6 +12,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 /**
  *
@@ -46,5 +50,6 @@ public class ReceiptData {
     private List<ReceiptTransactionData> transactions = new ArrayList<>();
     private List<ReceiptItemData> receiptItems = new ArrayList<>();
     private ShiftData shiftData;
+    private VisitEnum.VisitType visitType;
 
 }

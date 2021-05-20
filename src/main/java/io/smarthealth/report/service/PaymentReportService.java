@@ -107,7 +107,7 @@ public class PaymentReportService {
             employee = emp.get();
         }
 
-        List<PettyCashRequestsData> pettyCashData = pettyCashRequestService.findPettyCashRequests(requestNo, employee, status, Pageable.unpaged())
+        List<PettyCashRequestsData> pettyCashData = pettyCashRequestService.findPettyCashRequests(requestNo, employee, status, range, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map(x -> PettyCashRequestsData.map(x))
@@ -321,7 +321,7 @@ public class PaymentReportService {
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, null, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -442,7 +442,7 @@ public class PaymentReportService {
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid,null, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
