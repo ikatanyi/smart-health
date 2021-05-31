@@ -96,7 +96,6 @@ public class PaymentDetailsData {
         d.setHasCapitation(e.isHasCapitation());
         d.setCapitationAmount(e.getCapitationAmount());
         d.setRunningLimit(e.getRunningLimit());
-        System.out.println("e.getTempRunningLimit() "+e.getTempRunningLimit());
         d.setTempRunningLimit(e.getTempRunningLimit());
         d.setLimitEnabled(e.getLimitEnabled());
         d.setIdNumber(e.getIdNo());

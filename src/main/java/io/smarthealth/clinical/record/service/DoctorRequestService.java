@@ -5,6 +5,10 @@
  */
 package io.smarthealth.clinical.record.service;
 
+import io.smarthealth.accounting.pricelist.domain.PriceBook;
+import io.smarthealth.accounting.pricelist.domain.PriceBookRepository;
+import io.smarthealth.accounting.pricelist.domain.PriceList;
+import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -18,6 +22,8 @@ import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
+import io.smarthealth.clinical.visit.domain.PaymentDetailsRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -35,8 +41,11 @@ import io.smarthealth.stock.item.domain.Item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
@@ -52,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DoctorRequestService implements DateConverter {
 
     // @Autowired
@@ -71,14 +81,22 @@ public class DoctorRequestService implements DateConverter {
 
     private final PatientService patientService;
 
+    private final PaymentDetailsRepository paymentDetailsRepository;
+
+    private final PricelistService pricelistService;
+
+
     @Transactional
     public List<DoctorRequest> createRequest(List<DoctorRequest> docRequests) {
+        log.info("START create doc request ");
         List<DoctorRequest> docReqs = doctorRequestRepository.saveAll(docRequests);
         //Send patient to queue
         for (DoctorRequest docRequest : docReqs) {
             PatientQueue patientQueue = new PatientQueue();
 //            Department department = departmentService.findByServicePointTypeAndloggedFacility(docRequest.getRequestType());      
             ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(docRequest.getRequestType().name()));
+            //update limit on the fly
+            updateLimitOnRequest(docRequest);
             //check if patient is already queued
             if (patientQueueService.patientIsQueued(servicePoint, docRequest.getPatient())) {
                 continue;
@@ -90,10 +108,48 @@ public class DoctorRequestService implements DateConverter {
             patientQueue.setUrgency(PatientQueue.QueueUrgency.Medium);
             patientQueue.setVisit(docRequest.getVisit());
             PatientQueue savedQueue = patientQueueService.createPatientQueue(patientQueue);
+
         }
-
+        log.info("STOP create doc request ");
         return docReqs;
+    }
 
+    private void updateLimitOnRequest(DoctorRequest docRequest) {
+        System.out.println("docRequest.getVisit().getPaymentMethod() " + docRequest.getVisit().getPaymentMethod());
+        if (docRequest.getVisit().getPaymentMethod().equals(PaymentMethod.Insurance)) {
+            //reduce the temp limit
+            PaymentDetails paymentDetails = docRequest.getVisit().getPaymentDetails();
+            System.out.println("Pde " + paymentDetails.getTempRunningLimit());
+            Double requestAmount = 0.0;
+            PriceBook priceBook = docRequest.getVisit().getPaymentDetails().getPayer().getPriceBook();
+            ServicePoint servicePoint = null;
+
+
+            if (docRequest.getRequestType().equals(RequestType.Laboratory)) {
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+            }
+            if (docRequest.getRequestType().equals(RequestType.Pharmacy)) {
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
+            }
+            if (docRequest.getRequestType().equals(RequestType.Procedure)) {
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
+            }
+            if (docRequest.getRequestType().equals(RequestType.Radiology)) {
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
+            }
+            System.out.println("servicePoint.getId() "+servicePoint.getId());
+            System.out.println("priceBook.getId() "+priceBook.getId());
+            System.out.println("docRequest.getItem().getId() "+docRequest.getItem().getId());
+            Page<PriceList> pd = pricelistService.getPricelistByLocation(servicePoint.getId(),
+                    priceBook.getId(),
+                    docRequest.getItem().getId(),
+                    Pageable.unpaged());
+
+            requestAmount = pd.getContent().get(0).getSellingRate().doubleValue();
+            System.out.println("Requested amount for " + docRequest.getRequestType() + " = " + requestAmount);
+            paymentDetails.setTempRunningLimit(paymentDetails.getTempRunningLimit() - requestAmount);
+            paymentDetailsRepository.saveAndFlush(paymentDetails);
+        }
     }
 
     public Page<DoctorRequest> findAllRequestsByVisitAndRequestType(final Visit visit, final RequestType requestType, Pageable pageable) {

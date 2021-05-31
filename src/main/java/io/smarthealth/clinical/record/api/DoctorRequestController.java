@@ -95,14 +95,13 @@ public class DoctorRequestController {
             @RequestBody @Valid final List<DoctorRequestData> docRequestData
     ) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-            //TODO I had to hack this one too
-        String admNo = visit.getVisitType() ==  VisitEnum.VisitType.Inpatient ? visitNumber : null;
+        //TODO I had to hack this one too
+        String admNo = visit.getVisitType() == VisitEnum.VisitType.Inpatient ? visitNumber : null;
         User user = getRequestingUser(admNo);
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
         List<DoctorRequestData.RequestType> requestType = new ArrayList<>();
         for (DoctorRequestData data : docRequestData) {
-//
             DoctorRequest doctorRequest = DoctorRequestData.map(data);
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
             //validate if already requested
@@ -113,7 +112,6 @@ public class DoctorRequestController {
                         throw APIException.conflict("{0} has already been requested ", item.getItemName());
                     }
                 }
-
             }
             doctorRequest.setItem(item);
             doctorRequest.setItemCostRate(item.getCostRate() != null ? item.getCostRate().doubleValue() : 0);
@@ -130,7 +128,6 @@ public class DoctorRequestController {
             if (!requestType.contains(data.getRequestType())) {
                 requestType.add(data.getRequestType());
             }
-
         }
 
         List<DoctorRequest> docReqs = requestService.createRequest(docRequests);
@@ -228,15 +225,12 @@ public class DoctorRequestController {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         //fetch all visits by patient
         Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, range, null, null, false, null, billPaymentValidationPoint, pageable);
-        System.out.println("patientVisits " + patientVisits.getContent().size());
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {
             Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable, null, null, null);
-            System.out.println("pageList " + pageList.getContent().size());
             int count = 0;
             for (DoctorRequest docReq : pageList.getContent()) {
-                System.out.println("count " + count);
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
                 waitingRequest.setId(docReq.getId());
                 waitingRequest.setPatientName(patient.getFullName());
@@ -250,7 +244,6 @@ public class DoctorRequestController {
 
                 //find line items by request_id
                 List<DoctorRequest> serviceItems = requestService.fetchServiceRequests(docReq.getPatient(), fulfillerStatus, requestType, v);
-                System.out.println("serviceItems " + serviceItems.size());
                 List<DoctorRequestItem> requestItems = new ArrayList<>();
                 for (DoctorRequest r : serviceItems) {
                     requestItems.add(requestService.toData(r));
@@ -481,17 +474,17 @@ public class DoctorRequestController {
 
     //Helper method to default doctors requests
     //a hack to get admitting doctor to be default for IP Requests
-    private User getRequestingUser(String visitId){
+    private User getRequestingUser(String visitId) {
         Optional<User> optUser = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
         User user = optUser.get();
-        if(visitId == null){
+        if (visitId == null) {
             return user;
         }
         //this is scenario for IP
         Optional<CareTeam> careTeam = careTeamRepository.findCareTeamByAdmission_AdmissionNoAndCareRole(visitId, CareTeamRole.Admitting);
-        if(careTeam.isPresent()){
-            if(careTeam.isPresent()){
-                return careTeam.get().getMedic().getLoginAccount() !=null ?careTeam.get().getMedic().getLoginAccount() : user;
+        if (careTeam.isPresent()) {
+            if (careTeam.isPresent()) {
+                return careTeam.get().getMedic().getLoginAccount() != null ? careTeam.get().getMedic().getLoginAccount() : user;
             }
         }
         return user;

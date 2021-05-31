@@ -492,8 +492,7 @@ public class ClinicalVisitController {
     public ResponseEntity<?> fetchpaymentModeByVisit(@PathVariable("visitNo") String visitNo) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         PaymentDetails pde = paymentDetailsService.fetchPaymentDetailsByVisit(visit);
-        System.out.println("Pde "+pde.getLimitAmount());
-        System.out.println("Pde "+pde.getTempRunningLimit());
+
         Pager<PaymentDetailsData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment Mode");

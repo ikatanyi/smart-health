@@ -120,7 +120,6 @@ public class VisitService {
                         // visitData.add(v);
                         visitData.remove(v);
 //                        visitList.remove(v);
-                        System.out.println("tally count");
                         break;
                     }
                 }
