@@ -8,6 +8,7 @@ import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
 import io.smarthealth.stock.purchase.data.PurchaseOrderItemData;
 import io.smarthealth.stock.purchase.domain.HtmlData;
+import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.service.PurchaseService;
 import io.swagger.annotations.Api;
@@ -140,5 +141,10 @@ public class PurchaseOrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
-    
+
+    @PutMapping("/purchaseorders/{orderNo}/authorise")
+    public ResponseEntity<PurchaseOrderData> approvePurchaseOrder(@PathVariable(value = "orderNo") String orderNo) {
+        PurchaseOrder order = service.approveOrder(orderNo);
+        return ResponseEntity.ok(order.toData());
+    }
 }

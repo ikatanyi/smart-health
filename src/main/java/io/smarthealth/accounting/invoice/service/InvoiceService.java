@@ -1,13 +1,7 @@
 package io.smarthealth.accounting.invoice.service;
 
 import io.smarthealth.accounting.accounts.data.FinancialActivity;
-import io.smarthealth.accounting.accounts.domain.Account;
-import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
-import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
-import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
-import io.smarthealth.accounting.accounts.domain.JournalState;
-import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
@@ -17,21 +11,11 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.billing.service.PatientBillingService;
-import io.smarthealth.accounting.invoice.data.CreateInvoice;
-import io.smarthealth.accounting.invoice.data.InvoiceData;
-import io.smarthealth.accounting.invoice.data.InvoiceEditData;
-import io.smarthealth.accounting.invoice.data.InvoiceItemData;
-import io.smarthealth.accounting.invoice.data.MergeInvoice;
+import io.smarthealth.accounting.invoice.data.*;
 import io.smarthealth.accounting.invoice.data.statement.InterimInvoice;
 import io.smarthealth.accounting.invoice.data.statement.InterimInvoiceItem;
 import io.smarthealth.accounting.invoice.data.statement.InvoiceStatement;
-import io.smarthealth.accounting.invoice.domain.Invoice;
-import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
-import io.smarthealth.accounting.invoice.domain.InvoiceItem;
-import io.smarthealth.accounting.invoice.domain.InvoiceItemRepository;
-import io.smarthealth.accounting.invoice.domain.InvoiceMerge;
-import io.smarthealth.accounting.invoice.domain.InvoiceMergeRepository;
-import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
+import io.smarthealth.accounting.invoice.domain.*;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceItemSpecification;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
@@ -47,34 +31,32 @@ import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
-import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.report.data.CompanyHeader;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stat.service.ReportService;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.accounting.invoice.data.RebateInvoice;
-import java.time.LocalDate;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.ResourceUtils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -195,9 +177,7 @@ public class InvoiceService {
                                 .forEach(inv -> {
                                     PatientBillItem item = billingService.findBillItemById(inv.getBillItemId());
                                     //only finalize what has not been finalized
-
                                     if (item.isFinalized() == false) {
-
                                         InvoiceItem lineItem = new InvoiceItem();
                                         BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(inv.getAmount());
                                         item.setPaid(Boolean.TRUE);
@@ -205,7 +185,10 @@ public class InvoiceService {
                                         if (item.getPaymentReference() == null) {
                                             item.setPaymentReference(invoiceNo);
                                         }
-                                        item.setFinalized(true);
+
+//                                        item.setFinalized(true);
+                                        final String finalInv = StringUtils.isNotBlank(item.getInvoiceNumber()) ? StringUtils.join(item.getInvoiceNumber(), invoiceNo, ",") : invoiceNo;
+                                        System.err.println("final Invoice "+finalInv);
                                         item.setInvoiceNumber(invoiceNo);
                                         item.setBalance(0D);
 
@@ -241,7 +224,18 @@ public class InvoiceService {
 
         for (Invoice savedInvoice : savedInvoices) {
             patientBillingService.createReceiptItem(visit.getVisitNumber(), savedInvoice);
+
+            savedInvoice.getItems()
+                    .stream()
+                    .forEach(pt -> {
+                        PatientBillItem item = pt.getBillItem();
+                        item.setFinalized(true);
+                        item.setBalance(0D);
+                        patientBillingService.updateBillItem(item);
+                    });
         }
+        //update the invoice wuth balances from the above
+
         return savedInvoices;
 
     }
@@ -328,6 +322,7 @@ public class InvoiceService {
     }
 
     public Invoice saveInvoice(Invoice invoice) {
+
         Invoice savedInvoice = invoiceRepository.save(invoice);
         journalService.save(toJournal(invoice));
         return savedInvoice;

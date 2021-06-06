@@ -14,6 +14,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,6 +56,9 @@ public class PurchaseOrder extends Auditable {
     private List<PurchaseOrderItem> purchaseOrderLines;
     
     private String remarks;
+    private boolean approved;
+    private LocalDateTime approvalDate;
+    private String approvedBy;
 
     public PurchaseOrder() {
     }
@@ -128,6 +132,9 @@ public class PurchaseOrder extends Auditable {
                 .collect(Collectors.toList());
 
         data.setPurchaseOrderItems(list);
+        data.setApprovalDate(this.approvalDate);
+        data.setApproved(this.approved);
+        data.setApprovedBy(this.approvedBy);
 
         return data;
     }

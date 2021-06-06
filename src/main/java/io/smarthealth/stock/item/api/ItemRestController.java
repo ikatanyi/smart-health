@@ -7,8 +7,10 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.data.ReorderLevelData;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemMetadata;
+import io.smarthealth.stock.item.domain.ReorderRule;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.service.ItemService;
@@ -131,5 +133,15 @@ public class ItemRestController {
         ItemMetadata metadata = service.getItemMetadata();
         return ResponseEntity.ok(metadata);
     }
+    @PutMapping("/items/reorder-level")
+    @PreAuthorize("hasAuthority('edit_items')")
+    public ResponseEntity<Pager<ReorderLevelData>> updateReorderLevel(@Valid @RequestBody ReorderLevelData reorderLevelData) {
+        ReorderRule rule = service.createReorderLevel(reorderLevelData);
+        Pager<ReorderLevelData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Item Reorder Rule Updated Successful");
+        pagers.setContent(rule.toData());
+        return ResponseEntity.ok(pagers);
 
+    }
 }

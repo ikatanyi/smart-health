@@ -130,7 +130,9 @@ public class VisitData {
             if (visitEntity.getPaymentDetails() != null) {
                 visitDTO.setSchemeName(visitEntity.getPaymentDetails().getScheme().getSchemeName());
                 visitDTO.setSchemeId(visitEntity.getPaymentDetails().getScheme().getId());
-                visitDTO.setPriceBookId(visitEntity.getPaymentDetails().getScheme().getPayer().getPriceBook().getId());
+                if(visitEntity.getPaymentDetails().getScheme().getPayer().getPriceBook()!=null) {
+                    visitDTO.setPriceBookId(visitEntity.getPaymentDetails().getScheme().getPayer().getPriceBook().getId());
+                }
                 visitDTO.setPayerId(visitEntity.getPaymentDetails().getPayer().getId());
                 visitDTO.setPayerName(visitEntity.getPaymentDetails().getPayer().getPayerName());
                 visitDTO.setRunningLimit(visitEntity.getPaymentDetails().getRunningLimit());

@@ -323,6 +323,19 @@ public class StockReportService {
         reportData.setReportName("Stock-Adjustment-Statement");
         reportService.generateReport(reportData, response);
     }
+    public void getStockAdjustedItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
+
+        List<StockAdjustmentData> inventoryItemData = inventoryAdjustmentService.getStockAdjustments(null, null, range, Pageable.unpaged()).getContent();
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/StockAdjustment");
+        reportData.setReportName("Stock Adjustment Report");
+        reportService.generateReport(reportData, response);
+    }
 
     public void getItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
