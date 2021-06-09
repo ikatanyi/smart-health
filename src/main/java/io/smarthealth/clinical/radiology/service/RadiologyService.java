@@ -173,7 +173,7 @@ public class RadiologyService {
 
         }
         PatientScanRegister scanRegister = patientradiologyRepository.save(patientScanReg);
-        PatientBill bill = toBill(scanRegister);
+        PatientBill bill = toBill(scanRegister, patientScanRegData);
         billService.save(bill);
         //if all goes well and the patient was sent on this service point direct (exclusive of doctor request) - mark on the patient visit the patient has been served, and remove from the waiting list
         if (!patientScanRegData.getIsWalkin()) {
@@ -185,7 +185,7 @@ public class RadiologyService {
         return scanRegister;
     }
 
-    private PatientBill toBill(PatientScanRegister data) {
+    private PatientBill toBill(PatientScanRegister data,PatientScanRegisterData patientScanRegData) {
         //get the service point from store
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
         PatientBill patientbill = new PatientBill();
@@ -206,6 +206,8 @@ public class RadiologyService {
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
+        patientbill.setSurpassedAmountPaymentMethod(patientScanRegData.getSurpassedAmountPaymentMethod());
+        patientbill.setAllowedToExceedLimit(patientScanRegData.getAllowedToExceedLimit());
 
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
 

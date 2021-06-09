@@ -4,6 +4,7 @@ import io.smarthealth.accounting.accounts.data.FinancialActivity;
 import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.*;
+import io.smarthealth.accounting.billing.data.nue.BillItemListToDataConverter;
 import io.smarthealth.accounting.billing.domain.*;
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -216,7 +217,7 @@ public class PatientBillingService {
         //Check the current configuration if pay first then do not dispense just create the bill and allow to be dispensed on receipting
         PatientBill savedBill = patientBillRepository.save(patientBill);
 
-        dispensingService.dispenseItem(drugRequest, store,savedBill);
+        dispensingService.dispenseItem(drugRequest, store, savedBill);
 
         return patientBill;
     }
@@ -278,7 +279,7 @@ public class PatientBillingService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public PatientBill createReceiptItem(String patientNumber, String patientName, String visitNumber, Double amount, ItemCategory itemCategory, boolean isWalking,String reference) {
+    public PatientBill createReceiptItem(String patientNumber, String patientName, String visitNumber, Double amount, ItemCategory itemCategory, boolean isWalking, String reference) {
         //I need to pass copay as part of this
         Visit visit = null;
         if (!isWalking) {
@@ -296,12 +297,12 @@ public class PatientBillingService {
 
         if (creditItem != null) {
             PatientBill receiptBill = createPatientBill(patientNumber, patientName, visitNumber, LocalDate.now(), "Cash", amount, 0D, isWalking);
-             Double qty= 1D;
-             Double price= amount;
-             if(creditItem.getCategory() == NHIF_Rebate){
-                 qty= (amount/creditItem.getRate().doubleValue());
-                 price = creditItem.getRate().doubleValue();
-             }
+            Double qty = 1D;
+            Double price = amount;
+            if (creditItem.getCategory() == NHIF_Rebate) {
+                qty = (amount / creditItem.getRate().doubleValue());
+                price = creditItem.getRate().doubleValue();
+            }
 
             PatientBillItem billsItem = new PatientBillItem();
 
@@ -318,9 +319,9 @@ public class PatientBillingService {
             billsItem.setServicePointId(0L);
             billsItem.setStatus(BillStatus.Paid);
             billsItem.setMedicId(null);
-            if(visit!=null){
-               billsItem.setBillPayMode(visit.getPaymentMethod());
-            }else {
+            if (visit != null) {
+                billsItem.setBillPayMode(visit.getPaymentMethod());
+            } else {
                 billsItem.setBillPayMode(PaymentMethod.Cash);
 //                billsItem.setBillPayMode(itemCategory == NHIF_Rebate ? PaymentMethod.Insurance : PaymentMethod.Cash);
             }
@@ -337,11 +338,11 @@ public class PatientBillingService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public PatientBill createReceiptItem(String visitNumber, Invoice invoice){
-        Patient patient  = invoice.getPatient();
+    public PatientBill createReceiptItem(String visitNumber, Invoice invoice) {
+        Patient patient = invoice.getPatient();
 
         Visit visit = visitRepository.findByVisitNumber(visitNumber)
-                    .orElseThrow(() -> APIException.notFound("Visit ID {0} Not Found", visitNumber));
+                .orElseThrow(() -> APIException.notFound("Visit ID {0} Not Found", visitNumber));
 
 
         Optional<Item> receiptItem = itemRepository.findFirstByCategory(ItemCategory.Receipt);
@@ -414,20 +415,22 @@ public class PatientBillingService {
 //        return patientBills;
 //    }
 
-    public Page<VisitBillSummary> getVisitBills(BillingQuery query){
-       return patientBillRepository.getVisitBill(query);
+    public Page<VisitBillSummary> getVisitBills(BillingQuery query) {
+        return patientBillRepository.getVisitBill(query);
     }
 
     //TODO also find the walking bills and add them
     public Page<PatientBillItem> getPatientBillItems(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType, Pageable pageable) {
         return billItemRepository.findAll(findPatientBillItemsWith(visitNumber, includeCanceled, paymentMethod, billEntryType), pageable);
     }
-    public List<PatientBillItem> getInterimBillItems(String visitNumber, String type){
-        if(type.toLowerCase().equals("detailed")){
+
+    public List<PatientBillItem> getInterimBillItems(String visitNumber, String type) {
+        if (type.toLowerCase().equals("detailed")) {
             return billItemRepository.getByVisitNumberStatus(visitNumber);
         }
         return billItemRepository.getByBillingDate(visitNumber);
     }
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<PatientBillItem> voidPatientBillItem(String visitNumber, List<VoidBillItem> items) {
 
@@ -503,7 +506,7 @@ public class PatientBillingService {
 
         return cinvoice;
     }
-   // create an invoice entry
+    // create an invoice entry
 
     @Transactional
     public List<PatientBillItem> allocateBillPayment(ReceivePayment data) {
@@ -592,7 +595,7 @@ public class PatientBillingService {
         BigDecimal receiptAmount = data.getBillItems().stream()
                 .map(BillReceiptedItem::getAmount)
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
-        System.err.println("Comparing Incoming: "+data.getAmount()+" : Calculated. "+receiptAmount);
+        System.err.println("Comparing Incoming: " + data.getAmount() + " : Calculated. " + receiptAmount);
 //        if this is copay no need to create the receipt
         createReceiptItem(patientNumber, patientName, data.getVisitNumber(), receiptAmount.doubleValue(), ItemCategory.Receipt, isWalking, data.getReceiptNo());
 
@@ -825,10 +828,15 @@ public class PatientBillingService {
 
                 if (schemeConfigurations.isPresent() && schemeConfigurations.get().isLimitEnabled()) {
                     if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled() && bill.getVisit().getVisitType().equals(VisitEnum.VisitType.Outpatient)) {
-                        throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ", "");
+                        System.out.println("Lie 830");
+//                        throw new LimitExceedingResponse(LimitResponseStatus.ERROR, "Bill amount (" + amountToBill +
+//                                ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ",
+//                                bill.getVisit().getVisitNumber(), bill.getPatient().getPatientNumber(),
+//                                amountToBill - payDetails.getRunningLimit(), amountToBill,
+//                                payDetails.getRunningLimit(),
+//                                BillItemListToDataConverter.billItemDataConverter(bill.getBillItems()));
                     }
                     if (payDetails.getRunningLimit() < amountToBill && payDetails.getExcessAmountEnabled()) {
-                        //check if
                         if (payDetails.getLimitReached()) {
                             //proceed to accept excess entry
                             //TODO: register to keep log of the excess amounts with correct pricebook
@@ -849,7 +857,12 @@ public class PatientBillingService {
                             }
                         }
                         if (!payDetails.getLimitReached() && itemCount > 0) {
-                            throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning limit amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items from the bill count", "");
+//                            throw new LimitExceedingResponse(LimitResponseStatus.ERROR, "Bill amount (" + amountToBill +
+//                                    ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ",
+//                                    bill.getVisit().getVisitNumber(), bill.getPatient().getPatientNumber(),
+//                                    amountToBill - payDetails.getRunningLimit(), amountToBill,
+//                                    payDetails.getRunningLimit(),
+//                                    BillItemListToDataConverter.billItemDataConverter(bill.getBillItems()));
                         }
                     }
 //                    }
@@ -919,7 +932,7 @@ public class PatientBillingService {
         savedItem.setEntryType(BillEntryType.Debit);
         savedItem.setRequestReference(billReceiptedItem.getDoctorRequestId());
 
-        if(billReceiptedItem.getServicePointId()==null) {
+        if (billReceiptedItem.getServicePointId() == null) {
             ServicePoint sp = servicePointService.getServicePointByName(billReceiptedItem.getServicePoint());
             if (sp != null) {
                 savedItem.setServicePointId(sp.getId());
@@ -952,9 +965,10 @@ public class PatientBillingService {
         return billItemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill Item with Id {0} not found", id));
     }
-   public PaymentDetails createPreauthDetails(PreAuthData data){
+
+    public PaymentDetails createPreauthDetails(PreAuthData data) {
         return preAuthorizationService.createPreAuthorization(data);
-   }
-   //update the patient bills
+    }
+    //update the patient bills
 
 }

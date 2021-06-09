@@ -89,7 +89,7 @@ public class DispensingService {
     private final PatientBillItemRepository billItemRepository;
 
 
-    public List<DispensedDrug> dispenseItem(DrugRequest drugRequest, Store store,PatientBill patientBill) {
+    public List<DispensedDrug> dispenseItem(DrugRequest drugRequest, Store store, PatientBill patientBill) {
         List<DispensedDrug> dispensedDrugList = new ArrayList<>();
         Visit visit = visitService.findVisit(drugRequest.getVisitNumber()).orElse(null);
 //        Store store = storeService.getStoreWithNoFoundDetection(patientDrugs.getStoreId());
@@ -131,7 +131,7 @@ public class DispensingService {
                         dispensedDrug.setVisit(visit);
                         dispensedDrug.setBillNumber(drugRequest.getBillNumber());
                         //find patient bill item
-                        PatientBillItem patientBillItem = billingService.findBillItemByPatientBillAndItem(patientBill,item);
+                        PatientBillItem patientBillItem = billingService.findBillItemByPatientBillAndItem(patientBill, item);
 
                         dispensedDrug.setBillItem(patientBillItem);
 
@@ -354,6 +354,8 @@ public class DispensingService {
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
+        patientbill.setAllowedToExceedLimit(data.getAllowedToExceedLimit());
+        patientbill.setSurpassedAmountPaymentMethod(data.getSurpassedAmountPaymentMethod());
 
         List<PatientBillItem> lineItems = data.getDrugItems()
                 .stream()
@@ -422,11 +424,12 @@ public class DispensingService {
     public List<DispensedDrug> findDispensedDrugs(Long drugId, String visitNo, LocalDate date, String transNo) {
         return dispensedDrugRepository.findDispensedDrug(drugId, visitNo, date, transNo);
     }
-    public void updateStockEntry(Item item, Store store, Double qty){
-        if(item.getCategory() == ItemCategory.Drug){
+
+    public void updateStockEntry(Item item, Store store, Double qty) {
+        if (item.getCategory() == ItemCategory.Drug) {
             //update the dispensed drug
 
-        }else{
+        } else {
             //affect the store only
         }
     }
