@@ -8,16 +8,20 @@ package io.smarthealth.notification.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.UnsafeOkHttpClient;
 import io.smarthealth.notification.data.SmsMessageData;
+import io.smarthealth.notification.domain.SMSConfiguration;
 import io.smarthealth.notification.domain.SmsMessage;
 import io.smarthealth.notification.domain.enumeration.ReceiverType;
+import io.smarthealth.notification.domain.enumeration.SMSProvider;
 import io.smarthealth.notification.domain.specification.TextMessageSpecification;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -27,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -39,11 +44,11 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.notification.domain.SmsMessageRepository;
 import org.springframework.scheduling.annotation.Async;
 import io.smarthealth.clinical.visit.domain.Visit;
+
 import java.time.LocalTime;
 import java.util.Arrays;
 
 /**
- *
  * @author kent
  */
 @Slf4j
@@ -55,6 +60,8 @@ public class SmsMessagingService {
     private final PatientService patientService;
     private final EmployeeService employeeService;
     private final VisitRepository visitRepository;
+    private final SMSConfigurationService smsConfigurationService;
+    private final SmartApplicationSMSProviderService smartApplicationSMSProviderService;
 
     @Transactional
     public SmsMessage sendBulkSMS(SmsMessageData d) {
@@ -72,7 +79,7 @@ public class SmsMessagingService {
             }*/
         }
         if (d.getReceiverType().equals(ReceiverType.AllSuppliers)) {
-            
+
         }
         if (d.getReceiverType().equals(ReceiverType.DailyVisitPatient)) {
             Page<Visit> visits = visitRepository.findByStartDatetimeBetween(d.getVisitDate().atStartOfDay(), d.getVisitDate().atTime(LocalTime.MAX), Pageable.unpaged());
@@ -164,34 +171,43 @@ public class SmsMessagingService {
     }
 
     public String sendSMS(String phone, String msg) {
+
         String status = null;
 
         if (phone == null) {
             return "";
         }
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
 
-            OkHttpClient client = UnsafeOkHttpClient.getUnsafeOkHttpClient();
-            String encMessage = URLEncoder.encode(msg, StandardCharsets.UTF_8.toString());
-            String encPhone = URLEncoder.encode(phone.trim(), StandardCharsets.UTF_8.toString());
-            String url = "https://data.smartapplicationsgroup.com/api/smsgateway/send?to=" + encPhone + "&message=" + encMessage;
-            log.info("Sending SMS initiated ... ");
-            Request request = new Request.Builder()
-                    .url(url)
-                    .header("X-Gravitee-Api-Key", "86b45e1a-f22c-44d2-a434-a7c4a49f900a")
-                    .build();
-
-            okhttp3.Response response = client.newCall(request).execute();
-            JsonNode rootNode = objectMapper.readTree(response.body().string());
-            status = rootNode.path("AfricasTalkingResponse").path("SMSMessageData").path("Recipients").path("Recipient").path("status").textValue();
-
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(SmsMessagingService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(SmsMessagingService.class.getName()).log(Level.SEVERE, null, ex);
+        //find sms configurations;
+        List<SMSConfiguration> smsConfig = smsConfigurationService.findAllByStatus("Active");
+        if (smsConfig.size() > 1) {
+            throw APIException.conflict("Please mark only one sms provider as active. Multiple conflict");
         }
-        return status;
+        SMSConfiguration activeConfig = smsConfig.get(0);
+        log.info(activeConfig.getProviderName()+" to send SMS ");
+        try {
+            if (activeConfig.getProviderName().equals(SMSProvider.Smart)) {
+                status = smartApplicationSMSProviderService.sendSingleSMS(phone, msg, activeConfig);
+            } else if (activeConfig.getProviderName().equals(SMSProvider.Mobitech)) {
+                log.info("Mobitech to send sms {} to {}",msg, phone);
+
+                new MobitechGateway(activeConfig.getUsername(), activeConfig.getApiKey(),
+                        activeConfig.getSenderId(),
+                        activeConfig.getGatewayUrl()).sendMessage(phone, msg);
+                status = "true";//this status I am not sure why Ikatanyi had to put it in the first place, we shall
+                // demolish
+                // it later
+            } else if (activeConfig.getProviderName().equals(SMSProvider.AfricasTalkingGateway)) {
+
+            } else {
+                throw APIException.notFound("Unhandled active sms provider found");
+            }
+            return status;//sijui hii ni yanini, I just conformed to the initial method signature
+        } catch (Exception e) {
+            throw APIException.internalError(e.getMessage());
+        }
+
     }
+
 
 }
