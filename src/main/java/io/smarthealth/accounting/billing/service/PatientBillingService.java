@@ -956,5 +956,9 @@ public class PatientBillingService {
         return preAuthorizationService.createPreAuthorization(data);
    }
    //update the patient bills
-
+    public double runningBill(String visitNumber){
+        List<PatientBillItem> items = billItemRepository.getByVisitNumber(visitNumber);
+       return items.stream().map(x -> x.getEntryType() == BillEntryType.Debit ? x.getAmount() : (x.getAmount()*-1))
+                .reduce(0D, (x,y) -> x+y);
+    }
 }

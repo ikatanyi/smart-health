@@ -1076,6 +1076,7 @@ public class BillingService {
                                 updateStockItem(item, qty, trdId);
                             }
                       }
+                      item.setPrice(x.getPrice());
                     item.setQuantity(x.getQuantity());
                     item.setStatus(x.getStatus());
                     item.setAmount(x.getAmount());

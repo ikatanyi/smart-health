@@ -38,6 +38,8 @@ import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.smarthealth.stock.purchase.service.PurchaseService;
+import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.stock.stores.domain.StoreRepository;
 import io.smarthealth.supplier.data.SupplierBalanceAging;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
@@ -91,6 +93,7 @@ public class StockReportService {
     private final ReportRepository reportRepository;
     private final JasperReportsService jasperReportService;
     private final ConfigService configService;
+    private final StoreRepository storeRepository;
 
 
 
@@ -325,10 +328,29 @@ public class StockReportService {
     }
     public void getStockAdjustedItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        Long storeId = NumberUtils.createLong(reportParam.getFirst("store_id"));
+        Long itemId = NumberUtils.createLong(reportParam.getFirst("item_id"));
 
-        List<StockAdjustmentData> inventoryItemData = inventoryAdjustmentService.getStockAdjustments(null, null, range, Pageable.unpaged()).getContent();
+        String storeName=null;
+        String itemName=null;
+        if(storeId!=null){
+            Store store = storeRepository.findById(storeId).orElse(null);
+            if(store!=null){
+                storeName = store.getStoreName();
+            }
+        }
+        if(itemId!=null){
+            Item item = itemService.findById(itemId).orElse(null);
+            if(item!=null){
+                itemName = item.getItemName();
+            }
+        }
+        //(list.getContent().sort(Comparator.comparing(Item::getName)))
+        List<StockAdjustmentData> inventoryItemData = inventoryAdjustmentService.getStockAdjustments(storeId, itemId, range, Pageable.unpaged()).getContent();
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("storeName", storeName);
+        reportData.getFilters().put("itemName", itemName);
 
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
