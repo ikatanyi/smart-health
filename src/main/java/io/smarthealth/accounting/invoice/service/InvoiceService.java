@@ -738,7 +738,6 @@ public class InvoiceService {
        System.err.println("Invoice Net Amount: "+invoices.get(0).getNetAmount());
        type=  StringUtils.capitalize(type.toLowerCase());
        String reportTemplate = String.format("classpath:reports/accounts/invoice/%sInterimStatement.jrxml", type);
-
        File file = ResourceUtils.getFile(reportTemplate);
        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(invoices);

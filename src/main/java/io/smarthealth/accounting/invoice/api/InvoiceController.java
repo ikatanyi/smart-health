@@ -222,6 +222,7 @@ public class InvoiceController {
                                @PathVariable String invoiceNo,
                                @RequestParam(value = "type", required = false, defaultValue = "standard") String type,
                                @RequestParam(value = "format", required = false, defaultValue = "PDF") ExportFormat format) throws FileNotFoundException, JRException {
+
         JasperPrint print = service.generateInterimStatement(invoiceNo, type);
         //this should be redefined to allow dynamic out
         response.setHeader("Content-Disposition", String.format("attachment; filename=" +"SmartHealth_Interim_Invoice"+ invoiceNo + "." + format.name().toLowerCase()));
