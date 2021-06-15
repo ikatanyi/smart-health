@@ -56,6 +56,11 @@ public class MpesaService {
         return request.toString();
     }
 
+    public MobileMoneyResponse findRecentByPhoneNumber(String phoneNumber) {
+        return moneyResponseRepository.findTopByPhoneNoAndPatientBillEffectedOrderByIdDesc(phoneNumber,
+                Boolean.FALSE).orElseThrow(() -> APIException.notFound("No active record found"));
+    }
+
     @Transactional
     public MobileMoneyResponse saveMobileMoneyResponse(String response) {
         String transactionType;
@@ -98,11 +103,13 @@ public class MpesaService {
             responseObj.setTransTime(transTime);
             responseObj.setTransactionType(transactionType);
             responseObj.setPatientBillEffected(Boolean.FALSE);
-            
+
             return moneyResponseRepository.save(responseObj);
         } catch (Exception e) {
             e.printStackTrace();
             throw APIException.internalError("Error occurred while processing request");
         }
     }
+
+
 }

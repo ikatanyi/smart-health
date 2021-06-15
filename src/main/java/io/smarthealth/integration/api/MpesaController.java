@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/smartpayments")
+@RequestMapping("/api/v1")
 public class MpesaController {
 
     private final MpesaService mpesaService;
@@ -36,7 +36,7 @@ public class MpesaController {
         this.mpesaService = mpesaService;
     }
 
-    @PostMapping("/confirm")
+    @PostMapping("/smartpayments/confirm")
     @ResponseBody
     public ResponseEntity<?> confirmationFromProvidersSide(@RequestBody String response) {
         log.info("Acknowledging Safaricom Response Remotely...");
@@ -51,6 +51,9 @@ public class MpesaController {
     public ResponseEntity<?> confirmationLocalDB(@PathVariable(required = true, value = "phoneNumber") final String phoneNumber) {
         log.info("Acknowledging Safaricom Response locally...");
         //validate mpesa transactions
+        MobileMoneyResponse activeRecord = mpesaService.findRecentByPhoneNumber(phoneNumber);
+        //sort active bill
+
 
         return ResponseEntity.ok("Successful");
     }

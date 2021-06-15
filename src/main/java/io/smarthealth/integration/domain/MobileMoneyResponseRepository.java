@@ -2,6 +2,9 @@ package io.smarthealth.integration.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MobileMoneyResponseRepository extends JpaRepository<MobileMoneyResponse, Long> {
+import java.util.Optional;
 
+public interface MobileMoneyResponseRepository extends JpaRepository<MobileMoneyResponse, Long> {
+    Optional<MobileMoneyResponse> findTopByPhoneNoAndPatientBillEffectedOrderByIdDesc(String phoneNo,
+                                                                                     Boolean billAffected);
 }

@@ -1,5 +1,7 @@
 package io.smarthealth.administration.mobilemoney.service;
 
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.administration.mobilemoney.data.MobileMoneyIntegrationData;
 import io.smarthealth.administration.mobilemoney.domain.BusinessNumberType;
 import io.smarthealth.administration.mobilemoney.domain.MobileMoneyIntegration;
@@ -14,9 +16,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MobileMoneyIntegrationService {
     private final MobileMoneyIntegrationRepository mobileMoneyIntegrationRepository;
+    private final AccountRepository accountRepository;
 
     public MobileMoneyIntegration save(MobileMoneyIntegrationData data) {
-        return mobileMoneyIntegrationRepository.save(MobileMoneyIntegrationData.map(data));
+        //find account mapped
+        Account account = accountRepository.findById(data.getAccountId()).orElseThrow(() -> APIException.notFound(
+                "Account identified by id {0} not found ", data.getAccountId()));
+
+        MobileMoneyIntegration moneyIntegration = MobileMoneyIntegrationData.map(data);
+        moneyIntegration.setCashAccount(account);
+
+        return mobileMoneyIntegrationRepository.save(moneyIntegration);
     }
 
     public MobileMoneyIntegration updateMIP(MobileMoneyIntegrationData data, Long id) {

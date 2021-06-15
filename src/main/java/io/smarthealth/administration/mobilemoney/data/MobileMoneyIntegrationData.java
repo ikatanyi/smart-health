@@ -3,6 +3,8 @@ package io.smarthealth.administration.mobilemoney.data;
 import io.smarthealth.administration.mobilemoney.domain.BusinessNumberType;
 import io.smarthealth.administration.mobilemoney.domain.MobileMoneyIntegration;
 import io.smarthealth.administration.mobilemoney.domain.MobileMoneyProvider;
+import io.smarthealth.infrastructure.common.IntegrationStatus;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.EnumType;
@@ -22,8 +24,16 @@ public class MobileMoneyIntegrationData {
     private String confirmUrl;
     private String callBackUrl;
     private String validationUrl;
+    @Enumerated(EnumType.STRING)
+    private IntegrationStatus status;
 
+    private Long accountId;
+
+    @ApiModelProperty(hidden = true)
     private Long id;
+
+    @ApiModelProperty(hidden = true)
+    private String cashAccountName;
 
     public static MobileMoneyIntegration map(MobileMoneyIntegrationData oi) {
         MobileMoneyIntegration ou = new MobileMoneyIntegration();
@@ -36,6 +46,8 @@ public class MobileMoneyIntegrationData {
         ou.setPassKey(oi.getPassKey());
         ou.setValidationUrl(oi.getValidationUrl());
         ou.setCallBackUrl(oi.getCallBackUrl());
+        ou.setStatus(oi.getStatus());
+
         return ou;
     }
 
@@ -51,6 +63,11 @@ public class MobileMoneyIntegrationData {
         ou.setValidationUrl(oi.getValidationUrl());
         ou.setCallBackUrl(oi.getCallBackUrl());
         ou.setId(oi.getId());
+        ou.setStatus(oi.getStatus());
+        if (oi.getCashAccount() != null) {
+            ou.setCashAccountName(oi.getCashAccount().getName());
+            ou.setAccountId(oi.getCashAccount().getId());
+        }
         return ou;
     }
 }
