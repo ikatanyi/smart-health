@@ -30,8 +30,13 @@ public class MobileMoneyIntegrationService {
     }
 
     public MobileMoneyIntegration updateMIP(MobileMoneyIntegrationData data, Long id) {
+
         MobileMoneyIntegration moneyIntegration =
                 mobileMoneyIntegrationRepository.findById(id).orElseThrow(() -> APIException.notFound("Not found"));
+        //find account mapped
+        Account account = accountRepository.findById(data.getAccountId()).orElseThrow(() -> APIException.notFound(
+                "Account identified by id {0} not found ", data.getAccountId()));
+
         moneyIntegration.setMobileMoneyName(data.getMobileMoneyName());
         moneyIntegration.setAppKey(data.getAppKey());
         moneyIntegration.setAppSecret(data.getAppSecret());
@@ -40,6 +45,9 @@ public class MobileMoneyIntegrationService {
         moneyIntegration.setCallBackUrl(data.getCallBackUrl());
         moneyIntegration.setConfirmUrl(data.getConfirmUrl());
         moneyIntegration.setPassKey(data.getPassKey());
+        moneyIntegration.setStatus(data.getStatus());
+        moneyIntegration.setValidationUrl(data.getValidationUrl());
+        moneyIntegration.setCashAccount(account);
         return mobileMoneyIntegrationRepository.save(moneyIntegration);
     }
 
