@@ -63,5 +63,12 @@ public class MobileMoneyIntegrationController {
         return ResponseEntity.ok(pager);
     }
 
+    @DeleteMapping("/mobile-money-integration/{id}")
+    public @ResponseBody
+    ResponseEntity<?> removeMobileIntegProvider(@PathVariable(required = true, value = "id") final Long id) {
+        moneyIntegrationService.deleteMIP(id);
+        return ResponseEntity.ok("Successfully deleted provider");
+    }
+
 
 }

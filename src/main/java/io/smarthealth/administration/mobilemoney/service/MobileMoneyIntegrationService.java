@@ -62,4 +62,10 @@ public class MobileMoneyIntegrationService {
     public List<MobileMoneyIntegration> findAll() {
         return mobileMoneyIntegrationRepository.findAll();
     }
+
+    public void deleteMIP(Long id) {
+        MobileMoneyIntegration moneyIntegration =
+                mobileMoneyIntegrationRepository.findById(id).orElseThrow(() -> APIException.notFound("Not found"));
+        mobileMoneyIntegrationRepository.deleteById(id);
+    }
 }
