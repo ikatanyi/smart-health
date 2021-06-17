@@ -5,14 +5,23 @@
  */
 package io.smarthealth.integration.api;
 
+import io.smarthealth.administration.mobilemoney.domain.MobileMoneyIntegration;
+import io.smarthealth.administration.mobilemoney.domain.MobileMoneyIntegrationRepository;
+import io.smarthealth.administration.mobilemoney.domain.MobileMoneyProvider;
+import io.smarthealth.infrastructure.common.IntegrationStatus;
+import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.integration.data.MobileMoneyResponseData;
 import io.smarthealth.integration.domain.MobileMoneyResponse;
+import io.smarthealth.integration.service.MobileMoneyProcessingService;
 import io.smarthealth.integration.service.MpesaService;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 
 import java.math.BigDecimal;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,20 +30,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 /**
  * @author Kelsas
  */
 @Api
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1")
 public class MpesaController {
 
     private final MpesaService mpesaService;
+    private final MobileMoneyProcessingService moneyProcessingService;
 
-    public MpesaController(MpesaService mpesaService) {
-        this.mpesaService = mpesaService;
-    }
+    private final MobileMoneyIntegrationRepository mobileMoneyIntegrationRepository;
+
 
     @PostMapping("/smartpayments/confirm")
     @ResponseBody
@@ -46,16 +58,35 @@ public class MpesaController {
         return ResponseEntity.ok("Successful");
     }
 
-    @PostMapping("/confirm/{phoneNumber}")
+    @PostMapping("/confirm/{phoneNumber}/provider/{provider}")
     @ResponseBody
-    public ResponseEntity<?> confirmationLocalDB(@PathVariable(required = true, value = "phoneNumber") final String phoneNumber) {
+    public ResponseEntity<?> confirmationLocalDB(
+            @PathVariable("phoneNumber") final String phoneNumber,
+            @PathVariable("provider") final MobileMoneyProvider provider
+    ) {
         log.info("Acknowledging Safaricom Response locally...");
-        //validate mpesa transactions
-        MobileMoneyResponse activeRecord = mpesaService.findRecentByPhoneNumber(phoneNumber);
-        //sort active bill
+        //validate if provider integration is active
+        MobileMoneyIntegration moneyIntegration =
+                mobileMoneyIntegrationRepository.findByMobileMoneyName(provider).orElseThrow(() -> APIException.notFound("No provider identified by {0} found ", provider.name()));
+        if (moneyIntegration.getStatus().equals(IntegrationStatus.InActive)) {
+            throw APIException.notFound("No integration settings for provider {0} .", provider.name());
+        }
 
+        //respond the response with unique status
+        MobileMoneyResponse moneyResponse = moneyProcessingService.findRecentByPhoneNumberOrNull(phoneNumber);
+        Pager<MobileMoneyResponseData> pagers = new Pager();
+        if (moneyResponse == null) {
+            pagers.setCode("404");
+            pagers.setMessage("Response not found. Please try again!");
+            pagers.setContent(null);
+        }
+        if (moneyResponse != null) {
+            pagers.setCode("200");
+            pagers.setMessage("Response found.");
+            pagers.setContent(MobileMoneyResponseData.map(moneyResponse));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
 
-        return ResponseEntity.ok("Successful");
     }
 
     @PostMapping("/initiate-stk-push/{phoneNo}")

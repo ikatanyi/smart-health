@@ -7,4 +7,6 @@ import java.util.Optional;
 public interface MobileMoneyIntegrationRepository extends JpaRepository<MobileMoneyIntegration, Long> {
     Optional<MobileMoneyIntegration> findByMobileMoneyNameAndBusinessNumberType(String providerName,
                                                                                 BusinessNumberType businessNumberType);
+
+    Optional<MobileMoneyIntegration> findByMobileMoneyName(MobileMoneyProvider provider);
 }
