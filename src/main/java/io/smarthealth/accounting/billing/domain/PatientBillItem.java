@@ -12,6 +12,7 @@ import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
+
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.*;
@@ -20,7 +21,6 @@ import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import lombok.Data;
 
 /**
- *
  * @author Kelsas
  */
 @Entity
@@ -111,9 +111,9 @@ public class PatientBillItem extends Auditable {
         if (this.item != null) {
             data.setItemId(this.item.getId());
             data.setItemCode(this.item.getItemCode());
-            if(this.item.getCategory() == ItemCategory.Receipt){
-                data.setItem("Receipt No. "+this.getPaymentReference());
-            }else {
+            if (this.item.getCategory() == ItemCategory.Receipt) {
+                data.setItem("Receipt No. " + this.getPaymentReference());
+            } else {
                 data.setItem(this.item.getItemName());
             }
             data.setItemCategory(this.item.getCategory());
@@ -135,14 +135,14 @@ public class PatientBillItem extends Auditable {
         if (this.entryType != null) {
             data.setEntryType(this.entryType);
         }
-        if(scheme!=null){
+        if (scheme != null) {
             data.setSchemeId(scheme.getId());
             data.setSchemeName(scheme.getSchemeName());
         }
-        if(this.billPayMode!=null && billPayMode == PaymentMethod.Insurance){
+        if (this.billPayMode != null && billPayMode == PaymentMethod.Insurance) {
 
             data.setPaymentStatus(finalized ? "Finalized" : "Draft");
-        }else{
+        } else {
             data.setPaymentStatus(status.name());
         }
         return data;
@@ -176,6 +176,35 @@ public class PatientBillItem extends Auditable {
         data.setBillPayMode(this.getBillPayMode());
         data.setFinalized(this.finalized);
         data.setInvoiceNumber(this.invoiceNumber);
+        return data;
+    }
+
+    public static PatientBillItem clone(PatientBillItem pbi) {
+        PatientBillItem data = new PatientBillItem();
+
+        if (pbi.getItem() != null) {
+            data.setItem(pbi.getItem());
+        }
+        data.setBillingDate(pbi.getBillingDate());
+        data.setQuantity(pbi.getQuantity());
+        data.setPrice(pbi.getPrice());
+        data.setAmount(pbi.getAmount());
+        data.setDiscount(pbi.getDiscount());
+        data.setPaid(pbi.getPaid());
+        data.setTransactionId(pbi.getTransactionId());
+        data.setStatus(pbi.getStatus());
+        data.setBillPayMode(pbi.getBillPayMode());
+        data.setFinalized(pbi.isFinalized());
+        data.setInvoiceNumber(pbi.getInvoiceNumber());
+        data.setEntryType(pbi.getEntryType());
+        data.setPatientBill(pbi.getPatientBill());
+        data.setMedicId(pbi.getMedicId());
+        data.setStoreId(pbi.getStoreId());
+        data.setRequestReference(pbi.getRequestReference());
+        data.setPaymentReference(pbi.getPaymentReference());
+        data.setServicePoint(pbi.getServicePoint());
+        data.setServicePointId(pbi.getServicePointId());
+        data.setScheme(pbi.getScheme());
         return data;
     }
 

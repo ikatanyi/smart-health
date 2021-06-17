@@ -71,7 +71,6 @@ public class MpesaController {
         if (moneyIntegration.getStatus().equals(IntegrationStatus.InActive)) {
             throw APIException.notFound("No integration settings for provider {0} .", provider.name());
         }
-
         //respond the response with unique status
         MobileMoneyResponse moneyResponse = moneyProcessingService.findRecentByPhoneNumberOrNull(phoneNumber);
         Pager<MobileMoneyResponseData> pagers = new Pager();
