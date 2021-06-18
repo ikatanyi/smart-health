@@ -277,11 +277,15 @@ public class BillingService {
                                 bill.getBillItems().get(0).setAmount(runningLimit);
                                 bill.getBillItems().get(0).setBalance(runningLimit);
                                 bill.getBillItems().get(0).setBillPayMode(PaymentMethod.Insurance);
+                                bill.getBillItems().get(0).setPrice(runningLimit);
+                                bill.getBillItems().get(0).setQuantity(1.0);
                             }
                             if (runningLimit < 0) {
                                 bill.getBillItems().get(0).setAmount(sellingPrice);
                                 bill.getBillItems().get(0).setBalance(sellingPrice);
                                 bill.getBillItems().get(0).setBillPayMode(PaymentMethod.Cash);
+                                bill.getBillItems().get(0).setPrice(sellingPrice);
+                                bill.getBillItems().get(0).setQuantity(1.0);
                             }
 
                             if (bill.getSurpassedAmountPaymentMethod().equals(ExcessAmountPayMethod.Cash)) {
@@ -289,6 +293,10 @@ public class BillingService {
                                 PatientBillItem nb = PatientBillItem.clone(bill.getBillItems().get(0));
                                 nb.setAmount(runningLimit >= 0 ? surpassedAmount : sellingPrice);
                                 nb.setBalance(runningLimit >= 0 ? surpassedAmount : sellingPrice);
+
+                                nb.setPrice(runningLimit >= 0 ? surpassedAmount : sellingPrice);
+                                nb.setQuantity(1.0);
+
                                 nb.setBillPayMode(PaymentMethod.Cash);
                                 bill.getBillItems().add(nb);
                             }
