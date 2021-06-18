@@ -15,6 +15,7 @@ import javax.persistence.*;
 )
 public class MobileMoneyIntegration extends Auditable {
 
+    @Column(unique = true)
     @Enumerated(EnumType.STRING)
     private MobileMoneyProvider mobileMoneyName;
 

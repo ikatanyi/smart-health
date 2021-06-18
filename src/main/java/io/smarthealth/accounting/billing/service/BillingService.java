@@ -272,29 +272,39 @@ public class BillingService {
                             Double runningLimit = payDetails.getRunningLimit();
                             Double surpassedAmount = sellingPrice - runningLimit;
                             Double newAmountToBill = surpassedAmount;
-
                             //create default credit bill
                             if (runningLimit >= 0) {
                                 bill.getBillItems().get(0).setAmount(runningLimit);
+                                bill.getBillItems().get(0).setBalance(runningLimit);
                                 bill.getBillItems().get(0).setBillPayMode(PaymentMethod.Insurance);
-                            } else {
+                                bill.getBillItems().get(0).setPrice(runningLimit);
+                                bill.getBillItems().get(0).setQuantity(1.0);
+                            }
+                            if (runningLimit < 0) {
                                 bill.getBillItems().get(0).setAmount(sellingPrice);
+                                bill.getBillItems().get(0).setBalance(sellingPrice);
                                 bill.getBillItems().get(0).setBillPayMode(PaymentMethod.Cash);
+                                bill.getBillItems().get(0).setPrice(sellingPrice);
+                                bill.getBillItems().get(0).setQuantity(1.0);
                             }
 
                             if (bill.getSurpassedAmountPaymentMethod().equals(ExcessAmountPayMethod.Cash)) {
                                 //create cash bill for the surpassed amount
-                                PatientBillItem nb = bill.getBillItems().get(0);
+                                PatientBillItem nb = PatientBillItem.clone(bill.getBillItems().get(0));
                                 nb.setAmount(runningLimit >= 0 ? surpassedAmount : sellingPrice);
+                                nb.setBalance(runningLimit >= 0 ? surpassedAmount : sellingPrice);
+
+                                nb.setPrice(runningLimit >= 0 ? surpassedAmount : sellingPrice);
+                                nb.setQuantity(1.0);
+
                                 nb.setBillPayMode(PaymentMethod.Cash);
                                 bill.getBillItems().add(nb);
                             }
+
                             if (bill.getSurpassedAmountPaymentMethod().equals(ExcessAmountPayMethod.Discount)) {
                                 //write off surpassed amount
                                 throw APIException.internalError("Some parameters are not set");//for managing end user
                             }
-
-
                         }
                     }
 
@@ -343,6 +353,9 @@ public class BillingService {
 //                bill.setStatus(BillStatus.Paid);
 //            }
 //        }
+        for (PatientBillItem bi : bill.getBillItems()) {
+            System.out.println(bi.getItem().getItemName() + " Amount: " + bi.getAmount() + " Paymode " + bi.getBillPayMode().name());
+        }
 
         PatientBill savedBill = patientBillRepository.saveAndFlush(bill);
 

@@ -1,6 +1,7 @@
 package io.smarthealth.integration.data;
 
 import io.smarthealth.administration.mobilemoney.domain.MobileMoneyProvider;
+import io.smarthealth.integration.domain.MobileMoneyResponse;
 import lombok.Data;
 
 import javax.persistence.EnumType;
@@ -22,4 +23,18 @@ public class MobileMoneyResponseData {
 
     @Enumerated(EnumType.STRING)
     private MobileMoneyProvider provider;
+
+    public static MobileMoneyResponseData map(MobileMoneyResponse i){
+        MobileMoneyResponseData o = new MobileMoneyResponseData();
+        o.setBillRefNumber(i.getBillRefNumber());
+        o.setFirstName(i.getFirstName());
+        o.setBusinessShortCode(i.getBusinessShortCode());
+        o.setInvoiceNumber(i.getInvoiceNumber());
+        o.setMiddleName(i.getMiddleName());
+        o.setFirstName(i.getFirstName());
+        o.setPhoneNo(o.getPhoneNo());
+        o.setProvider(i.getProvider());
+        o.setTransactionType(i.getTransactionType());
+        return  o;
+    }
 }

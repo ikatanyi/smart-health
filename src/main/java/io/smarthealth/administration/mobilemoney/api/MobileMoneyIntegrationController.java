@@ -1,17 +1,14 @@
 package io.smarthealth.administration.mobilemoney.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.smarthealth.administration.mobilemoney.data.MobileMoneyIntegrationData;
 import io.smarthealth.administration.mobilemoney.domain.MobileMoneyIntegration;
 import io.smarthealth.administration.mobilemoney.service.MobileMoneyIntegrationService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.integration.data.ClaimFileData;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.ClientResponse;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -61,6 +58,13 @@ public class MobileMoneyIntegrationController {
         details.setReportName("Mobile Integrations");
         pager.setPageDetails(details);
         return ResponseEntity.ok(pager);
+    }
+
+    @DeleteMapping("/mobile-money-integration/{id}")
+    public @ResponseBody
+    ResponseEntity<?> removeMobileIntegProvider(@PathVariable(required = true, value = "id") final Long id) {
+        moneyIntegrationService.deleteMIP(id);
+        return ResponseEntity.ok("Successfully deleted provider");
     }
 
 

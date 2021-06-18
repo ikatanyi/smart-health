@@ -56,10 +56,7 @@ public class MpesaService {
         return request.toString();
     }
 
-    public MobileMoneyResponse findRecentByPhoneNumber(String phoneNumber) {
-        return moneyResponseRepository.findTopByPhoneNoAndPatientBillEffectedOrderByIdDesc(phoneNumber,
-                Boolean.FALSE).orElseThrow(() -> APIException.notFound("No active record found"));
-    }
+
 
     @Transactional
     public MobileMoneyResponse saveMobileMoneyResponse(String response) {
