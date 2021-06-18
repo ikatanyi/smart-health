@@ -17,8 +17,8 @@ import org.springframework.data.repository.query.Param;
 public interface ReceiptRepository extends JpaRepository<Receipt, Long>, JpaSpecificationExecutor<Receipt> {
 
     @Modifying
-    @Query("UPDATE Receipt p SET p.voided=true, p.voidedDatetime=CURRENT_TIMESTAMP, p.voidedBy=:user WHERE p.id=:id")
-    int voidPayment(@Param("user") String user, @Param("id") Long id);
+    @Query("UPDATE Receipt p SET p.voided=true, p.voidedDatetime=CURRENT_TIMESTAMP, p.voidedBy=:user, p.comments = :comments WHERE p.id=:id")
+    int voidPayment(@Param("user") String user, @Param("id") Long id, String comments);
 
     Optional<Receipt> findByReceiptNo(String receiptNo);
 }

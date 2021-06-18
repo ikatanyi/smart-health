@@ -14,6 +14,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -168,7 +169,7 @@ public class JournalService {
                     .collect(Collectors.toList());
 
             String description = journalEntryEntity.getDescription() != null ? journalEntryEntity.getDescription()+"(Reversed Transaction)" : "Journal Reversal - Journal Entry: " + journalEntryEntity.getId();
-            JournalEntry toSave = new JournalEntry(journalReversal.getDate(), description, items);
+            JournalEntry toSave = new JournalEntry(LocalDate.now(), description, items);
             toSave.setTransactionType(TransactionType.Journal_Entry_Reversal);
             toSave.setStatus(JournalState.PENDING);
 

@@ -47,5 +47,6 @@ public interface PatientBillItemRepository extends JpaRepository<PatientBillItem
 
     Optional<PatientBillItem> getPatientBillItemByPaymentReference(String reference);
 
+    List<PatientBillItem> findByPaymentReference(String reference);
 
 }

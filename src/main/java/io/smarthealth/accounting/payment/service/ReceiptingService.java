@@ -10,8 +10,10 @@ import io.smarthealth.accounting.accounts.domain.JournalReversal;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
+import io.smarthealth.accounting.billing.data.VoidReceipt;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.billing.service.PatientBillingService;
 import io.smarthealth.accounting.cashier.data.CashierShift;
@@ -109,6 +111,7 @@ public class ReceiptingService {
         receipt.setTransactionNo(trdId);
         receipt.setReceiptNo(receiptNo);
         receipt.setPrepayment(Boolean.FALSE);
+        receipt.setType(Receipt.Type.Payment);
         receipt.setReceivedFrom(data.getPayer());
         data.setReceiptNo(receiptNo);
         data.setTransactionNo(trdId);
@@ -205,14 +208,17 @@ public class ReceiptingService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void voidPayment(String receiptNo) { 
-        Receipt receipt = getPaymentByReceiptNumber(receiptNo);
+    public Receipt voidPayment(VoidReceipt data) {
+        Receipt receipt = getPaymentByReceiptNumber(data.getReceiptNo());
 
-        repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), receipt.getId());
+        repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), receipt.getId(), data.getComments());
         Optional<JournalEntry> journalEntry = journalEntryService.findJournalByTransactionNo(receipt.getTransactionNo());
         if (journalEntry.isPresent()) {
             journalEntryService.reverseJournal(journalEntry.get().getId(), new JournalReversal(receipt.getTransactionDate().toLocalDate(), "Receipt Cancelation - Receipt No. " + receipt.getTransactionNo(), null));
         }
+        //determine the transactions done and reverse them too
+        patientBillingService.reverseBillItemsPaid(data.getReceiptNo());
+        return getPaymentOrThrow(receipt.getId());
     }
 
     @Transactional
@@ -223,6 +229,7 @@ public class ReceiptingService {
                 .stream()
                 .map(x -> {
                     ReceiptItem p = receiptItemRepository.findById(x.getId()).orElseThrow(() -> APIException.notFound("No Receipt Item Found with the Id {0}", x.getId()));
+
                     p.setVoided(Boolean.TRUE);
                     p.setVoidedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
                     p.setVoidedDate(LocalDateTime.now());
@@ -234,6 +241,8 @@ public class ReceiptingService {
         //then cancel the receipts and adjust the 
         repository.save(receipt);
         receiptItemRepository.saveAll(lists);
+        //post journals
+
         return receipt;
     }
 
@@ -458,6 +467,7 @@ public class ReceiptingService {
         receipt.setTenderedAmount(data.getAmount());
         receipt.setReferenceNumber(data.getReference());
         receipt.setRefundedAmount(BigDecimal.ZERO);
+        receipt.setType(Receipt.Type.Payment);
         if (data.getShiftNo() != null) {
             Shift shift = shiftRepository.findByShiftNo(data.getShiftNo()).orElse(null);
             receipt.setShift(shift);
@@ -506,6 +516,7 @@ public class ReceiptingService {
         receipt.setTenderedAmount(data.getAmount());
         receipt.setReferenceNumber(data.getReference());
         receipt.setRefundedAmount(BigDecimal.ZERO);
+        receipt.setType(Receipt.Type.Payment);
         if (data.getShiftNo() != null) {
             Shift shift = shiftRepository.findByShiftNo(data.getShiftNo()).orElse(null);
             receipt.setShift(shift);
@@ -568,5 +579,63 @@ public class ReceiptingService {
         billedItems.stream()
                 .filter(x -> x.getRequestReference()!=null)
                 .forEach(req -> doctorsRequestRepository.updateBilledAndPaidDoctorRequest(req.getRequestReference()));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Receipt refundReceipt(RefundData data) {
+
+        //get the receipt to refund
+        Optional<Receipt> optReceipt = repository.findByReceiptNo(data.getReceiptNo());
+        if(optReceipt.isPresent()){
+
+            Receipt currentReceipt = optReceipt.get();
+            currentReceipt.setRefundedAmount(currentReceipt.getRefundedAmount().add(data.getRefundAmount()));
+            currentReceipt.setComments(data.getComments());
+            repository.save(currentReceipt);
+
+            String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+            String receiptNo = sequenceNumberService.next(1L, Sequences.Receipt.name());
+
+            Receipt receipt = new Receipt();
+            receipt.setAmount(data.getRefundAmount());
+            receipt.setPayer(currentReceipt.getPayer());
+            receipt.setDescription("Receipt Refund ("+currentReceipt.getReceiptNo()+")");
+            receipt.setPaid(data.getRefundAmount());
+            receipt.setPaymentMethod(data.getPaymentMethod());
+            receipt.setTenderedAmount(data.getRefundAmount());
+            receipt.setReferenceNumber(data.getReferenceNumber());
+            receipt.setRefundedAmount(BigDecimal.ZERO);
+            receipt.setType(Receipt.Type.Refund);
+            if (data.getShiftNo() != null) {
+                Shift shift = shiftRepository.findByShiftNo(data.getShiftNo()).orElse(null);
+                receipt.setShift(shift);
+            }
+            receipt.setTransactionDate(LocalDateTime.now());
+            receipt.setDescription(data.getComments());
+            receipt.setTransactionNo(trdId);
+            receipt.setReceiptNo(receiptNo);
+            receipt.setPrepayment(Boolean.FALSE);
+            receipt.setReceivedFrom(data.getPayer());
+            Receipt savedReceipt = repository.save(receipt);
+
+            //do the posting
+            List<PatientBillItem> items = data.getItems()
+            .stream()
+            .map(x -> {
+                ReceiptItem p = receiptItemRepository.findById(x.getId()).orElseThrow(() -> APIException.notFound("No Receipt Item Found with the Id {0}", x.getId()));
+                p.setVoided(Boolean.TRUE);
+                p.setVoidedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
+                p.setVoidedDate(LocalDateTime.now());
+                receiptItemRepository.save(p);
+                PatientBillItem itm = p.getItem();
+                itm.setStatus(BillStatus.Canceled);
+                return itm;
+            })  .collect(Collectors.toList());
+
+            patientBillingService.createReceiptRefund(savedReceipt, items);
+
+            return savedReceipt;
+        }
+       return null;
     }
 }

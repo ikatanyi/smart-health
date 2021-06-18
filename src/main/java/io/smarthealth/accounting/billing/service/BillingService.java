@@ -1,11 +1,14 @@
 package io.smarthealth.accounting.billing.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import io.smarthealth.accounting.accounts.data.FinancialActivity;
 import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.*;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.accounting.billing.data.nue.BillItemListToDataConverter;
 import io.smarthealth.accounting.billing.data.nue.BillPayment;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
@@ -13,6 +16,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.accounting.billing.domain.enumeration.ExcessAmountPayMethod;
 import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
 import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
@@ -64,9 +68,12 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -237,16 +244,60 @@ public class BillingService {
             pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
             PaymentDetails payDetails = pd.orElse(null);
             if (payDetails != null) {
-                System.out.println("Lie 235");
                 Optional<SchemeConfigurations> schemeConfigurations = payDetails.getScheme() != null ? schemeService.fetchSchemeConfigByScheme(payDetails.getScheme()) : Optional.empty();
 
                 if (schemeConfigurations.isPresent() && schemeConfigurations.get().isLimitEnabled()) {
-//                    if (pd.isPresent() && pd.get().getLimitEnabled()) {
-//                        PaymentDetails payDetails = pd.get();
-                    System.out.println("Visit type " + bill.getVisit().getVisitType().name());
-                    if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled() && bill.getVisit().getVisitType().equals(VisitEnum.VisitType.Outpatient)) {
-                        throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ", "");
+                    if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled()
+                            && bill.getVisit().getVisitType().equals(VisitEnum.VisitType.Outpatient)) {
+                        if (bill.getAllowedToExceedLimit().equals(Boolean.FALSE)) {
+                            List<BillItemData> billItemData = new ArrayList<>();
+                            LimitExceedingResponse response = new LimitExceedingResponse(LimitResponseStatus.ERROR,
+                                    "Bill amount (" + amountToBill +
+                                            ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ",
+                                    bill.getVisit().getVisitNumber(), bill.getPatient().getPatientNumber(),
+                                    amountToBill - payDetails.getRunningLimit(), amountToBill,
+                                    payDetails.getRunningLimit(),
+                                    BillItemListToDataConverter.billItemDataConverter(bill.getBillItems()));
+                            throw APIException.limitExceedResponse(response);
+                        }
+                        if (bill.getAllowedToExceedLimit().equals(Boolean.TRUE) && bill.getBillItems().size() > 1) {
+                            throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning " +
+                                    "limit  amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items" +
+                                    " from the bill count", "");
+                        }
+                        if (bill.getAllowedToExceedLimit().equals(Boolean.TRUE)) {
+                            //split the amount
+                            PatientBillItem b = bill.getBillItems().get(0);
+                            Double sellingPrice = b.getAmount();
+                            Double runningLimit = payDetails.getRunningLimit();
+                            Double surpassedAmount = sellingPrice - runningLimit;
+                            Double newAmountToBill = surpassedAmount;
+
+                            //create default credit bill
+                            if (runningLimit >= 0) {
+                                bill.getBillItems().get(0).setAmount(runningLimit);
+                                bill.getBillItems().get(0).setBillPayMode(PaymentMethod.Insurance);
+                            } else {
+                                bill.getBillItems().get(0).setAmount(sellingPrice);
+                                bill.getBillItems().get(0).setBillPayMode(PaymentMethod.Cash);
+                            }
+
+                            if (bill.getSurpassedAmountPaymentMethod().equals(ExcessAmountPayMethod.Cash)) {
+                                //create cash bill for the surpassed amount
+                                PatientBillItem nb = bill.getBillItems().get(0);
+                                nb.setAmount(runningLimit >= 0 ? surpassedAmount : sellingPrice);
+                                nb.setBillPayMode(PaymentMethod.Cash);
+                                bill.getBillItems().add(nb);
+                            }
+                            if (bill.getSurpassedAmountPaymentMethod().equals(ExcessAmountPayMethod.Discount)) {
+                                //write off surpassed amount
+                                throw APIException.internalError("Some parameters are not set");//for managing end user
+                            }
+
+
+                        }
                     }
+
                     if (payDetails.getRunningLimit() < amountToBill && payDetails.getExcessAmountEnabled()) {
                         //check if
                         if (payDetails.getLimitReached()) {
@@ -271,6 +322,7 @@ public class BillingService {
                         if (!payDetails.getLimitReached() && itemCount > 0) {
                             throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning limit amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items from the bill count", "");
                         }
+
                     }
 //                    }
                 }
@@ -1062,12 +1114,12 @@ public class BillingService {
 
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
 
-       List<PatientBillItem> items= billItems.stream()
-                .map(x ->{
+        List<PatientBillItem> items = billItems.stream()
+                .map(x -> {
                     PatientBillItem item = billItemRepository.findById(x.getId()).get();
-                      if(item.getItem().getItemType() == ItemType.Inventory && item.getQuantity() != x.getQuantity()){
-                         //1 - 2 = 1
-                          ServicePoint servicePoint = servicePointService.getServicePoint(item.getServicePointId());
+                    if (item.getItem().getItemType() == ItemType.Inventory && item.getQuantity() != x.getQuantity()) {
+                        //1 - 2 = 1
+                        ServicePoint servicePoint = servicePointService.getServicePoint(item.getServicePointId());
                         double qty = (x.getQuantity() - item.getQuantity());
                           if(qty > 0 ){ // an increase in qty
                                updateStockItem(item, servicePoint.getStore(), qty, trdId);
@@ -1084,7 +1136,7 @@ public class BillingService {
 
                     return item;
                 })
-               .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
         return billItemRepository.saveAll(items);
 
@@ -1329,7 +1381,7 @@ public class BillingService {
         return billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, paymentMethod, billEntryType), pageable);
     }
 
-    private void updateStockItem(PatientBillItem billItem, Store store, Double qty, String trdId ){
+    private void updateStockItem(PatientBillItem billItem, Store store, Double qty, String trdId) {
         DispensedDrug dispensedDrug = new DispensedDrug();
         Item item = billItem.getItem();
 
@@ -1362,12 +1414,12 @@ public class BillingService {
     }
 
 
-    private void updateStockItem(PatientBillItem item, Double qty, String trdId){
+    private void updateStockItem(PatientBillItem item, Double qty, String trdId) {
         StockEntry stock = new StockEntry();
 
         Optional<DispensedDrug> optionalDrugs = dispensedDrugRepository.findDispensedDrugByBillItem(item);
 
-        if(optionalDrugs.isPresent()){
+        if (optionalDrugs.isPresent()) {
             DispensedDrug drugs = optionalDrugs.get();
 
             DispensedDrug drug1 = ObjectUtils.clone(drugs);
@@ -1400,13 +1452,14 @@ public class BillingService {
 
             drugs.setReturnedQuantity((drugs.getReturnedQuantity() + qty));
             drugs.setReturnReason("Bill Adjustments");
-            drugs.setReturnDate(item.getBillingDate()!= null ? item.getBillingDate() : LocalDate.now());
+            drugs.setReturnDate(item.getBillingDate() != null ? item.getBillingDate() : LocalDate.now());
 
             dispensedDrugRepository.save(drugs);
 
         }
 
     }
+
     private void doStockEntries(Long drugId) {
         Optional<DispensedDrug> drug = dispensedDrugRepository.findById(drugId);
         if (drug.isPresent()) {

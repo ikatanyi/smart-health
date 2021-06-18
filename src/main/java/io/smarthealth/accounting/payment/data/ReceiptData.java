@@ -45,8 +45,12 @@ public class ReceiptData {
     private String receivedFrom;
     private Boolean voided;
     private String voidedBy;
+    private String comments;
     private ReceiptType receiptType;
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime voidedDatetime;
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
+    private LocalDateTime createdOn;
     private List<ReceiptTransactionData> transactions = new ArrayList<>();
     private List<ReceiptItemData> receiptItems = new ArrayList<>();
     private ShiftData shiftData;

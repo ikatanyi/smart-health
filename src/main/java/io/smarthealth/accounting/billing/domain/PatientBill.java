@@ -4,6 +4,7 @@ import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.accounting.billing.domain.enumeration.ExcessAmountPayMethod;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -44,6 +45,12 @@ public class PatientBill extends Auditable {
     private String reference;
     private String otherDetails;
     private Boolean walkinFlag;
+
+    /* Start Limit manager variable */
+    private Boolean allowedToExceedLimit = Boolean.FALSE;
+    @Enumerated(EnumType.STRING)
+    private ExcessAmountPayMethod surpassedAmountPaymentMethod;
+    /* End Limit manager variables */
 
     @Enumerated(EnumType.STRING)
     private BillStatus status;

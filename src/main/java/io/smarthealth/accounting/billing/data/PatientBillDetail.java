@@ -34,7 +34,11 @@ public class PatientBillDetail {
 
     }
 
-    public PatientBillDetail(String billNo, String patientNumber, String patientName, String visitNumber, LocalDateTime visitDate, VisitType visitType, BigDecimal totalBillAmount, BigDecimal totalAmountPaid, BigDecimal balance, PaymentMethod paymentMethod, Long payerId, String payerName, Long schemeId, String schemeName,Double copayValue, String copayType) {
+    public PatientBillDetail(String billNo, String patientNumber, String patientName, String visitNumber,
+                             LocalDateTime visitDate, VisitType visitType, BigDecimal totalBillAmount,
+                             BigDecimal totalAmountPaid, BigDecimal balance, PaymentMethod paymentMethod,
+                             Long payerId, String payerName, Long schemeId, String schemeName, Double copayValue,
+                             String copayType) {
         this.billNo = billNo;
         this.patientNumber = patientNumber;
         this.patientName = patientName;

@@ -209,13 +209,13 @@ public class ProcedureService {
         patientProcReg.setBalance(amount);
         PatientProcedureRegister savedProcedure = patientprocedureRepository.save(patientProcReg);
 
-        PatientBill bill = toBill(savedProcedure);
+        PatientBill bill = toBill(savedProcedure,patientProcRegData);
         //save the bill
         billingService.save(bill);
         return savedProcedure;
     }
 
-    private PatientBill toBill(PatientProcedureRegister data) {
+    private PatientBill toBill(PatientProcedureRegister data, PatientProcedureRegisterData patientProcRegData) {
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
 
@@ -236,6 +236,9 @@ public class ProcedureService {
         patientbill.setBalance(data.getAmount());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
+
+        patientbill.setSurpassedAmountPaymentMethod(patientProcRegData.getSurpassedAmountPaymentMethod());
+        patientbill.setAllowedToExceedLimit(patientProcRegData.getAllowedToExceedLimit());
 
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
 
