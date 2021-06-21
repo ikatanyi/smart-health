@@ -131,9 +131,9 @@ public class DispensingService {
                         dispensedDrug.setVisit(visit);
                         dispensedDrug.setBillNumber(drugRequest.getBillNumber());
                         //find patient bill item
-                        PatientBillItem patientBillItem = billingService.findBillItemByPatientBillAndItem(patientBill, item);
-
-                        dispensedDrug.setBillItem(patientBillItem);
+//                        PatientBillItem patientBillItem = billingService.findBillItemByPatientBillAndItem(patientBill, item);
+//
+//                        dispensedDrug.setBillItem(patientBillItem);
 
                         DispensedDrug savedDrug = dispensedDrugRepository.saveAndFlush(dispensedDrug);
                         doStockEntries(savedDrug.getId());
