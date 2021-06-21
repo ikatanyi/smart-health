@@ -251,31 +251,25 @@ public class InventoryService {
 //                    );
                     }
                     );
-
         }
 
         if (stockData.getPurchaseType() == PurchaseType.Payable) {
-
             purchaseInvoiceService.createPurchaseInvoice(store, stockData);
         }
         if (stockData.getOrderNumber() != null) {
             PurchaseOrder order = purchaseOrderRepository.findByOrderNumber(stockData.getOrderNumber()).orElse(null);
             if (order != null) {
-                Double balance = 0D;
-
-                balance = stockData.getItems().stream().map((x) -> (x.getQtyOrdered() - x.getReceivedQuantity() - x.getQuantity())).reduce(balance, (x, y) -> x + y);
-                PurchaseOrderStatus status = PurchaseOrderStatus.Received;
-                if (balance > 0) {
-                    status = PurchaseOrderStatus.PartialReceived;
+                //Double balance = 0D;
+                //balance = stockData.getItems().stream().map((x) -> (x.getQtyOrdered() - x.getReceivedQuantity() - x.getQuantity())).reduce(0D, (x, y) -> x + y);
+                if (order.hasOrderBalance()) {
+                    order.setStatus(PurchaseOrderStatus.PartialReceived);
                 } else {
+                    order.setStatus(PurchaseOrderStatus.Received);
                     order.setReceived(Boolean.TRUE);
                 }
-                order.setStatus(status);
                 order.setBilled(Boolean.TRUE);
-
                 purchaseOrderRepository.save(order);
             }
-
         }
 
         return trdId;

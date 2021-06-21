@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -137,5 +138,11 @@ public class PurchaseOrder extends Auditable {
         data.setApprovedBy(this.approvedBy);
 
         return data;
+    }
+    public Boolean hasOrderBalance(){
+       Optional<PurchaseOrderItem> itm= this.getPurchaseOrderLines().stream()
+               .filter(x -> x.getReceivedQuantity() < x.getQuantity())
+                .findFirst();
+       return  itm.isPresent();
     }
 }
