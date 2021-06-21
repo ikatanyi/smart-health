@@ -4,7 +4,6 @@ import io.smarthealth.accounting.accounts.data.FinancialActivity;
 import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.*;
-import io.smarthealth.accounting.billing.data.nue.BillItemListToDataConverter;
 import io.smarthealth.accounting.billing.domain.*;
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -20,7 +19,6 @@ import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.config.domain.GlobalConfigNum;
 import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.service.ConfigService;
-import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
@@ -37,7 +35,6 @@ import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurationsRepository;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -279,7 +276,41 @@ public class PatientBillingService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void createReceiptRefund(Receipt refundReceipt, List<PatientBillItem> billItems) {
+
+        if (!billItems.isEmpty()) {
+            billItemRepository.saveAll(billItems);
+            PatientBillItem patientBillItem = billItems.get(0);
+            String patientNo, patientName, visitNo;
+            boolean isWalking = false;
+            double amount = refundReceipt.getAmount().doubleValue();
+            if (patientBillItem.getPatientBill().getWalkinFlag()) {
+                patientNo = patientBillItem.getPatientBill().getReference();
+                patientName = patientBillItem.getPatientBill().getOtherDetails();
+                visitNo = patientNo;
+                isWalking = true;
+            } else {
+                patientNo = patientBillItem.getPatientBill().getPatient().getPatientNumber();
+                patientName = patientBillItem.getPatientBill().getPatient().getFullName();
+                visitNo = patientBillItem.getPatientBill().getVisit().getVisitNumber();
+                isWalking = false;
+            }
+
+            createReceiptItem(patientNo, patientName, visitNo, amount * -1, ItemCategory.Receipt, isWalking, refundReceipt.getReceiptNo(), "Refund");
+            //refundReceipt(r);
+            //TODO Refund to items
+            postRefundJournal(billItems, refundReceipt);
+        }
+
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createReceiptItem(String patientNumber, String patientName, String visitNumber, Double amount, ItemCategory itemCategory, boolean isWalking, String reference) {
+        return createReceiptItem(patientNumber, patientName, visitNumber, amount, itemCategory, isWalking, reference, null);
+    }
+
+    //@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    private PatientBill createReceiptItem(String patientNumber, String patientName, String visitNumber, Double amount, ItemCategory itemCategory, boolean isWalking, String reference, String desc) {
         //I need to pass copay as part of this
         Visit visit = null;
         if (!isWalking) {
@@ -293,7 +324,7 @@ public class PatientBillingService {
 
         Item creditItem = receiptItem.get();
         //define the type of receipting if copay
-        String description = creditItem.getItemName() != null ? creditItem.getItemName() : "Receipt";
+        String description = desc != null ? desc : (creditItem.getItemName() != null ? creditItem.getItemName() : "Receipt");
 
         if (creditItem != null) {
             PatientBill receiptBill = createPatientBill(patientNumber, patientName, visitNumber, LocalDate.now(), "Cash", amount, 0D, isWalking);
@@ -329,7 +360,6 @@ public class PatientBillingService {
             billsItem.setPaymentReference(reference);
 //            billsItem.setTransactionType(TransactionType.Receipting);
             //can add the transaction type
-
 
             receiptBill.addBillItem(billsItem);
             return save(receiptBill);
@@ -968,7 +998,103 @@ public class PatientBillingService {
 
     public PaymentDetails createPreauthDetails(PreAuthData data) {
         return preAuthorizationService.createPreAuthorization(data);
-    }
-    //update the patient bills
 
+    }
+
+    //update the patient bills
+    public double runningBill(String visitNumber) {
+        List<PatientBillItem> items = billItemRepository.getByVisitNumber(visitNumber);
+        return items.stream().map(x -> x.getEntryType() == BillEntryType.Debit ? x.getAmount() : (x.getAmount() * -1))
+                .reduce(0D, (x, y) -> x + y);
+    }
+
+    //update the patient bills
+    public void reverseBillItemsPaid(String receiptNo) {
+        if (receiptNo == null) return;
+        List<PatientBillItem> lists = billItemRepository.findByPaymentReference(receiptNo)
+                .stream()
+                .map(x -> {
+                    x.setBalance(x.getAmount());
+                    x.setPaid(false);
+
+                    if (x.getEntryType() == BillEntryType.Credit) {
+                        x.setStatus(BillStatus.Canceled);
+                    } else {
+                        x.setStatus(BillStatus.Draft);
+                    }
+                    return x;
+                }).collect(Collectors.toList());
+        billItemRepository.saveAll(lists);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void postRefundJournal(List<PatientBillItem> billedItems, Receipt refundReceipt) {
+        if (billedItems.isEmpty()) return;
+        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+
+        List<JournalEntryItem> items = new ArrayList<>();
+
+        Map<Long, List<PatientBillItem>> map = billedItems
+                .stream()
+                .filter(x -> x.getItem().getCategory() != ItemCategory.CoPay || x.getItem().getCategory() != ItemCategory.Receipt)
+                .collect(Collectors.groupingBy(PatientBillItem::getServicePointId, Collectors.toList()));
+
+        map.forEach((k, v) -> {
+            ServicePoint srv = servicePointService.getServicePoint(k);
+            String narration = "Receipt Refund for " + srv.getName();
+            Account debit = srv.getIncomeAccount();
+            Double subTotal = 0D;
+            Double discount = 0D;
+            Double taxes = 0D;
+            for (PatientBillItem b : v) {
+                subTotal += b.getNetAmount(); //
+                discount += b.getDiscount();
+                taxes += b.getTaxes();
+            }
+            BigDecimal amount = BigDecimal.valueOf(subTotal).add(BigDecimal.valueOf(discount));
+            if (discount > 0) {
+                FinancialActivityAccount credtAcc = activityAccountRepository.findByFinancialActivity(FinancialActivity.Discount_Allowed)
+                        .orElseThrow(() -> APIException.badRequest("Discount Account is Not Mapped For Transaction"));
+                items.add(new JournalEntryItem(credtAcc.getAccount(), "Sales Discount Refund - " + srv.getName(), BigDecimal.ZERO, BigDecimal.valueOf(discount)));
+            }
+            items.add(new JournalEntryItem(debit, narration, BigDecimal.valueOf(subTotal), BigDecimal.ZERO));
+            items.add(new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, amount));
+
+        });
+
+        Map<Long, Double> inventory = billedItems
+                .stream()
+                .filter(x -> x.getItem().isInventoryItem())
+                .collect(
+                        Collectors.groupingBy(PatientBillItem::getServicePointId,
+                                Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity())))
+                );
+        if (!inventory.isEmpty()) {
+            inventory.forEach((k, v) -> {
+                //revenue
+                ServicePoint srv = servicePointService.getServicePoint(k);
+                String narration = "Inventory Refund Receipt for " + srv.getName();
+                BigDecimal amount = BigDecimal.valueOf(v);
+                items.add(new JournalEntryItem(srv.getExpenseAccount(), narration, BigDecimal.ZERO, amount));
+                items.add(new JournalEntryItem(srv.getInventoryAssetAccount(), narration, amount, BigDecimal.ZERO));
+            });
+        }
+
+        billedItems.stream()
+                .filter(x -> x.getItem().getCategory() == ItemCategory.CoPay)
+                .forEach(x -> {
+                    String narration = "Copayment Receipting for - " + x.getPatientBill().getPatient().getPatientNumber();
+                    BigDecimal amount = BigDecimal.valueOf(x.getAmount());
+                    Optional<FinancialActivityAccount> copay = activityAccountRepository.findByFinancialActivity(FinancialActivity.Copayment);
+                    items.add(new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, amount));
+                    items.add(new JournalEntryItem(copay.get().getAccount(), narration, amount, BigDecimal.ZERO));
+                });
+        String description = "Sales Refund. Receipt no. " + refundReceipt.getReceiptNo();
+        JournalEntry toSave = new JournalEntry(LocalDate.now(), description, items);
+        toSave.setTransactionType(TransactionType.Refund);
+        toSave.setTransactionNo(refundReceipt.getTransactionNo());
+        toSave.setStatus(JournalState.PENDING);
+
+        journalService.save(toSave);
+    }
 }

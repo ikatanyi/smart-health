@@ -6,11 +6,16 @@
 package io.smarthealth.report.service;
 
 import io.smarthealth.accounting.accounts.service.LedgerService;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
+import io.smarthealth.accounting.billing.domain.PatientBillRepository;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.data.ShiftPayment;
 import io.smarthealth.accounting.cashier.service.CashierService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.statement.InvoiceSummary;
+import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.data.PettyCashPaymentData;
@@ -92,6 +97,7 @@ public class PaymentReportService {
     private final CashierService cashierService;
     private final ConfigService configService;
     private final AdmissionService admissionService;
+    private final PatientBillItemRepository patientBillItemRepository;
 
     public void getPettyCashRequests(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
         String requestNo = reportParam.getFirst("requestNo");
@@ -153,7 +159,13 @@ public class PaymentReportService {
         reportData.getFilters().put("showCapitationItem", showCapitationItem);
         //rebate inbo
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
-
+        if(invoiceData.getRebate() !=null && invoiceData.getRebate()){
+            Optional<PatientBillItem> optionalPatientBillItem = patientBillItemRepository.getPatientBillItemByPaymentReference(invoiceData.getNumber());
+           if(optionalPatientBillItem.isPresent()){
+               PatientBillItem item = optionalPatientBillItem.get();
+               invoiceData.getInvoiceItems().add(InvoiceItem.toData(item));
+           }
+        }
         Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
         if (admission.isPresent()) {
             GlobalConfiguration gconfig = configService.getByNameOrThrow(GlobalConfigNum.ShowInvoiceDate.name());

@@ -1134,13 +1134,14 @@ public class BillingService {
                         //1 - 2 = 1
                         ServicePoint servicePoint = servicePointService.getServicePoint(item.getServicePointId());
                         double qty = (x.getQuantity() - item.getQuantity());
-                        if (qty > 0) { // an increase in qty
-                            updateStockItem(item, servicePoint.getStore(), qty, trdId);
-                        } else if (qty < 0) {
-                            qty *= -1;
-                            updateStockItem(item, qty, trdId);
-                        }
-                    }
+                          if(qty > 0 ){ // an increase in qty
+                               updateStockItem(item, servicePoint.getStore(), qty, trdId);
+                            }else if (qty < 0){
+                                qty *= -1;
+                                updateStockItem(item, qty, trdId);
+                            }
+                      }
+                      item.setPrice(x.getPrice());
                     item.setQuantity(x.getQuantity());
                     item.setStatus(x.getStatus());
                     item.setAmount(x.getAmount());

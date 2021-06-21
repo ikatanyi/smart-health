@@ -63,7 +63,7 @@ public interface LabRegisterTestRepository extends JpaRepository<LabRegisterTest
     List<LabTest> findPanels();
 
 
-    @Query("SELECT d.labTest.testName as testName, count(d.labTest.testName) AS count, SUM(d.price) as totalPrice FROM LabRegisterTest d WHERE d.labRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.labTest.testName")
+    @Query("SELECT d.labTest.testName as testName, count(d.labTest.testName) AS count, SUM(d.price) as totalPrice FROM LabRegisterTest d LEFT JOIN LabTest t ON d.labTest.id= t.id WHERE d.labRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.labTest.testName")
     List<TotalTest>findTotalTests(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
 
     @Query("SELECT d.labTest.testName as testName, d.labRegister.requestedBy as practitioner, count(d.labTest.testName) AS count, SUM(d.price) as totalPrice FROM LabRegisterTest d WHERE d.labRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.labRegister.requestedBy")

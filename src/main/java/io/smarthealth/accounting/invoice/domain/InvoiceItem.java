@@ -42,6 +42,11 @@ public class InvoiceItem extends Auditable {
     private String remarks;
     private LocalDateTime voidedDatetime;
 
+    public InvoiceItem of(PatientBillItem item){
+        InvoiceItem invoiceItem =new InvoiceItem();
+        invoiceItem.setBillItem(item);
+       return invoiceItem;
+    }
     public InvoiceItemData toData() {
         InvoiceItemData data = new InvoiceItemData();
         data.setId(this.getId());
@@ -67,7 +72,28 @@ public class InvoiceItem extends Auditable {
         return data;
     }
 
-    private BigDecimal toBigDecimal(Double val) {
+    public static InvoiceItemData toData(PatientBillItem item) {
+        InvoiceItemData data = new InvoiceItemData();
+        data.setId(item.getId());
+        data.setDate(item.getBillingDate());
+        data.setInvoiceNo(item.getPaymentReference());
+        data.setInvoiceDate(item.getBillingDate());
+        data.setItemId(item.getItem().getId());
+        data.setItemCode(item.getItem().getItemCode());
+        data.setItem(item.getItem().getItemName());
+        data.setQuantity(item.getQuantity());
+        data.setPrice(toBigDecimal(item.getPrice()));
+        data.setDiscount(toBigDecimal(item.getDiscount()));
+        data.setTax(toBigDecimal(item.getTaxes()));
+        data.setAmount(toBigDecimal(item.getAmount()));
+        data.setTransactionId(item.getTransactionId());
+        data.setServicePointId(item.getServicePointId());
+        data.setServicePoint(item.getServicePoint());
+
+        return data;
+    }
+
+    private static BigDecimal toBigDecimal(Double val) {
         if (val == null) {
             return BigDecimal.ZERO;
         }

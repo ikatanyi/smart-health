@@ -348,6 +348,9 @@ public class ReportController {
             case SupplierAgingBalance:
                 stockReportService.getSupplierAgingBalance(queryParams,format,response);
                 break;
+            case StockAdjustment:
+                stockReportService.getStockAdjustedItems(queryParams, format, response);
+                break;
             default:
                 break;
                 //TODO throw error no report selected

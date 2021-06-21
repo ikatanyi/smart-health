@@ -4,6 +4,7 @@ import io.smarthealth.accounting.accounts.data.SimpleAccountData;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.stock.stores.data.StoreData;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
@@ -29,7 +30,7 @@ public class ServicePointData {
 
     private Long storeId;
     private String storeName;
-//    private List<StoreData> stores = new ArrayList();
+    private List<StoreData> stores = new ArrayList();
 
     public ServicePointData() {
     }
@@ -54,14 +55,9 @@ public class ServicePointData {
         if(point.getStore()!=null){
             data.setStoreId(point.getId());
             data.setStoreName(point.getName());
+            StoreData sd = StoreData.map(point.getStore());
+            data.setStores(Arrays.asList(sd));
         }
-        
-//        data.setStores(
-//                point.getStores()
-//                        .stream()
-//                        .map(StoreData::map)
-//                        .collect(Collectors.toList())
-//        );
 
         return data;
     }

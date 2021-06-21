@@ -72,12 +72,13 @@ public class PatientBillingController {
              @RequestParam(value = "visitType", required = false) VisitEnum.VisitType visitType,
              @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMethod,
              @RequestParam(value = "dateRange", required = false) String dateRange,
+             @RequestParam(value = "visitNumber", required = false) String visitNumber,
              @RequestParam(value = "page", required = false) Integer page,
              @RequestParam(value = "pageSize", required = false) Integer size){
 
           Pageable pageable = PaginationUtil.createPage(page, size);
           DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-          BillingQuery query = new BillingQuery(search, patientNumber, visitType, paymentMethod, range, pageable);
+          BillingQuery query = new BillingQuery(search, patientNumber, visitType, paymentMethod, visitNumber, range, pageable);
 
           Page<VisitBillSummary> list = service.getVisitBills(query);
           Pager<List<VisitBillSummary>> pager = (Pager<List<VisitBillSummary>>) PaginationUtil.toPager(list, "Patient Visit Bill");
@@ -179,4 +180,5 @@ public class PatientBillingController {
                throw APIException.badRequest("Preauthorization not Successfully created");
           }
      }
+
 }

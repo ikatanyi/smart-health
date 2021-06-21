@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.payment.api;
 
+import io.smarthealth.accounting.billing.data.VoidReceipt;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.payment.data.*;
@@ -95,12 +96,17 @@ public class ReceiptingController {
         return ResponseEntity.ok(payment.toData());
     }
 
-    @PutMapping("/receipting/{receiptNo}/void")
+    @PutMapping("/receipting/void")
     @PreAuthorize("hasAuthority('edit_receipt')")
-    public ResponseEntity<?> voidPaymentReceipt(@PathVariable(value = "receiptNo") String receiptNo) {
-        service.voidPayment(receiptNo);
-        auditTrailService.saveAuditTrail("Receipts", "Cancelled a payment receipt "+receiptNo);
-        return ResponseEntity.accepted().build();
+    public ResponseEntity<?> voidPaymentReceipt(@Valid @RequestBody VoidReceipt data) {
+        Receipt payment = service.voidPayment(data);
+        auditTrailService.saveAuditTrail("Receipts", "Cancelled a payment receipt "+data.getReceiptNo());
+        Pager<ReceiptData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Payment Voided successfully.");
+        pagers.setContent(payment.toData());
+        auditTrailService.saveAuditTrail("Receipts", "Created a Deposit receipt "+payment.getReceiptNo());
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
     @PutMapping("/receipting/{receiptNo}/adjustment")
@@ -181,4 +187,17 @@ public class ReceiptingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-}
+
+    @PostMapping("/receipting/refund")
+//    @PreAuthorize("hasAuthority('create_receipt')")
+    public ResponseEntity<Pager<ReceiptData>> createReceiptRefund(@Valid @RequestBody RefundData data) {
+        Receipt payment = service.refundReceipt(data);
+
+        Pager<ReceiptData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Payment Refund successfully.");
+        pagers.setContent(payment.toData());
+        auditTrailService.saveAuditTrail("Receipts", "Created a receipt refund "+payment.getReceiptNo());
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+    }

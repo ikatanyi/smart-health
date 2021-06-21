@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -73,7 +74,7 @@ public class JournalController {
 
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = PaginationUtil.createPage(page, size, Sort.by("date").descending());
         Page<JournalEntryData> list = journalService.findJournals(transactionNo, type, status, range, accountNo, pageable);
 
         Pager<List<JournalEntryData>> pagers = new Pager();

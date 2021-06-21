@@ -193,6 +193,9 @@ public class PatientReportServices {
                     case "Consultation":
                         data.setConsultation(interf.getTat());
                         break;
+                    case "Triage":
+                        data.setRadiology(interf.getTat());
+                        break;
                     case "Radiology":
                         data.setRadiology(interf.getTat());
                         break;

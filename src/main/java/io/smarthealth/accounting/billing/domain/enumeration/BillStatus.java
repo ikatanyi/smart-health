@@ -8,5 +8,6 @@ public enum BillStatus {
     Draft,
     Paid,
     Returned,
+    Refunded,
     Canceled
 }

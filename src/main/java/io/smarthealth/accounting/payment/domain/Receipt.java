@@ -6,6 +6,7 @@ import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +29,10 @@ import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 @Table(name = "acc_receipts")
 public class Receipt extends Auditable {
 
+    public static enum Type{
+        Refund,
+        Payment
+    }
     private String payer;
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;
@@ -50,8 +55,11 @@ public class Receipt extends Auditable {
     private Boolean voided;
     private String voidedBy;
     private LocalDateTime voidedDatetime;
+    private String comments;
     @Enumerated(EnumType.STRING)
     private VisitEnum.VisitType visitType;
+    @Enumerated(EnumType.STRING)
+    private Type type = Type.Payment;
 
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptTransaction> transactions = new ArrayList<>();
@@ -119,6 +127,7 @@ public class Receipt extends Auditable {
         data.setVoided(this.voided);
         data.setVoidedBy(this.voidedBy);
         data.setVoidedDatetime(this.voidedDatetime);
+        data.setComments(this.comments);
 
         if (prepayment) {
             data.setReceiptType(ReceiptType.Deposit);
@@ -132,6 +141,7 @@ public class Receipt extends Auditable {
         }
 
         data.setVisitType(this.visitType);
+        data.setCreatedOn(LocalDateTime.ofInstant(this.getCreatedOn(), ZoneId.systemDefault()));
 
         return data;
     }
