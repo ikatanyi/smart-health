@@ -4,6 +4,7 @@ import io.smarthealth.accounting.payment.data.BankChargeData;
 import io.smarthealth.accounting.payment.data.BankingData;
 import io.smarthealth.accounting.payment.data.InterbankData;
 import io.smarthealth.accounting.payment.domain.Banking;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.accounting.payment.domain.repository.BankingRepository;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.accounting.payment.domain.Receipt;
@@ -15,11 +16,13 @@ import io.smarthealth.organization.bank.domain.BankAccount;
 import io.smarthealth.organization.bank.domain.BankAccountRepository;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +30,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author Kelsas
  */
 @Service
@@ -40,6 +42,10 @@ public class BankingService {
 
     public Optional<BankAccount> findBankAccountByNumber(String accountNumber) {
         return bankAccountRepository.findByAccountNumber(accountNumber);
+    }
+
+    public Optional<BankAccount> findBankById(Long id) {
+        return bankAccountRepository.findById(id);
     }
 
     public Banking save(Banking banking) {
@@ -127,14 +133,17 @@ public class BankingService {
 
         return save(bank);
     }
-   public Banking bankingCharges(BankChargeData data){ 
-       BankAccount bank = findBankAccountByNumber(data.getBankAccountNumber())
+
+    public Banking bankingCharges(BankChargeData data) {
+        BankAccount bank = findBankAccountByNumber(data.getBankAccountNumber())
                 .orElseThrow(() -> APIException.notFound("Bank Account Number {0} Not Found", data.getBankAccountNumber()));
-        
-        return bankingCharges(bank,data.getAmount(),sequenceNumberService.next(1L, Sequences.Transactions.name()));
+
+        return bankingCharges(bank, data.getAmount(), sequenceNumberService.next(1L, Sequences.Transactions.name()));
     }
+
     public Banking bankingCharges(BankAccount bankAccount, BigDecimal amount, String transactionNo) {
-        Banking bank = new Banking(bankAccount, LocalDate.now(), "", "Bank Charges", BigDecimal.ZERO, amount, "", "", BankingType.BankCharges, transactionNo, "");
+        Banking bank = new Banking(bankAccount, LocalDate.now(), "", "Bank Charges", BigDecimal.ZERO, amount, null, "",
+                BankingType.BankCharges, transactionNo, "");
         return save(bank);
     }
 
@@ -155,7 +164,7 @@ public class BankingService {
         fromBanking.setDate(LocalDate.now());
         fromBanking.setDebit(BigDecimal.ZERO);
         fromBanking.setDescription(data.getDescription());
-        fromBanking.setPaymentMode("Cash");
+        fromBanking.setPaymentMode(ReceiptAndPaymentMethod.Cash);
         fromBanking.setReferenceNumber(data.getTransactionNo());
         fromBanking.setTransactionNo(trnid);
         fromBanking.setTransactionType(BankingType.InterBanking);
@@ -169,7 +178,7 @@ public class BankingService {
         toBanking.setDate(LocalDate.now());
         toBanking.setDebit(data.getAmount());
         toBanking.setDescription(data.getDescription());
-        toBanking.setPaymentMode("Cash");
+        toBanking.setPaymentMode(ReceiptAndPaymentMethod.Cash);
         toBanking.setReferenceNumber(data.getTransactionNo());
         toBanking.setTransactionNo(trnid);
         toBanking.setTransactionType(BankingType.InterBanking);

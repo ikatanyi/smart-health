@@ -1,5 +1,6 @@
 package io.smarthealth.integration.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.administration.mobilemoney.domain.MobileMoneyProvider;
 import io.smarthealth.integration.domain.MobileMoneyResponse;
 import lombok.Data;
@@ -16,6 +17,7 @@ public class MobileMoneyResponseData {
     private String businessShortCode;
     private String billRefNumber;
     private String invoiceNumber;
+    @JsonIgnore
     private String orgAccountBalance;
     private String phoneNo;
     private String firstName;
@@ -32,9 +34,12 @@ public class MobileMoneyResponseData {
         o.setInvoiceNumber(i.getInvoiceNumber());
         o.setMiddleName(i.getMiddleName());
         o.setFirstName(i.getFirstName());
-        o.setPhoneNo(o.getPhoneNo());
+        o.setPhoneNo(i.getPhoneNo());
         o.setProvider(i.getProvider());
         o.setTransactionType(i.getTransactionType());
+        o.setTransAmount(i.getTransAmount());
+        o.setTransID(i.getTransID());
+        o.setTransTime(i.getTransTime());
         return  o;
     }
 }

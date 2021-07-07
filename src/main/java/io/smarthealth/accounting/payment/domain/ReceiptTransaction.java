@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.payment.data.ReceiptTransactionData;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
@@ -38,7 +39,10 @@ public class ReceiptTransaction extends Identifiable {
     private Receipt receipt;
 
     private LocalDateTime datetime;
-    private String method;
+
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod method;
+
     private BigDecimal amount;
     private String reference;
     @Enumerated(EnumType.STRING)

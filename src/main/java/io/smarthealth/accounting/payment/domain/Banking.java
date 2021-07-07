@@ -2,6 +2,7 @@ package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.payment.data.BankingData;
 import io.smarthealth.accounting.payment.domain.enumeration.BankingType;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.bank.domain.BankAccount;
 import java.math.BigDecimal;
@@ -39,7 +40,9 @@ public class Banking extends Auditable {
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal debit;
     private BigDecimal credit;
-    private String paymentMode;
+
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMode;
     private String referenceNumber; //voucher no,
     @Enumerated(EnumType.STRING)
     private BankingType transactionType;
@@ -71,7 +74,7 @@ public class Banking extends Auditable {
 
     }
 
-    public static Banking deposit(BankAccount bankAccount, String client, String description, BigDecimal amount, String paymentMode, String referenceNumber, String transactionNo, String currency) {
+    public static Banking deposit(BankAccount bankAccount, String client, String description, BigDecimal amount, ReceiptAndPaymentMethod paymentMode, String referenceNumber, String transactionNo, String currency) {
         return new Banking(bankAccount, LocalDate.now(), client, description, amount, BigDecimal.ZERO, paymentMode, referenceNumber, BankingType.Banking, transactionNo, currency);
 
     }

@@ -21,6 +21,7 @@ import io.smarthealth.accounting.payment.data.PettyCashPaymentData;
 import io.smarthealth.accounting.payment.data.PettyCashRequestItem;
 import io.smarthealth.accounting.payment.data.SupplierPaymentData;
 import io.smarthealth.accounting.payment.domain.DoctorsPayment;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.accounting.payment.domain.repository.DoctorsPaymentRepository;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.accounting.payment.domain.repository.PaymentRepository;
@@ -106,6 +107,7 @@ public class MakePaymentService {
         payment.setAmount(data.getAmount());
         payment.setDescription(data.getDescription());
         payment.setPaymentDate(data.getDate());
+
         payment.setPaymentMethod(data.getPaymentMethod());
         payment.setReferenceNumber(data.getReferenceNumber());
 //        payment.setSupplier(supplier);
@@ -329,7 +331,7 @@ public class MakePaymentService {
         payment.setAmount(data.getApprovedAmount());
         payment.setDescription(data.getDescription());
         payment.setPaymentDate(data.getDate());
-        payment.setPaymentMethod("Cash");
+        payment.setPaymentMethod(ReceiptAndPaymentMethod.Cash);
         payment.setReferenceNumber(data.getReferenceNumber());
 //        payment.setSupplier(supplier);
         //update the invoices paid

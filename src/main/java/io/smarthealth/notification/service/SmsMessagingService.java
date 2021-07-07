@@ -183,13 +183,17 @@ public class SmsMessagingService {
         if (smsConfig.size() > 1) {
             throw APIException.conflict("Please mark only one sms provider as active. Multiple conflict");
         }
-        SMSConfiguration activeConfig = smsConfig.get(0);
-        log.info(activeConfig.getProviderName()+" to send SMS ");
+        SMSConfiguration activeConfig = null;
+        if (smsConfig.size() < 1) {
+            return "false";
+        }
+
+        log.info(activeConfig.getProviderName() + " to send SMS ");
         try {
             if (activeConfig.getProviderName().equals(SMSProvider.Smart)) {
                 status = smartApplicationSMSProviderService.sendSingleSMS(phone, msg, activeConfig);
             } else if (activeConfig.getProviderName().equals(SMSProvider.Mobitech)) {
-                log.info("Mobitech to send sms {} to {}",msg, phone);
+                log.info("Mobitech to send sms {} to {}", msg, phone);
 
                 new MobitechGateway(activeConfig.getUsername(), activeConfig.getApiKey(),
                         activeConfig.getSenderId(),

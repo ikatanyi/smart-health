@@ -1,5 +1,6 @@
 package io.smarthealth.integration.service;
 
+import io.smarthealth.administration.mobilemoney.domain.MobileMoneyProvider;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.integration.config.MpesaProperties;
 import io.smarthealth.integration.data.MpesaRequest;
@@ -100,6 +101,7 @@ public class MpesaService {
             responseObj.setTransTime(transTime);
             responseObj.setTransactionType(transactionType);
             responseObj.setPatientBillEffected(Boolean.FALSE);
+            responseObj.setProvider(MobileMoneyProvider.Safaricom);
 
             return moneyResponseRepository.save(responseObj);
         } catch (Exception e) {

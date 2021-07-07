@@ -90,6 +90,8 @@ public class AppointmentService {
         Optional<Patient> patient = patientRepository.findByPatientNumber(appointment.getPatientNumber());
         if (patient.isPresent()) {
             entity.setPatient(patient.get());
+        }else {
+            throw APIException.notFound("Patient not found ");
         }
         Optional<Employee> practitioner = employeeService.findEmployeeByStaffNumber(appointment.getPractitionerCode());
         if (practitioner.isPresent()) {
@@ -97,6 +99,11 @@ public class AppointmentService {
             msgData = new SmsMessageData();
             msgData.setReceiverId(practitioner.get().getStaffNumber());
             msgData.setReceiverType(ReceiverType.employee);
+            System.out.println("practitioner.get().getFullName() "+practitioner.get().getFullName());
+            System.out.println("entity.getAppointmentDate() "+entity.getAppointmentDate());
+            System.out.println("entity.getAppointmentDate() "+entity.getAppointmentDate());
+            System.out.println("entity.getStartTime() "+entity.getStartTime());
+            System.out.println("patient.get().getFullName() "+patient.get().getFullName());
             msgData.setMessage("Dear Doctor,"+practitioner.get().getFullName()+" You Have a scheduled Appoinment with "+patient.get().getFullName()+" on "+entity.getAppointmentDate()+" at"+entity.getStartTime());
             dataList.add(msgData);
         }        

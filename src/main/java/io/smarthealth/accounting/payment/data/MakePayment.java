@@ -2,6 +2,7 @@ package io.smarthealth.accounting.payment.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,6 +11,9 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 /**
  *
@@ -30,7 +34,8 @@ public class MakePayment {
     private Long creditorId;
     private String creditor;
     private PayeeType creditorType;
-    private String paymentMethod; // if cash give options for petty cash or undeposited funds
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMethod; // if cash give options for petty cash or undeposited funds
     private BigDecimal amount;
 
     @JsonFormat(pattern = Constants.DATE_PATTERN)

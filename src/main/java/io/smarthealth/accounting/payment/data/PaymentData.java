@@ -8,7 +8,12 @@ package io.smarthealth.accounting.payment.data;
 import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import lombok.Data;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 /**
  *
@@ -22,7 +27,9 @@ public class PaymentData {
     private PayeeType payeeType;
     private LocalDate paymentDate;
     private String voucherNo; //payment number
-    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMethod;
     private BigDecimal amount;
     private String referenceNumber;
     private String description;

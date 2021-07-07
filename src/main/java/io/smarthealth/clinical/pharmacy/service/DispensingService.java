@@ -107,6 +107,7 @@ public class DispensingService {
                         DispensedDrug dispensedDrug = new DispensedDrug();
                         Item item = billingService.getItemByCode(drugData.getItemCode());
 
+                        dispensedDrug.setWalkIn(drugRequest.getWalkIn());
                         dispensedDrug.setPatient(patient);
                         dispensedDrug.setDrug(item);
                         dispensedDrug.setStore(store);
@@ -191,6 +192,7 @@ public class DispensingService {
             WalkIn w = createWalking(drugRequest.getPatientName());
             drugRequest.setPatientNumber(w.getWalkingIdentitificationNo());
             drugRequest.setPaymentMode("Cash");
+            drugRequest.setWalkIn(w);
         }
 
         PatientBill savedBill = billingService.save(toBill(drugRequest, store));

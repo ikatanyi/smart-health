@@ -92,7 +92,8 @@ public class VisitSpecification {
                         cb.or(
                                 cb.like(root.get("patient").get("givenName"), patientNameExpression),
                                 cb.like(root.get("patient").get("middleName"), patientNameExpression),
-                                cb.like(root.get("patient").get("surname"), patientNameExpression)
+                                cb.like(root.get("patient").get("middleName"), patientNameExpression),
+                                cb.like(root.get("patient").get("primaryContact"), patientNameExpression)
                         )
                 );
             }

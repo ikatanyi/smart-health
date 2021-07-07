@@ -19,6 +19,7 @@ import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import io.smarthealth.accounting.payment.domain.enumeration.PayerType;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -607,7 +608,7 @@ public class VimakHistoricalClinicalData {
                 receipt.setReceiptNo(rs.getString("receipt_no"));
                 receipt.setAmount(NumberUtils.createBigDecimal(rs.getString("debit")));
                 receipt.setPayer(rs.getString(patient.getFullName()));
-                receipt.setPaymentMethod(rs.getString("payment_method"));
+                receipt.setPaymentMethod(ReceiptAndPaymentMethod.valueOf(rs.getString("payment_method")));
                 receipt.setReferenceNumber(rs.getString("paymentCode"));
                 receipt.setTenderedAmount(NumberUtils.createBigDecimal(rs.getString("amount_paid")));
                 receipt.setPaid(NumberUtils.createBigDecimal(rs.getString("amount_paid")));
