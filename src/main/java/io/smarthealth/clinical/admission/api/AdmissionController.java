@@ -6,7 +6,10 @@
 package io.smarthealth.clinical.admission.api;
 
 import io.smarthealth.clinical.admission.data.AdmissionData;
+import io.smarthealth.clinical.admission.data.AdmissionRequestData;
+import io.smarthealth.clinical.admission.data.OPAdmissionData;
 import io.smarthealth.clinical.admission.domain.Admission;
+import io.smarthealth.clinical.admission.domain.AdmissionRequest;
 import io.smarthealth.clinical.admission.domain.Bed;
 import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.clinical.admission.service.BedService;
@@ -20,9 +23,11 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
+
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- *
  * @author Simon.waweru
  */
 @Api
@@ -62,7 +66,21 @@ public class AdmissionController {
         pagers.setCode("200");
         pagers.setMessage("Admission request successfully submitted");
         pagers.setContent(AdmissionData.map(a));
-        auditTrailService.saveAuditTrail("Admission", "Admitted patient "+a.getPatient().getFullName()+" to ward "+a.getWard().getName()+" ,room"+a.getRoom().getName());
+        auditTrailService.saveAuditTrail("Admission", "Admitted patient " + a.getPatient().getFullName() + " to ward " + a.getWard().getName() + " ,room" + a.getRoom().getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+
+    @PostMapping("/outpatient-admission")
+//    @PreAuthorize("hasAuthority('create_admission')")
+    public ResponseEntity<?> createOPAdmission(@Valid @RequestBody OPAdmissionData data) {
+        AdmissionRequest a = admissionService.createAdmissionRequest(data);
+
+        Pager<AdmissionRequestData> pagers = new Pager();
+        pagers.setCode("200");
+        pagers.setMessage("Admission request successfully submitted");
+        pagers.setContent(AdmissionRequestData.map(a));
+        auditTrailService.saveAuditTrail("Admission",
+                "Sent admission request " + a.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -71,7 +89,7 @@ public class AdmissionController {
     public ResponseEntity<?> findAdmissionById(
             @PathVariable("id") final Long id
     ) {
-         auditTrailService.saveAuditTrail("Admission", "Searched Admission identified by id "+id);
+        auditTrailService.saveAuditTrail("Admission", "Searched Admission identified by id " + id);
         Admission a = admissionService.findAdmissionById(id);
         Pager<AdmissionData> pagers = new Pager();
         pagers.setCode("200");
@@ -120,7 +138,7 @@ public class AdmissionController {
     public ResponseEntity<?> updateAdmission(@PathVariable("id") Long id, @Valid @RequestBody AdmissionData admissionData) {
 
         Admission a = admissionService.updateAdmission(id, admissionData);
-        auditTrailService.saveAuditTrail("Admission", "Edited Admissions idenfied by id "+id);
+        auditTrailService.saveAuditTrail("Admission", "Edited Admissions idenfied by id " + id);
         Pager<AdmissionData> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Admission Updated successfully");
@@ -135,19 +153,19 @@ public class AdmissionController {
     public ResponseEntity<?> checkOuInPatient(@PathVariable("admissionNo") String admissionNo) {
 
         Admission a = admissionService.findAdmissionByNumber(admissionNo);
-        if(!a.getDischarged()){
+        if (!a.getDischarged()) {
             throw APIException.badRequest("You cannot checkout a patient who has not been discharged!");
         }
         a.setStatus(Status.CheckOut);
 
         //mark active visit status on queue as false
         List<PatientQueue> pq = patientQueueService.fetchQueueByVisit(a);
-        for(PatientQueue q: pq){
+        for (PatientQueue q : pq) {
             q.setStatus(false);
             patientQueueService.createPatientQueue(q);
         }
 
-        auditTrailService.saveAuditTrail("Admission", "Checkedout patient  "+a.getPatient().getFullName());
+        auditTrailService.saveAuditTrail("Admission", "Checkedout patient  " + a.getPatient().getFullName());
         admissionService.saveAdmission(a);
 
         //release bed
@@ -161,11 +179,12 @@ public class AdmissionController {
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
+
     @GetMapping("/admission/{admissionNo}/details")
-    public ResponseEntity<AdmissionData> getAdmission(@PathVariable("admissionNo") String admissionNo){
-        Optional<Admission> admission =admissionService.findByAdmissionNo(admissionNo);
-        AdmissionData data=null;
-        if(admission.isPresent()){
+    public ResponseEntity<AdmissionData> getAdmission(@PathVariable("admissionNo") String admissionNo) {
+        Optional<Admission> admission = admissionService.findByAdmissionNo(admissionNo);
+        AdmissionData data = null;
+        if (admission.isPresent()) {
             data = AdmissionData.map(admission.get());
         }
         return ResponseEntity.ok(data);

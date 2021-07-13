@@ -4,9 +4,12 @@ import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.data.CareTeamData;
+import io.smarthealth.clinical.admission.data.OPAdmissionData;
 import io.smarthealth.clinical.admission.domain.*;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
+import io.smarthealth.clinical.admission.domain.repository.AdmissionRequestRepository;
 import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
@@ -24,10 +27,13 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.service.UserService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import lombok.RequiredArgsConstructor;
+import org.apache.tools.ant.taskdefs.War;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -39,7 +45,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author Simon.waweru
  */
 @Service
@@ -57,6 +62,8 @@ public class AdmissionService {
     private final BillingService billingService;
     private final SchemeService schemeService;
     private final VisitService visitService;
+    private final UserService userService;
+    private final AdmissionRequestRepository admissionRequestRepository;
 
     @Transactional
     public Admission createAdmission(AdmissionData d) {
@@ -67,7 +74,7 @@ public class AdmissionService {
         BedType bt = bedService.getBedType(d.getBedTypeId());
         Patient p = patientService.findPatientOrThrow(d.getPatientNumber());
         Optional<Visit> visit = visitService.fetchVisitByPatientAndStatus(p, Status.CheckIn);
-        if(visit.isPresent()){
+        if (visit.isPresent()) {
             throw APIException.badRequest("Patient has an already existing visit.", "");
         }
         System.out.println("To create admission");
@@ -100,13 +107,13 @@ public class AdmissionService {
         a.setPaymentMethod(d.getPaymentMethod());
 
         List<CareTeam> ctList = d.getCareTeam().stream().map(c
-                -> {
-            CareTeam ct = CareTeamData.map(c);
-            ct.setAdmission(a);
-            ct.setMedic(employeeService.findEmployeeById(c.getMedicId()));
-            ct.setPatient(p);
-            return ct;
-        }
+                        -> {
+                    CareTeam ct = CareTeamData.map(c);
+                    ct.setAdmission(a);
+                    ct.setMedic(employeeService.findEmployeeById(c.getMedicId()));
+                    ct.setPatient(p);
+                    return ct;
+                }
         ).collect(Collectors.toList());
 
         a.setCareTeam(ctList);
@@ -121,12 +128,12 @@ public class AdmissionService {
             return contact;
         }).collect(Collectors.toList());
         a.setEmergencyContacts(EcList);
-       Optional<CareTeamData> hp = d.getCareTeam().stream().filter(x -> x.getRole() == CareTeamRole.Admitting)
+        Optional<CareTeamData> hp = d.getCareTeam().stream().filter(x -> x.getRole() == CareTeamRole.Admitting)
                 .findFirst();
-       if(hp.isPresent()){
-           Employee admittingDoctor = employeeService.findEmployeeById(hp.get().getMedicId());
-           a.setHealthProvider(admittingDoctor);
-       }
+        if (hp.isPresent()) {
+            Employee admittingDoctor = employeeService.findEmployeeById(hp.get().getMedicId());
+            a.setHealthProvider(admittingDoctor);
+        }
 
         Admission savedAdmissions = admissionRepository.save(a);
         System.out.println("d.getPaymentMethod() " + d.getPaymentMethod());
@@ -165,6 +172,25 @@ public class AdmissionService {
 
     }
 
+    public AdmissionRequest createAdmissionRequest(final OPAdmissionData data) {
+        Ward ward = wardService.getWard(data.getWardId());
+        Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
+        User user = userService.findUserById(data.getAdmittingDoctoruserId());
+        AdmissionRequest request = new AdmissionRequest();
+        request.setRequestDate(data.getAdmissionDate());
+        request.setRequestedBy(user);
+        request.setFulfillerComment(FullFillerStatusType.Unfulfilled.name());
+        request.setFulfillerStatus(FullFillerStatusType.Unfulfilled);
+        request.setNotes(data.getAdmissionReason());
+        request.setOpVisit(visit);
+        request.setOrderNumber(visit.getVisitNumber());
+        request.setWard(ward);
+        request.setPatient(visit.getPatient());
+        request.setUrgency(data.getUrgency());
+        request.setVoided(Boolean.FALSE);
+        return admissionRequestRepository.save(request);
+    }
+
     public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Boolean discharged, final Boolean active, final Status status, final DateRange range, final Pageable pageable) {
 
         Ward ward = null;
@@ -196,7 +222,7 @@ public class AdmissionService {
         return admissionRepository.findByPatientAndStatus(patient, Status.Admitted);
 
     }
-    
+
     public Optional<Admission> findByAdmissionNo(String admissionNo) {
         return admissionRepository.findByAdmissionNo(admissionNo);
 
@@ -264,7 +290,7 @@ public class AdmissionService {
         return admissionRepository.save(a);
     }
 
-    public  Admission saveAdmission(Admission admission){
-       return admissionRepository.save(admission);
+    public Admission saveAdmission(Admission admission) {
+        return admissionRepository.save(admission);
     }
 }
