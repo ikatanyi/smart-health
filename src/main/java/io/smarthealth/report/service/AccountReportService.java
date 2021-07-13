@@ -737,8 +737,8 @@ public class AccountReportService {
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
         String visitType = reportParam.getFirst("visitType");
-        VisitEnum.VisitType visitType1=visitTypeStatusToEnum(visitType);
-        if(visitType.equals("All")){
+        VisitEnum.VisitType visitType1 = visitTypeStatusToEnum(visitType);
+        if (visitType.equals("All")) {
             visitType = null;
         }
         String payee = reportParam.getFirst("payee");
@@ -1134,11 +1134,13 @@ public class AccountReportService {
         TrnxType trnxtype = EnumUtils.getEnum(TrnxType.class, reportParam.getFirst("trnxType"));
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
-        List<ReceiptTransactionData> receiptDataArray = receivePaymentService.getTransactions(method, receiptNo, trnxtype, range, Pageable.unpaged())
-                .getContent()
-                .stream()
-                .map((trans) -> trans.toData())
-                .collect(Collectors.toList());
+        List<ReceiptTransactionData> receiptDataArray =
+                receivePaymentService.getTransactions(ReceiptAndPaymentMethod.valueOf(method), receiptNo, trnxtype,
+                        range, Pageable.unpaged())
+                        .getContent()
+                        .stream()
+                        .map((trans) -> trans.toData())
+                        .collect(Collectors.toList());
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("method");
@@ -1319,6 +1321,7 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Invoice Status");
     }
+
     private VisitEnum.VisitType visitTypeStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("") || status.equals("All")) {
             return null;
@@ -1328,6 +1331,7 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Visit Type");
     }
+
     private AccountType AccountTypeToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;

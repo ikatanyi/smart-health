@@ -10,6 +10,7 @@ import io.smarthealth.clinical.moh.data.Register;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -25,7 +26,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- *
  * @author Simon.waweru
  */
 public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecificationExecutor<Visit>, ResultsRepository {
@@ -76,6 +76,8 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
     @Query(value = "SELECT v FROM Visit v WHERE v.patient=:patient  ORDER BY v.id DESC")
     Page<Visit> lastVisitWithoutCurrentActiveVisit(@Param("patient") Patient patient, Pageable pageable);
 
+    Optional<Visit> findTopByPatient(final Patient patient);
+
     @Query(value = "SELECT v FROM Visit v WHERE DATE(v.startDatetime)=:date GROUP BY v.patient.patientNumber, DATE(v.startDatetime)")
     List<Visit> visitAttendance(@Param("date") Date date);
 
@@ -123,6 +125,6 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
             + " GROUP BY ServicePoint", nativeQuery = true)
     List<TatInterface> patientTatStatement(Long visitId);
 
-    List<Visit> findByServicePointAndServedAtServicePointAndStatus(final ServicePoint servicePoint,final Boolean servedAtServicePoint, final  VisitEnum.Status status);
+    List<Visit> findByServicePointAndServedAtServicePointAndStatus(final ServicePoint servicePoint, final Boolean servedAtServicePoint, final VisitEnum.Status status);
 
 }

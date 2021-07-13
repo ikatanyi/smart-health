@@ -6,13 +6,7 @@
 package io.smarthealth.accounting.payment.service;
 
 import io.smarthealth.accounting.accounts.data.FinancialActivity;
-import io.smarthealth.accounting.accounts.domain.Account;
-import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
-import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
-import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
-import io.smarthealth.accounting.accounts.domain.JournalState;
-import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.PatientReceipt;
 import io.smarthealth.accounting.billing.domain.PatientBill;
@@ -43,11 +37,13 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +51,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author Kelsas
  */
 @Service
@@ -73,7 +68,7 @@ public class RemittanceService {
     private final BillingService billingService;
     private final ReceivePaymenttRepository receivePaymenttRepository;
     private final PatientRepository patientRepository;
-//    private final AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     public Receipt createRemittance(CreateRemittance data) {
 
@@ -117,8 +112,8 @@ public class RemittanceService {
         //
         if (data.getRecordType() == RecordType.Payment) {
             if (data.getPayerType() == PayerType.Insurance) {
-                        Payer payer = payerRepository.findById(data.getPayerId())
-                                    .orElseThrow(() -> APIException.notFound("Payer ID {0} Not Found", data.getPayerId()));
+                Payer payer = payerRepository.findById(data.getPayerId())
+                        .orElseThrow(() -> APIException.notFound("Payer ID {0} Not Found", data.getPayerId()));
                 Remittance remittance = new Remittance(payer, savedReceipt);
                 repository.save(remittance);
             }
@@ -253,6 +248,13 @@ public class RemittanceService {
             if (debitAccount == null) {
                 return null;
             }
+            items.add(new JournalEntryItem(debitAccount, narration, receipt.getAmount(), BigDecimal.ZERO));
+        }
+        if (data.getPaymentChannel().getType() == PayChannel.Type.Mobile) {
+            Account debitAccount =
+                    accountRepository.findById(data.getPaymentChannel().getAccountId()).orElseThrow(() -> APIException.notFound(
+                            "Account not found"));
+
             items.add(new JournalEntryItem(debitAccount, narration, receipt.getAmount(), BigDecimal.ZERO));
         }
         //TAXES

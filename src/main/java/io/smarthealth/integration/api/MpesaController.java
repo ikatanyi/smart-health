@@ -55,6 +55,9 @@ public class MpesaController {
         log.info(response);
         MobileMoneyResponse savedResponse = mpesaService.saveMobileMoneyResponse(response);
 
+
+
+
         return ResponseEntity.ok("Successful");
     }
 
@@ -69,9 +72,6 @@ public class MpesaController {
         if (phoneNumber.startsWith("0")) {
             phoneNumber = phoneNumber.replaceFirst("0", "254");
         }
-//        phoneNumber = phoneNumber.replaceAll(String.valueOf('+'), "");
-
-
         //validate if provider integration is active
         MobileMoneyIntegration moneyIntegration =
                 mobileMoneyIntegrationRepository.findById(providerId).orElseThrow(() -> APIException.notFound("No " +

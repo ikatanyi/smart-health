@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="payment_transactions_statement" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="145"/>
 	<property name="ireport.y" value="0"/>
-        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
@@ -27,8 +28,6 @@
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="range" class="java.lang.String"/>
 	<parameter name="to" class="java.util.Date"/>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
@@ -43,7 +42,7 @@
 	<field name="payer" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="receiptNo" class="java.lang.String"/>
-	<field name="method" class="java.lang.String"/>
+	<field name="method" class="java.lang.Object"/>
 	<field name="amount" class="java.math.BigDecimal"/>
 	<field name="reference" class="java.lang.String"/>
 	<field name="type" class="java.lang.Object"/>

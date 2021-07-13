@@ -291,7 +291,7 @@ public class ReceiptingService {
         return receiptItemRepository.findAll(spec, page);
     }
 
-    public Page<ReceiptTransaction> getTransactions(String method, String receiptNo, TrnxType type, DateRange range, Pageable page) {
+    public Page<ReceiptTransaction> getTransactions(ReceiptAndPaymentMethod method, String receiptNo, TrnxType type, DateRange range, Pageable page) {
         Specification<ReceiptTransaction> spec = ReceiptSpecification.createSpecification(method, receiptNo, type, range);
         return transactionRepository.findAll(spec, page);
     }
@@ -304,12 +304,6 @@ public class ReceiptingService {
         trans.setMethod(data.getMethod());
         trans.setReference(data.getReference());
         trans.setType(TrnxType.Payment);
-        /*
-        method: MOBILE MONEY
-reference: transID
-type: Safaricom
-amount:50
-         */
         if (data.getMethod().equals(ReceiptAndPaymentMethod.Mobile_Money)) {
             //check if mobile money type selected is integrated with the gateway
             MobileMoneyIntegration mmc = mobileMoneyIntegrationRepository.findById(data.getReferenceAccount()).orElseThrow(() -> APIException.notFound("Mobile money configuration identified by {0} not found ", data.getReferenceAccount()));

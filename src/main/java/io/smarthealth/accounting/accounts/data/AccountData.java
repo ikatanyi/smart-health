@@ -3,15 +3,18 @@ package io.smarthealth.accounting.accounts.data;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.AccountState;
 import io.smarthealth.accounting.accounts.domain.AccountType;
+
 import java.math.BigDecimal;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;   
+import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
- 
+
 @Data
 public final class AccountData {
 
+    private Long id;
     private AccountType type;
     private String identifier;
     @NotEmpty
@@ -27,6 +30,7 @@ public final class AccountData {
 
     public static AccountData map(final Account accountEntity) {
         final AccountData account = new AccountData();
+        account.setId(accountEntity.getId());
         account.setIdentifier(accountEntity.getIdentifier());
         account.setName(accountEntity.getName());
         account.setType(accountEntity.getType());

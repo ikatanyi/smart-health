@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="shift_mode_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
@@ -27,8 +28,6 @@
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -103,7 +102,7 @@
 	<field name="paid" class="java.math.BigDecimal"/>
 	<field name="tenderedAmount" class="java.math.BigDecimal"/>
 	<field name="refundedAmount" class="java.math.BigDecimal"/>
-	<field name="paymentMethod" class="java.lang.String"/>
+	<field name="paymentMethod" class="java.lang.Object"/>
 	<field name="receiptNo" class="java.lang.String"/>
 	<field name="referenceNumber" class="java.lang.String"/>
 	<field name="transactionType" class="java.lang.String"/>
@@ -510,7 +509,7 @@
 			</textField>
 			<textField>
 				<reportElement x="327" y="0" width="95" height="16" uuid="bd25f5a3-47d1-4683-89e9-4cb92340646e"/>
-				<textElement verticalAlignment="Middle">
+				<textElement verticalAlignment="Middle" markup="styled">
 					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
