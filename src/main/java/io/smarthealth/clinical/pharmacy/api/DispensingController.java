@@ -125,6 +125,7 @@ public class DispensingController {
         return ResponseEntity.ok(pagers);
     }
 
+    ///returned drugs
     @PostMapping("/pharmacybilling/{visitNumber}/returns")
     @PreAuthorize("hasAuthority('create_dispense')")
     public ResponseEntity<?> DrugsReturn(@PathVariable String visitNumber, @Valid @RequestBody List<ReturnedDrugData> data) {

@@ -29,4 +29,6 @@ public final class PatientData extends PersonData {
     private String visitType;
     private PortraitData portraitData;
     private String inpatientNumber;
+
+
 }

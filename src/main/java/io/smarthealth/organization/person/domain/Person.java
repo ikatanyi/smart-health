@@ -48,6 +48,15 @@ public class Person extends Auditable {
     @Formula("YEAR(CURDATE()) - YEAR(date_of_birth)")
     private int age;
 
+    //added for Pato
+   // @Formula("(YEAR(CURDATE()) - YEAR(date_of_birth))<5")
+//    @Formula("(int(age()<=5) && (gender)=='M')")
+//    private int male_under_5;
+   // @Formula("(select min(o.creation_date) from Orders o where o.customer_id = id)")
+//    private int male_above_5;
+//    private int female_under_5;
+//    private int female_above_5;
+
     @Formula(value = " concat(COALESCE(given_name, ''), ' ', COALESCE(middle_name, ''), ' ', COALESCE(surname, '')) ")
     private String fullName;
 
@@ -76,4 +85,5 @@ public class Person extends Auditable {
         }
         return String.format("%sY", agePeriod.getYears());
     }
+
 }

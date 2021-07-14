@@ -31,6 +31,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long>, JpaSpec
 
     @Query(value = "SELECT max(id) FROM Patient")
     public Integer maxId();
+
+//    @Query("SELECT * FROM person")
+//    public Integer male_under_5;
     
     //Testing this to easy dependency on JPA - Kelsas 2020-11-24 19:13
      @Query("select p from Patient p where p.givenName like lower(concat('%', ?1,'%')) or p.middleName like lower(concat('%', ?1,'%')) or p.surname like lower(concat('%', ?1,'%')) or p.patientNumber like lower(concat('%', ?1,'%'))")

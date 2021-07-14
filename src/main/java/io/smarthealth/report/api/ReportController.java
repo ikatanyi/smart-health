@@ -351,6 +351,10 @@ public class ReportController {
             case StockAdjustment:
                 stockReportService.getStockAdjustedItems(queryParams, format, response);
                 break;
+                //drugs returneed
+            case DrugsReturn:
+
+                break;
             default:
                 break;
                 //TODO throw error no report selected
