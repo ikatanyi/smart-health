@@ -1,5 +1,6 @@
 package io.smarthealth.integration.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.administration.mobilemoney.domain.MobileMoneyProvider;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import lombok.Data;

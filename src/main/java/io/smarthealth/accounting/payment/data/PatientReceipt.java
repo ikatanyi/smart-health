@@ -1,10 +1,13 @@
 package io.smarthealth.accounting.payment.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -22,7 +25,8 @@ public class PatientReceipt {
     private BigDecimal amount;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate date;
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMethod;
     private String reference;
     private String description;
     private String shiftNo;

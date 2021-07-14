@@ -2,8 +2,10 @@ package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.payment.data.ReceiptData;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.domain.Auditable;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -19,7 +21,6 @@ import org.hibernate.annotations.Where;
 import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 
 /**
- *
  * @author Kelsas
  */
 @Data
@@ -29,18 +30,21 @@ import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 @Table(name = "acc_receipts")
 public class Receipt extends Auditable {
 
-    public static enum Type{
+    public static enum Type {
         Refund,
         Payment
     }
+
     private String payer;
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;
-//    private BigDecimal credit;
+    //    private BigDecimal credit;
     private BigDecimal tenderedAmount;
     private BigDecimal refundedAmount;
     private BigDecimal paid;
-    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMethod;
     private String referenceNumber; //voucher no,
     private String receiptNo;
     private LocalDateTime transactionDate;
@@ -107,7 +111,7 @@ public class Receipt extends Auditable {
         data.setReceivedFrom(this.getReceivedFrom());
         data.setTransactionDate(this.getTransactionDate());
         data.setCreatedBy(this.getCreatedBy());
-        if(this.getShift()!=null){
+        if (this.getShift() != null) {
             data.setShiftData(this.getShift().toData());
         }
         if (this.shift != null) {

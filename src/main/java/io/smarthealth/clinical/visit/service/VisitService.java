@@ -29,11 +29,13 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -45,7 +47,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author Simon.waweru
  */
 @Service
@@ -58,7 +59,7 @@ public class VisitService {
     private final EmployeeService employeeService;
     private final BillingService billingService;
     private final ConfigService configService;
- 
+
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
         Page<Visit> visits = visitRepository.findByPatientOrderByStartDatetimeDesc(patient, pageable);
@@ -71,7 +72,8 @@ public class VisitService {
         return visits;
     }
 
-    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final ServicePointType servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final boolean orderByTriageCategory, final String queryTerm, final Boolean billPaymentValidation, final Pageable pageable) {
+    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber,
+                                      final ServicePointType servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final boolean orderByTriageCategory, final String queryTerm, final Boolean billPaymentValidation, final Pageable pageable) {
         Employee employee = null;
         ServicePoint servicePoint = null;
         Patient patient = null;
@@ -134,12 +136,7 @@ public class VisitService {
     //@Transactional
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Visit createAVisit(final Visit visit) {
-//        try {
         return visitRepository.save(visit);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw APIException.internalError("There was an error creating visit", e.getMessage());
-//        }
     }
 
     public String updateVisit(final String visitNumber, final VisitData visitDTO) {
@@ -268,9 +265,9 @@ public class VisitService {
         return visitRepository.patientTatStatement(visitId);
     }
 
-      public String patientActiveVisit(final Long patientId){
-        System.out.println("To search "+patientId);
-        return  visitRepository.patientActiveVisit(patientId);
+    public String patientActiveVisit(final Long patientId) {
+        System.out.println("To search " + patientId);
+        return visitRepository.patientActiveVisit(patientId);
     }
 
     public Page<Visit> getSimpleVisits(String visitNumber, String patientNumber, DateRange dateRange, Pageable page) {
@@ -278,7 +275,7 @@ public class VisitService {
         return visitRepository.findAll(spec, page);
     }
 
-    public  List<Visit> visitByServicePointAndServedAtServicePoint(final ServicePoint servicePoint, final Boolean served){
-      return   visitRepository.findByServicePointAndServedAtServicePointAndStatus(servicePoint,served, VisitEnum.Status.CheckIn);
+    public List<Visit> visitByServicePointAndServedAtServicePoint(final ServicePoint servicePoint, final Boolean served) {
+        return visitRepository.findByServicePointAndServedAtServicePointAndStatus(servicePoint, served, VisitEnum.Status.CheckIn);
     }
 }

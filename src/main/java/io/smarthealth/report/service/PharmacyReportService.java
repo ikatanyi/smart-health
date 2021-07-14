@@ -106,7 +106,7 @@ public class PharmacyReportService {
         ReportData reportData = new ReportData();
         DateRange range = DateRange.fromIsoString(reportParam.getFirst("dateRange"));
         List<DispensedDrugsInterface> requestData = dispenseService.dispensedDrugs(range);
-        reportData.setData(requestData);
+        reportData.setData(requestData);  //setting data from DB
         reportData.setFormat(format);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setTemplate("/clinical/pharmacy/dispensed_drugs");

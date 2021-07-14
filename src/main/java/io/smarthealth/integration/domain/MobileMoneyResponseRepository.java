@@ -6,5 +6,7 @@ import java.util.Optional;
 
 public interface MobileMoneyResponseRepository extends JpaRepository<MobileMoneyResponse, Long> {
     Optional<MobileMoneyResponse> findTopByPhoneNoAndPatientBillEffectedOrderByIdDesc(String phoneNo,
-                                                                                     Boolean billAffected);
+                                                                                      Boolean billAffected);
+
+    Optional<MobileMoneyResponse> findByTransID(String transID);
 }

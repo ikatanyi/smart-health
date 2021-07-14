@@ -36,6 +36,7 @@ import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptTransactionData;
 import io.smarthealth.accounting.payment.data.RemittanceData;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.service.ReceiptingService;
@@ -736,8 +737,8 @@ public class AccountReportService {
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
         String visitType = reportParam.getFirst("visitType");
-        VisitEnum.VisitType visitType1=visitTypeStatusToEnum(visitType);
-        if(visitType.equals("All")){
+        VisitEnum.VisitType visitType1 = visitTypeStatusToEnum(visitType);
+        if (visitType.equals("All")) {
             visitType = null;
         }
         String payee = reportParam.getFirst("payee");
@@ -777,18 +778,18 @@ public class AccountReportService {
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
             }
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
-                switch (trx.getMethod().toUpperCase()) {
-                    case "BANK":
+                switch (trx.getMethod()) {
+                    case Bank:
                         data.setBank(data.getBank().add(trx.getAmount()));
                         break;
-                    case "CARD":
+                    case Card:
                         data.setCard(data.getCard().add(trx.getAmount()));
                         break;
-                    case "MOBILE MONEY":
+                    case Mobile_Money:
                         data.setMobilemoney(data.getMobilemoney().add(trx.getAmount()));
                         data.setReferenceNumber(trx.getReference());
                         break;
-                    case "CASH":
+                    case Cash:
                         data.setCash(data.getCash().add(trx.getAmount()));
                         break;
                     default:
@@ -1133,11 +1134,13 @@ public class AccountReportService {
         TrnxType trnxtype = EnumUtils.getEnum(TrnxType.class, reportParam.getFirst("trnxType"));
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
-        List<ReceiptTransactionData> receiptDataArray = receivePaymentService.getTransactions(method, receiptNo, trnxtype, range, Pageable.unpaged())
-                .getContent()
-                .stream()
-                .map((trans) -> trans.toData())
-                .collect(Collectors.toList());
+        List<ReceiptTransactionData> receiptDataArray =
+                receivePaymentService.getTransactions(ReceiptAndPaymentMethod.valueOf(method), receiptNo, trnxtype,
+                        range, Pageable.unpaged())
+                        .getContent()
+                        .stream()
+                        .map((trans) -> trans.toData())
+                        .collect(Collectors.toList());
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("method");
@@ -1318,6 +1321,7 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Invoice Status");
     }
+
     private VisitEnum.VisitType visitTypeStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("") || status.equals("All")) {
             return null;
@@ -1327,6 +1331,7 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Visit Type");
     }
+
     private AccountType AccountTypeToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;

@@ -55,21 +55,29 @@ public class MpesaController {
         log.info(response);
         MobileMoneyResponse savedResponse = mpesaService.saveMobileMoneyResponse(response);
 
+
+
+
         return ResponseEntity.ok("Successful");
     }
 
-    @PostMapping("/confirm/{phoneNumber}/provider/{provider}")
+    @PostMapping("/confirm/{phoneNumber}/provider/{providerId}")
     @ResponseBody
     public ResponseEntity<?> confirmationLocalDB(
-            @PathVariable("phoneNumber") final String phoneNumber,
-            @PathVariable("provider") final MobileMoneyProvider provider
+            @PathVariable("phoneNumber") String phoneNumber,
+            @PathVariable("providerId") final Long providerId
     ) {
         log.info("Acknowledging Safaricom Response locally...");
+
+        if (phoneNumber.startsWith("0")) {
+            phoneNumber = phoneNumber.replaceFirst("0", "254");
+        }
         //validate if provider integration is active
         MobileMoneyIntegration moneyIntegration =
-                mobileMoneyIntegrationRepository.findByMobileMoneyName(provider).orElseThrow(() -> APIException.notFound("No provider identified by {0} found ", provider.name()));
+                mobileMoneyIntegrationRepository.findById(providerId).orElseThrow(() -> APIException.notFound("No " +
+                        "provider identified by id {0} found ", providerId));
         if (moneyIntegration.getStatus().equals(IntegrationStatus.InActive)) {
-            throw APIException.notFound("No integration settings for provider {0} .", provider.name());
+            throw APIException.notFound("No integration settings for provider {0} .", providerId);
         }
         //respond the response with unique status
         MobileMoneyResponse moneyResponse = moneyProcessingService.findRecentByPhoneNumberOrNull(phoneNumber);
@@ -85,7 +93,6 @@ public class MpesaController {
             pagers.setContent(MobileMoneyResponseData.map(moneyResponse));
         }
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
-
     }
 
     @PostMapping("/initiate-stk-push/{phoneNo}")

@@ -5,6 +5,7 @@ import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
@@ -73,6 +74,10 @@ public class DispensedDrug extends Auditable implements Cloneable {
     private String billNumber;
 
     private String transactionId;
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharmacy_dispensed_drugs_walkin_id"))
+    private WalkIn walkIn;
 
     public DispensedDrugData toData() {
         DispensedDrugData data = new DispensedDrugData();

@@ -4,6 +4,7 @@ import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import io.smarthealth.accounting.payment.domain.ReceiptTransaction;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -137,7 +138,7 @@ public class ReceiptSpecification {
         };
     }
 
-    public static Specification<ReceiptTransaction> createSpecification(String method, String receiptNo, TrnxType type, DateRange range) {
+    public static Specification<ReceiptTransaction> createSpecification(ReceiptAndPaymentMethod method, String receiptNo, TrnxType type, DateRange range) {
 
         return (root, query, cb) -> {
 

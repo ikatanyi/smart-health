@@ -8,6 +8,7 @@ package io.smarthealth.accounting.payment.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.payment.data.PaymentDepositData;
 import io.smarthealth.accounting.payment.domain.enumeration.PayerType;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.accounting.payment.domain.enumeration.RecordType;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.lang.Constants;
@@ -40,7 +41,10 @@ public class PaymentDeposit extends Auditable {
     private String customerNumber;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate paymentDate;
-    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMethod;
+
     private String reference;
     private String description;
     private BigDecimal amount;

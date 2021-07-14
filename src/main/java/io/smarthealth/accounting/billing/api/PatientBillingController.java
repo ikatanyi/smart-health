@@ -78,10 +78,12 @@ public class PatientBillingController {
 
           Pageable pageable = PaginationUtil.createPage(page, size);
           DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-          BillingQuery query = new BillingQuery(search, patientNumber, visitType, paymentMethod, visitNumber, range, pageable);
+          BillingQuery query = new BillingQuery(search, patientNumber, visitType,
+                  paymentMethod, visitNumber, range, pageable);
 
           Page<VisitBillSummary> list = service.getVisitBills(query);
-          Pager<List<VisitBillSummary>> pager = (Pager<List<VisitBillSummary>>) PaginationUtil.toPager(list, "Patient Visit Bill");
+          Pager<List<VisitBillSummary>> pager = (Pager<List<VisitBillSummary>>) PaginationUtil.toPager(list,
+                  "Patient Visit Bill");
           return ResponseEntity.ok(pager);
      }
 

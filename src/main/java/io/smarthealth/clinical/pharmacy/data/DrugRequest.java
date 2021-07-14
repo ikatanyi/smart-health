@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.pharmacy.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.domain.enumeration.ExcessAmountPayMethod;
 import io.smarthealth.infrastructure.lang.Constants;
@@ -11,6 +12,7 @@ import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import io.smarthealth.organization.person.domain.WalkIn;
 import lombok.Data;
 
 /**
@@ -35,6 +37,9 @@ public class DrugRequest {
     private Double taxes;
     private Double discount;
     private Boolean isWalkin;
+
+    @JsonIgnore
+    private WalkIn walkIn;
 
     @Enumerated(EnumType.STRING)
     private BillStatus status;

@@ -2,12 +2,16 @@ package io.smarthealth.accounting.payment.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.payment.domain.enumeration.BankingType;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 /**
  *
@@ -27,7 +31,9 @@ public class BankingData {
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal debit;
     private BigDecimal credit;
-    private String paymentMode;
+
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMode;
     private String referenceNumber; //voucher no,
      private BankingType transactionType;
     private String transactionNo;

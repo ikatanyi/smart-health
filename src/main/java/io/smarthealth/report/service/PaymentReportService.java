@@ -159,12 +159,12 @@ public class PaymentReportService {
         reportData.getFilters().put("showCapitationItem", showCapitationItem);
         //rebate inbo
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
-        if(invoiceData.getRebate() !=null && invoiceData.getRebate()){
+        if (invoiceData.getRebate() != null && invoiceData.getRebate()) {
             Optional<PatientBillItem> optionalPatientBillItem = patientBillItemRepository.getPatientBillItemByPaymentReference(invoiceData.getNumber());
-           if(optionalPatientBillItem.isPresent()){
-               PatientBillItem item = optionalPatientBillItem.get();
-               invoiceData.getInvoiceItems().add(InvoiceItem.toData(item));
-           }
+            if (optionalPatientBillItem.isPresent()) {
+                PatientBillItem item = optionalPatientBillItem.get();
+                invoiceData.getInvoiceItems().add(InvoiceItem.toData(item));
+            }
         }
         Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
         if (admission.isPresent()) {
@@ -182,6 +182,7 @@ public class PaymentReportService {
         reportData.setFormat(format);
         reportService.generateReport(reportData, response);
     }
+
     public void getInvoiceSummary(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
         String invoiceNo = reportParam.getFirst("invoiceNo");
@@ -363,21 +364,21 @@ public class PaymentReportService {
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
             }
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
-                switch (trx.getMethod().toUpperCase()) {
-                    case "BANK":
+                switch (trx.getMethod()) {
+                    case Bank:
                         data.setBank(data.getBank().add(trx.getAmount()));
                         break;
-                    case "CARD":
+                    case Card:
                         data.setCard(data.getCard().add(trx.getAmount()));
                         break;
-                    case "MOBILE MONEY":
+                    case Mobile_Money:
                         data.setMobilemoney(data.getMobilemoney().add(trx.getAmount()));
                         data.setReferenceNumber(trx.getReference());
                         break;
-                    case "CASH":
+                    case Cash:
                         data.setCash(data.getCash().add(trx.getAmount()));
                         break;
-                    case "DISCOUNT":
+                    case Discount:
                         data.setDiscount(data.getDiscount().add(trx.getAmount()));
                         break;
                     default:
@@ -454,7 +455,7 @@ public class PaymentReportService {
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid,null, Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, null, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -480,7 +481,7 @@ public class PaymentReportService {
             data.setStartDate(receipt.getShiftData().getStartDate());
             data.setStopDate(receipt.getShiftData().getEndDate());
             BigDecimal otherReceipts = BigDecimal.ZERO;
-            if ( receipt.getPrepayment()) {
+            if (receipt.getPrepayment()) {
                 otherReceipts = data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount();
                 System.out.println("Other receipts line 444 " + otherReceipts);
             }
@@ -488,21 +489,21 @@ public class PaymentReportService {
             data.setOther(otherReceipts);
 
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
-                switch (trx.getMethod().toUpperCase()) {
-                    case "BANK":
+                switch (trx.getMethod()) {
+                    case Bank:
                         data.setBank(data.getBank().add(trx.getAmount()));
                         break;
-                    case "CARD":
+                    case Card:
                         data.setCard(data.getCard().add(trx.getAmount()));
                         break;
-                    case "MOBILE MONEY":
+                    case Mobile_Money:
                         data.setMobilemoney(data.getMobilemoney().add(trx.getAmount()));
                         data.setReferenceNumber(trx.getReference());
                         break;
-                    case "CASH":
+                    case Cash:
                         data.setCash(data.getCash().add(trx.getAmount()));
                         break;
-                    case "DISCOUNT":
+                    case Discount:
                         data.setDiscount(data.getDiscount().add(trx.getAmount()));
                         break;
                     default:
@@ -548,9 +549,9 @@ public class PaymentReportService {
 
             System.out.println("Other receipts line 519 " + otherReceipts);
             BigDecimal runningAmount = data.getAmount();
-            System.out.println("Running amount "+runningAmount);
+            System.out.println("Running amount " + runningAmount);
             BigDecimal newAmount = runningAmount.add(otherReceipts);
-            System.out.println("New amount "+newAmount);
+            System.out.println("New amount " + newAmount);
             data.setAmount(newAmount);
 
             receiptDataArray.add(data);

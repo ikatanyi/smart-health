@@ -5,6 +5,9 @@
  */
 package io.smarthealth.organization.person.patient.service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.domain.GlobalConfigurationRepository;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
@@ -114,6 +117,24 @@ public class PatientService {
     public Page<Patient> fetchAllPatients(final String term, final String dateRange, final Pageable pageable) {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Specification<Patient> spec = PatientSpecification.createSpecification(range, term);
+        //
+        JsonArray content = new JsonArray(); // This is your parsed json object maybe shold happen in service
+        HashMap<String, Integer> count = new HashMap<>();
+        for (JsonElement element : content) {
+            JsonObject jsonObject = element.getAsJsonObject();
+            if(jsonObject.has("gender")) {
+                String selValue = jsonObject.get("gender").getAsString();
+                if(count.containsKey(selValue)) {
+                    count.put(selValue, count.get(selValue) + 1);
+                } else {
+                    count.put(selValue, 1);
+                }
+            }
+        }
+
+        count.get("M"); // returns all Male
+        System.out.println("yuyu"+count.get("M"));
+
         return patientRepository.findAll(spec, pageable);
     }
 
