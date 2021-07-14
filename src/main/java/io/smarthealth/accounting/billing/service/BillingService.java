@@ -878,7 +878,7 @@ public class BillingService {
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(null);
                     billItem.setBillPayMode(PaymentMethod.Cash);
-                    billItem.setEntryType(BillEntryType.Debit);
+                    billItem.setEntryType(BillEntryType.Credit);
 
                     patientbill.addBillItem(billItem);
 

@@ -42,7 +42,7 @@ public class ReceivePayment {
     private String transactionNo;
 
     @Enumerated(EnumType.STRING)
-    private ReceiptAndPaymentMethod paymentMethod;
+    private ReceiptAndPaymentMethod paymentMethod; //this should be paymode i.e Cash/Credit not payment method -Simon's comments
     private String referenceNumber;
     private String visitNumber;
     private String patientNumber;

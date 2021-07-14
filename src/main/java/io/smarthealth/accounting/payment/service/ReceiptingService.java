@@ -150,15 +150,12 @@ public class ReceiptingService {
 
         if (!data.getPayment().isEmpty()) {
             //TODO read Simon's personal opinion and comments.
-            //Comment: this method of intercepting child classes is so limiting in manipulating sub-child classes
-            // attributes.
+            //Comment: this method of intercepting child classes is so limiting in manipulating sub-child classes attributes.
             receipt.addTransaction(
                     data.getPayment()
                             .stream()
                             .map(t -> {
-//                                if (StringUtils.isNotBlank(t.getAccountNumber())) {
                                 receiptMethods.add(t);
-//                                }
                                 return createPaymentTransaction(t);
                             })
                             .filter(x -> x.getAmount() != null)
