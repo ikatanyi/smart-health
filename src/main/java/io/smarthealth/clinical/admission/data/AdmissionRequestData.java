@@ -38,6 +38,7 @@ public class AdmissionRequestData {
 
     public static AdmissionRequestData map(AdmissionRequest i) {
         AdmissionRequestData o = new AdmissionRequestData();
+        o.setId(i.getId());
         o.setFulfillerComment(i.getFulfillerComment());
         o.setNotes(i.getNotes());
         o.setRequestDate(i.getRequestDate());

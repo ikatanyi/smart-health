@@ -172,10 +172,10 @@ public class AdmissionService {
         billingService.createFee(admissionNo, ItemCategory.Admission, 1);
 
         //OP to IP handling
-        if(d.getOpVisitNumber()!=null || d.getAdmissionRequestId()!=null ){
+        if (d.getOpVisitNumber() != null || d.getAdmissionRequestId() != null) {
             //update request to fulfilled
             AdmissionRequest admissionRequest =
-                    admissionRequestRepository.findById(d.getAdmissionRequestId()).orElseThrow(()-> APIException.notFound("Admission request identified by {0} not found ", d.getAdmissionRequestId()));
+                    admissionRequestRepository.findById(d.getAdmissionRequestId()).orElseThrow(() -> APIException.notFound("Admission request identified by {0} not found ", d.getAdmissionRequestId()));
 
             User user =
                     userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().orElse("")).orElse(null);
@@ -200,7 +200,7 @@ public class AdmissionService {
         Ward ward = wardService.getWard(data.getWardId());
         Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
         User user =
-                userService.findUserByUsernameOrEmail(data.getAdmittingDoctorusername()).orElseThrow(()->APIException.notFound("User identified by {0} not found ", data.getAdmittingDoctorusername()));
+                userService.findUserByUsernameOrEmail(data.getAdmittingDoctorusername()).orElseThrow(() -> APIException.notFound("User identified by {0} not found ", data.getAdmittingDoctorusername()));
         AdmissionRequest request = new AdmissionRequest();
         request.setRequestDate(data.getAdmissionDate());
         request.setRequestedBy(user);
