@@ -12,7 +12,7 @@ import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 @Data
 public class OPAdmissionData {
     private String visitNumber;
-    private Long  admittingDoctoruserId;//admittingDoctor
+    private String  admittingDoctorusername;//admittingDoctor
     private String admissionReason;
     private Long wardId;
     private String urgency;

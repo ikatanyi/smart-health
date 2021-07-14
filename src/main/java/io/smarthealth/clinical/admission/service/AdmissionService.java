@@ -30,6 +30,7 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
+import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
@@ -41,6 +42,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,7 +80,7 @@ public class AdmissionService {
         if (visit.isPresent()) {
             throw APIException.badRequest("Patient has an already existing visit.", "");
         }
-        System.out.println("To create admission");
+
         if (findAdmissionByPatientAndStatus(d.getPatientNumber()).isPresent()) {
             throw APIException.conflict("Patient {0} already Admitted.", d.getPatientNumber());
         }
@@ -137,7 +139,6 @@ public class AdmissionService {
         }
 
         Admission savedAdmissions = admissionRepository.save(a);
-        System.out.println("d.getPaymentMethod() " + d.getPaymentMethod());
         //payment data
         Scheme scheme = null;
         if (d.getPaymentMethod().equals(PaymentMethod.Insurance)) {
@@ -169,6 +170,28 @@ public class AdmissionService {
         patientService.savePatient(p);
 
         billingService.createFee(admissionNo, ItemCategory.Admission, 1);
+
+        //OP to IP handling
+        if(d.getOpVisitNumber()!=null || d.getAdmissionRequestId()!=null ){
+            //update request to fulfilled
+            AdmissionRequest admissionRequest =
+                    admissionRequestRepository.findById(d.getAdmissionRequestId()).orElseThrow(()-> APIException.notFound("Admission request identified by {0} not found ", d.getAdmissionRequestId()));
+
+            User user =
+                    userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().orElse("")).orElse(null);
+            admissionRequest.setFulfillerStatus(FullFillerStatusType.Fulfilled);
+            admissionRequest.setFulfillerComment(FullFillerStatusType.Fulfilled.name());
+            admissionRequest.setFullfilledBy(user);
+            admissionRequest.setAdmissionDateTime(LocalDateTime.now());
+            admissionRequestRepository.save(admissionRequest);
+
+            //Update OP visit to Admitted
+            Visit opVisit = visitService.findVisitEntityOrThrow(d.getOpVisitNumber());
+            opVisit.setComments(d.getAdmittingReason());
+            opVisit.setStatus(Status.Admitted);
+            visitService.createAVisit(opVisit);
+        }
+
         return savedAdmissions;
 
     }
@@ -176,7 +199,8 @@ public class AdmissionService {
     public AdmissionRequest createAdmissionRequest(final OPAdmissionData data) {
         Ward ward = wardService.getWard(data.getWardId());
         Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
-        User user = userService.findUserById(data.getAdmittingDoctoruserId());
+        User user =
+                userService.findUserByUsernameOrEmail(data.getAdmittingDoctorusername()).orElseThrow(()->APIException.notFound("User identified by {0} not found ", data.getAdmittingDoctorusername()));
         AdmissionRequest request = new AdmissionRequest();
         request.setRequestDate(data.getAdmissionDate());
         request.setRequestedBy(user);

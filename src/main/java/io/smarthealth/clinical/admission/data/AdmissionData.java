@@ -90,6 +90,12 @@ public class AdmissionData {
     private List<CareTeamData> careTeam = new ArrayList<>();
     private List<EmergencyContactData> emergencyContactData = new ArrayList();
 
+    //OP to IP conversion parameters
+    @ApiModelProperty(hidden = false, notes = "Required Only when OP is converted to IP")
+    private String opVisitNumber;
+
+    @ApiModelProperty(hidden = false, notes = "Required Only when OP is converted to IP")
+    private Long admissionRequestId;
 
     public static AdmissionData map(Admission adm) {
         AdmissionData d = new AdmissionData();

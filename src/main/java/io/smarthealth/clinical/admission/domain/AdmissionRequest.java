@@ -47,4 +47,10 @@ public class AdmissionRequest extends Auditable {
     private FullFillerStatusType fulfillerStatus;
     private String fulfillerComment;
     private Boolean voided = Boolean.FALSE;
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_admission_request_fulfilled_by_id"))
+    private User fullfilledBy;
+
+    private LocalDateTime admissionDateTime;
 }
