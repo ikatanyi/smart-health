@@ -5,5 +5,6 @@ public enum ReceiptAndPaymentMethod {
     Bank,
     Card,
     Mobile_Money,
-    Discount
+    Discount,
+    Insurance
 }

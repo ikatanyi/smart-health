@@ -63,6 +63,7 @@ public class ReceiptingController {
         auditTrailService.saveAuditTrail("Receipts", "Created a payment receipt "+payment.getReceiptNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
+
     @PostMapping("/receipting/copay")
     public  ResponseEntity<ReceiptData> createCopayReceipt(@Valid @RequestBody ReceiptInvoiceData data){
         Receipt receipt = service.receiptCopay(data);
