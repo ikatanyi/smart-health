@@ -52,6 +52,8 @@ public class AdmissionRequestData {
         if (i.getOpVisit() != null) {
             o.setOpVisitNumber(i.getOpVisit().getVisitNumber());
         }
+        o.setUrgency(i.getUrgency());
+        o.setOrderNumber(i.getOrderNumber());
         return o;
     }
 
