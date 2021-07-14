@@ -15,6 +15,7 @@ import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.clinical.admission.service.BedService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -128,6 +129,41 @@ public class AdmissionController {
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Admission Data");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/outpatient-admission")
+    public ResponseEntity<?> fetchAdmissionRequest(
+            @RequestParam(value = "patientName", required = false) final String patientName,
+            @RequestParam(value = "fulfillerStatus", required = false) final FullFillerStatusType status,
+            @RequestParam(value = "requestedByusername", required = false) final String requestedByusername,
+            @RequestParam(value = "wardId", required = false) final Long wardId,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Page<AdmissionRequestData> list = admissionService.fetchAdmissionRequest(
+                patientName,
+                status,
+                requestedByusername,
+                wardId,
+                range,
+                pageable).map(a -> AdmissionRequestData.map(a));
+        auditTrailService.saveAuditTrail("Admission", "Viewed all op admission requests");
+        Pager<List<AdmissionRequestData>> pagers = new Pager();
+        pagers.setCode("200");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Admission Request Data");
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);

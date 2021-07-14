@@ -8,6 +8,7 @@ import io.smarthealth.clinical.admission.data.OPAdmissionData;
 import io.smarthealth.clinical.admission.domain.*;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRequestRepository;
+import io.smarthealth.clinical.admission.domain.specification.AdmissionRequestSpecification;
 import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
@@ -189,6 +190,18 @@ public class AdmissionService {
         request.setUrgency(data.getUrgency());
         request.setVoided(Boolean.FALSE);
         return admissionRequestRepository.save(request);
+    }
+
+    public Page<AdmissionRequest> fetchAdmissionRequest(final String patientName,
+                                                        final FullFillerStatusType status,
+                                                        final String requestedByusername,
+                                                        final Long wardId,
+                                                        final DateRange requestDateRange,
+                                                        Pageable pageable) {
+        Specification<AdmissionRequest> s = AdmissionRequestSpecification.createSpecification(patientName, status,
+                requestedByusername, wardId, requestDateRange);
+        return admissionRequestRepository.findAll(s, pageable);
+
     }
 
     public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Boolean discharged, final Boolean active, final Status status, final DateRange range, final Pageable pageable) {
