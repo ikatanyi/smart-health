@@ -33,6 +33,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ContentDisposition;
@@ -52,7 +53,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/")
 public class InvoiceController {
 
+
+    @Autowired
     private final InvoiceService service;
+   // @Autowired
     private final AuditTrailService auditTrailService;
 
     public InvoiceController(InvoiceService service, AuditTrailService auditTrailService) {
@@ -158,10 +162,28 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices/{invoiceNo}/void")
+    @PreAuthorize("hasAuthority('create_invoices')") //added for debugging
     public ResponseEntity<?> cancelInvoice(@PathVariable(value = "invoiceNo") String invoiceNo, @Valid @RequestBody List<InvoiceItemData> invoiceItems) {
         Invoice invoice = service.cancelInvoice(invoiceNo, invoiceItems);
         auditTrailService.saveAuditTrail("Patient Invoice", "Cancelled Invoice " + invoiceNo);
-        return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
+//        return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
+
+        try {
+            if (invoice != null) {
+                invoice.toData();
+             //   System.out.println("invoiceee "+invoice);
+                return ResponseEntity.ok(invoice);
+            } else {
+                new InvoiceData();
+                assert false;
+             //   System.out.println("invoiceee2data "+invoice);
+                return ResponseEntity.ok(invoice);
+            }
+        }catch (RuntimeException e){
+           // System.out.println("theEksep"+e.toString());
+            return ResponseEntity.ok(invoice);
+        }
+
     }
 
     @PutMapping("/invoices/{id}/update-smart-status")
