@@ -1,9 +1,7 @@
 package io.smarthealth.stock.inventory.service;
 
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
-import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
-import io.smarthealth.accounting.accounts.domain.JournalState;
-import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.data.FinancialActivity;
+import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.InventoryStockData;
@@ -55,6 +53,7 @@ public class InventoryItemService {
     private final StockEntryRepository stockEntryRepository;
     private final SequenceNumberService sequenceNumberService;
     private final JournalService journalService;
+    private final FinancialActivityAccountRepository activityAccountRepository;
 
     private void decrease(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
@@ -287,14 +286,18 @@ public class InventoryItemService {
             throw APIException.notFound("Inventory Account is Not Defined for the Store " + store.getStoreName());
         }
         //get opening balance equity account for openining stocks
-
+        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.OpeningBalanceEquity);
+        if (!creditAccount.isPresent()) {
+            throw APIException.badRequest("Opening Balance Account is not mapped");
+        }
 
         String narration = "Opening Balance Inventory for  - " + store.getStoreName();
         JournalEntry toSave = new JournalEntry(
                 date,
                 narration,
                 new JournalEntryItem[]{
-                        new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO)
+                        new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO),
+                        new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, amount)
                 },
                 true
         );

@@ -25,7 +25,8 @@ public enum FinancialActivity {
     DeferredRevenue("Deferred Revenue", AccountType.LIABILITY),
     CapitationExpense("Capitation Expense", AccountType.EXPENSE),
     CapitationIncome("Capitation Income", AccountType.REVENUE),
-    MiscellaneousExpense("Miscellaneous Expense", AccountType.EXPENSE);
+    MiscellaneousExpense("Miscellaneous Expense", AccountType.EXPENSE),
+    OpeningBalanceEquity("Opening Balance Equity", AccountType.EQUITY);
 
     private final String activityName;
     private final AccountType accountType;
