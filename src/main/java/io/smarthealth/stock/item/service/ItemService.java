@@ -278,6 +278,7 @@ public class ItemService {
     }
 
     public Page<Item> fetchItems(ItemCategory category, ItemType type, boolean includeClosed, String term, Pageable pageable) {
+        System.err.println(category);
         Specification<Item> spec = ItemSpecification.createSpecification(category, type, includeClosed, term);
         Page<Item> items = itemRepository.findAll(spec, pageable);
         return items;

@@ -88,7 +88,9 @@ public class Item extends Identifiable {
         ItemData data = new ItemData();
         data.setActive(this.active);
         data.setBillable(this.billable);
-        data.setCategory(this.category);
+        if(this.category!=null) {
+            data.setCategory(this.category);
+        }
         data.setCostRate(this.costRate);
         data.setDescription(this.description);
         data.setDiscountable(this.discountable);
@@ -98,7 +100,9 @@ public class Item extends Identifiable {
         data.setItemCode(this.itemCode);
         data.setItemId(this.getId());
         data.setItemName(this.itemName);
-        data.setItemType(this.itemType);
+        if(this.itemType !=null) {
+            data.setItemType(this.itemType);
+        }
         data.setRate(this.rate);
         data.setRoute(this.route);
         data.setStrength(this.strength);

@@ -473,6 +473,7 @@ public class ReceiptingService {
 
         String description = payment.getDescription() + " - Receipt no. " + payment.getReceiptNo();
         JournalEntry toSave = new JournalEntry(payment.getTransactionDate().toLocalDate(), description, journalEntryItems);
+        System.err.println("My Journal... "+toSave);
         toSave.setTransactionType(TransactionType.Receipting);
         toSave.setTransactionNo(payment.getTransactionNo());
         toSave.setStatus(JournalState.PENDING);
