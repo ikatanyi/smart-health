@@ -37,6 +37,7 @@ public class SupplierData {
     private AddressData addresses;
     private ContactData contact;
     private String status;
+    private boolean active = true;
     //for reporting
     @ApiModelProperty(required = false, hidden = true)
     private String county;

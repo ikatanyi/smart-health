@@ -5,12 +5,21 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.accounting.billing.data.SummaryBill;
+import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.administration.config.domain.GlobalConfigNum;
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.EnglishNumberToWords;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.report.data.ReportData;
+import io.smarthealth.report.data.accounts.DailyBillingData;
+import io.smarthealth.report.experiments.ReportRepository;
 import io.smarthealth.stock.inventory.data.*;
 import io.smarthealth.stock.inventory.domain.Requisition;
 import io.smarthealth.stock.inventory.domain.RequisitionRepository;
@@ -19,6 +28,7 @@ import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.service.ItemService;
@@ -28,34 +38,42 @@ import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.smarthealth.stock.purchase.service.PurchaseService;
+import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.stock.stores.domain.StoreRepository;
+import io.smarthealth.supplier.data.SupplierBalanceAging;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRSortField;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.design.JRDesignSortField;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
+import net.sf.jasperreports.export.Exporter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 /**
- *
  * @author Kennedy.Imbenzi
  */
 @Service
@@ -72,6 +90,12 @@ public class StockReportService {
     private final InventoryService inventoryService;
     private final ItemService itemService;
     private final RequisitionRepository requisitionRepository;
+    private final ReportRepository reportRepository;
+    private final JasperReportsService jasperReportService;
+    private final ConfigService configService;
+    private final StoreRepository storeRepository;
+
+
 
     public void getSuppliers(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -115,15 +139,23 @@ public class StockReportService {
     public void getPurchaseOrder(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String orderNo = reportParam.getFirst("orderNo");
+        Boolean showBalance = Boolean.FALSE;
+        Optional<GlobalConfiguration> conf = configService.findByName(GlobalConfigNum.ShowStockBalancePurchaseOrder.name());
+        if(conf.isPresent()){
+            showBalance = conf.get().getValue().equals("1");
+            System.err.println("after changing ... "+showBalance);
+        }
 
+        System.err.println("show baalnce "+showBalance);
         PurchaseOrderData purchaseOrderData = purchaseService.findByOrderNumberOrThrow(orderNo).toData();
-        System.out.println("purchaseOrderData.getPurchaseOrderItems() "+purchaseOrderData.getPurchaseOrderItems().size());
-        for(PurchaseOrderItemData item: purchaseOrderData.getPurchaseOrderItems()){
+        System.out.println("purchaseOrderData.getPurchaseOrderItems() " + purchaseOrderData.getPurchaseOrderItems().size());
+        for (PurchaseOrderItemData item : purchaseOrderData.getPurchaseOrderItems()) {
             Integer count = inventoryItemService.getItemCount(item.getItemCode());
             item.setAvailable(count);
-            System.out.println("Count "+count);
+            System.out.println("Count " + count);
         }
         reportData.getFilters().put("category", "Supplier");
+        reportData.getFilters().put("showBalance", showBalance);
         Optional<Supplier> supplier = supplierService.getSupplierById(purchaseOrderData.getSupplierId());
         if (supplier.isPresent()) {
             reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
@@ -151,8 +183,8 @@ public class StockReportService {
                 .getContent()
                 .stream()
                 .map((x) -> {
-                    for(PurchaseOrderItem item:x.getPurchaseOrderLines()){
-                        PurchaseOrderItemData data=PurchaseOrderItemData.map(item);
+                    for (PurchaseOrderItem item : x.getPurchaseOrderLines()) {
+                        PurchaseOrderItemData data = PurchaseOrderItemData.map(item);
                         orderItemData.add(data);
                     }
                     return x.toData();
@@ -170,11 +202,11 @@ public class StockReportService {
         ReportData reportData = new ReportData();
         Long supplierId = NumberUtils.createLong(reportParam.getFirst("supplierId"));
         Boolean paid = reportParam.getFirst("paid") != null ? BooleanUtils.toBoolean(reportParam.getFirst("paid")) : null;
-         Boolean approved = reportParam.getFirst("approved")!=null?Boolean.getBoolean(reportParam.getFirst("approved")):null;
+        Boolean approved = reportParam.getFirst("approved") != null ? Boolean.getBoolean(reportParam.getFirst("approved")) : null;
         String invoiceNumber = reportParam.getFirst("invoiceNumber");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         PurchaseInvoiceStatus status = EnumUtils.getEnum(PurchaseInvoiceStatus.class, reportParam.getFirst("status"));
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status,approved, null, null, Pageable.unpaged())
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved, null, null, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((inv) -> {
@@ -240,7 +272,7 @@ public class StockReportService {
         List<InventoryItemData> inventoryItemData = inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map(itm->{
+                .map(itm -> {
                     return itm.toData();
                 })
                 .collect(Collectors.toList());
@@ -267,6 +299,7 @@ public class StockReportService {
         reportData.setReportName("Inventory-expiry-Statement");
         reportService.generateReport(reportData, response);
     }
+
     public ReportData emailExpiryStock() {
         List<ExpiryStock> inventoryItemData = inventoryItemService.getExpiryStock();
         ReportData reportData = new ReportData();
@@ -276,7 +309,8 @@ public class StockReportService {
         reportData.setReportName("Inventory-expiry-Statement");
 
         return reportData;
-    } 
+    }
+
     public void getInventoryAdjustedItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
@@ -290,6 +324,38 @@ public class StockReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/stock_adjustment_statement");
         reportData.setReportName("Stock-Adjustment-Statement");
+        reportService.generateReport(reportData, response);
+    }
+    public void getStockAdjustedItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        Long storeId = NumberUtils.createLong(reportParam.getFirst("store_id"));
+        Long itemId = NumberUtils.createLong(reportParam.getFirst("item_id"));
+
+        String storeName=null;
+        String itemName=null;
+        if(storeId!=null){
+            Store store = storeRepository.findById(storeId).orElse(null);
+            if(store!=null){
+                storeName = store.getStoreName();
+            }
+        }
+        if(itemId!=null){
+            Item item = itemService.findById(itemId).orElse(null);
+            if(item!=null){
+                itemName = item.getItemName();
+            }
+        }
+        //(list.getContent().sort(Comparator.comparing(Item::getName)))
+        List<StockAdjustmentData> inventoryItemData = inventoryAdjustmentService.getStockAdjustments(storeId, itemId, range, Pageable.unpaged()).getContent();
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("storeName", storeName);
+        reportData.getFilters().put("itemName", itemName);
+
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/StockAdjustment");
+        reportData.setReportName("Stock Adjustment Report");
         reportService.generateReport(reportData, response);
     }
 
@@ -333,22 +399,22 @@ public class StockReportService {
                 .stream()
                 .map((u) -> u.toData())
                 .collect(Collectors.toList());
-        
-        List<JRSortField> sortList = new ArrayList<>();
-        JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("category");
-        sortField.setOrder(SortOrderEnum.ASCENDING);
-        sortField.setType(SortFieldTypeEnum.FIELD);
-        sortList.add(sortField);
 
-        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+//        List<JRSortField> sortList = new ArrayList<>();
+//        JRDesignSortField sortField = new JRDesignSortField();
+//        sortField.setName("category");
+//        sortField.setOrder(SortOrderEnum.ASCENDING);
+//        sortField.setType(SortFieldTypeEnum.FIELD);
+//        sortList.add(sortField);
+
+       // reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/stock_purchase");
         reportData.setReportName("Stock-Purchase-Statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void requisitionRequest(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String requisitionNo = reportParam.getFirst("requisitionNo");
@@ -392,6 +458,20 @@ public class StockReportService {
         reportService.generateReport(reportData, response);
     }
 
+    public void supplierInvoice(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+
+        String document_no = reportParam.getFirst("doc_no");
+        SupplierInvoiceReport stockTransfer = purchaseInvoiceService.getSupplierInvoiceReport(document_no);
+        List<SupplierInvoiceReport> requisitionData = Arrays.asList(stockTransfer);
+
+        reportData.setData(requisitionData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/supplier/SupplierInvoice");
+        reportData.setReportName("Supplier Invoice");
+        reportService.generateReport(reportData, response);
+    }
+
     public void InventoryReorderStock(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long storeId = null, itemId = null;
@@ -403,13 +483,13 @@ public class StockReportService {
             search = reportParam.getFirst("search");
             includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
         }
-        List<InventoryItemData> inventoryItemData =new ArrayList<>();
+        List<InventoryItemData> inventoryItemData = new ArrayList<>();
         inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map(itm -> {
                     Double reOrderCount = itemService.getItemReorderCount(itm.getItem().getItemCode(), itm.getStore().getId());
-                    if(itm.getAvailableStock() <= reOrderCount){
+                    if (itm.getAvailableStock() <= reOrderCount) {
                         InventoryItemData data = itm.toData();
                         data.setReorderLevel(reOrderCount);
                         inventoryItemData.add(data);
@@ -454,9 +534,10 @@ public class StockReportService {
         }
         throw APIException.internalError("Provide a Valid Item Type");
     }
-    public ReportData emailReorderLevels( Long storeId){
+
+    public ReportData emailReorderLevels(Long storeId) {
         ReportData reportData = new ReportData();
-       Long itemId = null;
+        Long itemId = null;
         String search = null;
         Boolean includeClosed = null;
 //        if (reportParam != null) {
@@ -465,27 +546,89 @@ public class StockReportService {
 //            search = reportParam.getFirst("search");
 //            includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
 //        }
-        List<InventoryItemData> inventoryItemData =new ArrayList<>();
-                inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
+        List<InventoryItemData> inventoryItemData = new ArrayList<>();
+        inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map(itm -> {
-                     Double reOrderCount = itemService.getItemReorderCount(itm.getItem().getItemCode(), itm.getStore().getId());
-                     if(itm.getAvailableStock() <= reOrderCount){
-                         InventoryItemData data = itm.toData();
-                         data.setReorderLevel(reOrderCount);
-                         inventoryItemData.add(data);
-                     }
-                     return itm.toData();
-                        });
+                    Double reOrderCount = itemService.getItemReorderCount(itm.getItem().getItemCode(), itm.getStore().getId());
+                    if (itm.getAvailableStock() <= reOrderCount) {
+                        InventoryItemData data = itm.toData();
+                        data.setReorderLevel(reOrderCount);
+                        inventoryItemData.add(data);
+                    }
+                    return itm.toData();
+                });
 
         reportData.setData(inventoryItemData);
         reportData.setFormat(ExportFormat.PDF);
         reportData.setTemplate("/inventory/inventory_stock_reorder");
         reportData.setReportName("Inventory-Stock--Reorder-Statement");
-        
+
         return reportData;
     }
-    
-    
+
+    public void getItemValuation(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+        String date = reportParam.getFirst("asAt");
+        LocalDate asAt = date != null ? LocalDate.parse(date) : null;
+        Long storeId = reportParam.getFirst("storeId") != null ? Long.valueOf(reportParam.getFirst("storeId")) : null;
+        ReportData reportData = new ReportData();
+        reportData.getFilters().put("asAt", asAt);
+        reportData.getFilters().put("storeId", storeId);
+
+        List<ItemValuation> items = inventoryItemService.getItemValuations(storeId, asAt);
+        reportData.setData(items);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/ItemValuation");
+        reportData.setReportName("Item Valuation");
+        reportService.generateReport(reportData, response);
+    }
+
+    public void getItemMovement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        Long itemId = reportParam.getFirst("itemId") != null ? Long.valueOf(reportParam.getFirst("itemId")) : null;
+        ReportData reportData = new ReportData();
+        String itemName = null;
+        if(itemId!=null) {
+            Item item = itemService.findById(itemId).orElse(null);
+            itemName = item!=null ? item.getItemName() : null;
+        }
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("itemId", itemName);
+
+        Page<ItemMovement> items = inventoryItemService.getItemMovements(itemId,range, Pageable.unpaged());
+
+        reportData.setData(items.getContent());
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/StockMovement");
+        reportData.setReportName("Item Movement");
+        reportService.generateReport(reportData, response);
+    }
+
+    public void getLabReagentReport(MultiValueMap<String, String> reportParam, ExportFormat format,
+                                    HttpServletResponse response) throws SQLException, JRException, IOException {
+
+        String template = "/clinical/laboratory/Reagents.jrxml";
+        String reportName = "Lab Reagent Report";
+        Map<String, Object> params = new HashMap();
+
+
+        Exporter exporter = new JRPdfExporter();
+        JasperPrint jasperPrint = reportRepository.generateJasperPrint(template, params);
+        jasperReportService.export(jasperPrint, format, template, response);
+    }
+    public void getSupplierAgingBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+//        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        ReportData reportData = new ReportData();
+//        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        Page<SupplierBalanceAging> ages = supplierService.getSupplierAgingBalances(Pageable.unpaged());
+        reportData.setData(ages.getContent());
+        reportData.setFormat(format);
+        reportData.setTemplate("/supplier/SupplierAgingBalance");
+        reportData.setReportName("Supplier Aging Balance");
+        reportService.generateReport(reportData, response);
+    }
 }

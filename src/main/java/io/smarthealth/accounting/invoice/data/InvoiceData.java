@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -72,4 +73,9 @@ public class InvoiceData {
     private BigDecimal copay;
     private BigDecimal paid;
     private BigDecimal amountDue;
+    private String preauthCode;
+    @Column(name = "is_rebate")
+    private Boolean rebate = Boolean.FALSE;
+    @JsonFormat(pattern = Constants.DATE_PATTERN)
+    private LocalDate dischargeDate;
 }

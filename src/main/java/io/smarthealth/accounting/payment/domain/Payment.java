@@ -7,10 +7,13 @@ package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,7 +35,9 @@ public class Payment extends Auditable {
     private PayeeType payeeType;
     private LocalDate paymentDate;
     private String voucherNo; //payment number
-    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMethod;
     private BigDecimal amount;
     private String referenceNumber;
     private String description;

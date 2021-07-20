@@ -12,24 +12,15 @@ import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.security.domain.User;
-import java.math.BigDecimal;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import  io.smarthealth.clinical.visit.domain.Visit;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
- *
  * @author simz
  */
 @Data
@@ -69,13 +60,13 @@ public class PaymentDetails extends Auditable {
     private boolean hasCapitation;
     private BigDecimal capitationAmount = BigDecimal.ZERO;
     private double runningLimit;
-    
+
     @Column(columnDefinition = "tinyint(1) default 1")
     private Boolean limitEnabled = Boolean.TRUE;
-    
+
     @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean excessAmountEnabled = Boolean.FALSE;
-    
+
     @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean limitReached = Boolean.FALSE;
 
@@ -97,6 +88,12 @@ public class PaymentDetails extends Auditable {
     private Scheme excessAmountScheme;
 
     private String authorizationCode;
+    private Double tempRunningLimit;
+
+    private BigDecimal preauthRequestedAmount;
+    private BigDecimal preauthApprovedAmount;
+    private String preauthCode;
+    private LocalDate preauthDate;
 
     @Override
     public String toString() {

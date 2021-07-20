@@ -36,6 +36,7 @@ import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptTransactionData;
 import io.smarthealth.accounting.payment.data.RemittanceData;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.service.ReceiptingService;
@@ -68,6 +69,7 @@ import io.smarthealth.report.data.accounts.InsuranceInvoiceData;
 import io.smarthealth.report.data.accounts.ReportReceiptData;
 import io.smarthealth.report.data.accounts.TrialBalanceData;
 import io.smarthealth.clinical.admission.service.AdmissionService;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -79,6 +81,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
@@ -94,7 +97,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 /**
- *
  * @author Kennedy.Imbenzi
  */
 @Service
@@ -584,8 +586,8 @@ public class AccountReportService {
         reportData.setReportName("insurance_statement");
         reportService.generateReport(reportData, response);
     }
-    
-     public void getCapitationInvoice(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+    public void getCapitationInvoice(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
         Boolean includeCanceled = reportParam.getFirst("includeCanceled") != null ? Boolean.valueOf(reportParam.getFirst("includeCanceled")) : Boolean.FALSE;
@@ -596,7 +598,7 @@ public class AccountReportService {
         reportData.setReportName("Capitation_invoice");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void genNHIFStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
 
         Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
@@ -621,7 +623,7 @@ public class AccountReportService {
                 .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList<>();
-        JRDesignSortField sortField = new JRDesignSortField();  
+        JRDesignSortField sortField = new JRDesignSortField();
 
         sortField = new JRDesignSortField();
         sortField.setName("visitDate");
@@ -734,6 +736,11 @@ public class AccountReportService {
     public void getPatientPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
+        String visitType = reportParam.getFirst("visitType");
+        VisitEnum.VisitType visitType1 = visitTypeStatusToEnum(visitType);
+        if (visitType.equals("All")) {
+            visitType = null;
+        }
         String payee = reportParam.getFirst("payee");
         String transactionNo = reportParam.getFirst("transactionNo");
         Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
@@ -744,7 +751,7 @@ public class AccountReportService {
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, visitType1, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -765,24 +772,26 @@ public class AccountReportService {
             data.setShiftNo(receipt.getShiftNo());
             data.setTransactionDate(receipt.getTransactionDate());
             data.setCreatedBy(receipt.getCreatedBy());
-            if(receipt.getPrepayment()){
+            data.setVisitType(receipt.getVisitType());
+
+            if (receipt.getPrepayment()) {
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
             }
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
-                switch (trx.getMethod().toUpperCase()) {
-                    case "BANK":
+                switch (trx.getMethod()) {
+                    case Bank:
                         data.setBank(data.getBank().add(trx.getAmount()));
                         break;
-                    case "CARD":
+                    case Card:
                         data.setCard(data.getCard().add(trx.getAmount()));
                         break;
-                    case "MOBILE MONEY":
+                    case Mobile_Money:
                         data.setMobilemoney(data.getMobilemoney().add(trx.getAmount()));
                         data.setReferenceNumber(trx.getReference());
                         break;
-                    case "CASH":
+                    case Cash:
                         data.setCash(data.getCash().add(trx.getAmount()));
-                        break;                    
+                        break;
                     default:
                         data.setOtherPayment(data.getOtherPayment().add(trx.getAmount()));
                         break;
@@ -791,7 +800,7 @@ public class AccountReportService {
             }
 
             for (ReceiptItemData item : receipt.getReceiptItems()) {
-                 data.setDiscount(data.getDiscount().add(item.getDiscount()));
+                data.setDiscount(data.getDiscount().add(item.getDiscount()));
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
                         data.setLab(data.getLab().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
@@ -832,6 +841,7 @@ public class AccountReportService {
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("visitType", visitType);
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/departmental_mode_report");
@@ -891,7 +901,8 @@ public class AccountReportService {
     public void getLedger(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String identifier = reportParam.getFirst("identifier");
-        LedgerData ledgerData = ledgerService.findLedgerData(identifier).orElseThrow(() -> APIException.notFound("Ledger with id  {0} not found"));;
+        LedgerData ledgerData = ledgerService.findLedgerData(identifier).orElseThrow(() -> APIException.notFound("Ledger with id  {0} not found"));
+        ;
 
         reportData.setData(Arrays.asList(ledgerData));
         reportData.setFormat(format);
@@ -923,25 +934,24 @@ public class AccountReportService {
             } else {
                 ReceiptData receipt = paymentService.getPaymentByReceiptNumber(item.getPaymentReference()).toData();
                 if (receipt.getReceiptType() == ReceiptType.Deposit) {
-                    deposit = deposit+item.getAmount();
+                    deposit = deposit + item.getAmount();
                 } else {
-                    payment = payment+item.getAmount();
+                    payment = payment + item.getAmount();
                 }
             }
         }
 
-            reportData.setPatientNumber(patientNumber);
-            reportData.getFilters().put("range", DateRange.getReportPeriod(range));
-            reportData.getFilters().put("deposit", deposit);
-            reportData.getFilters().put("payment", payment);
-            reportData.setData(data);
-            reportData.setFormat(format);
-            reportData.setTemplate("/payments/patient_statement");
-            reportData.setReportName("Patient_Statement");
-            reportService.generateReport(reportData, response);
-        }
+        reportData.setPatientNumber(patientNumber);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("deposit", deposit);
+        reportData.getFilters().put("payment", payment);
+        reportData.setData(data);
+        reportData.setFormat(format);
+        reportData.setTemplate("/payments/patient_statement");
+        reportData.setReportName("Patient_Statement");
+        reportService.generateReport(reportData, response);
+    }
 
-    
 
     public void getInterimBill(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -1124,11 +1134,13 @@ public class AccountReportService {
         TrnxType trnxtype = EnumUtils.getEnum(TrnxType.class, reportParam.getFirst("trnxType"));
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
-        List<ReceiptTransactionData> receiptDataArray = receivePaymentService.getTransactions(method, receiptNo, trnxtype, range, Pageable.unpaged())
-                .getContent()
-                .stream()
-                .map((trans) -> trans.toData())
-                .collect(Collectors.toList());
+        List<ReceiptTransactionData> receiptDataArray =
+                receivePaymentService.getTransactions(ReceiptAndPaymentMethod.valueOf(method), receiptNo, trnxtype,
+                        range, Pageable.unpaged())
+                        .getContent()
+                        .stream()
+                        .map((trans) -> trans.toData())
+                        .collect(Collectors.toList());
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("method");
@@ -1191,7 +1203,7 @@ public class AccountReportService {
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Pageable pageable = PaginationUtil.createPage(1, 500);
+        Pageable pageable = Pageable.unpaged();
         List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, pageable).getContent()
                 .stream()
                 .map(x -> {
@@ -1308,6 +1320,16 @@ public class AccountReportService {
             return InvoiceStatus.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid Invoice Status");
+    }
+
+    private VisitEnum.VisitType visitTypeStatusToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("") || status.equals("All")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(VisitEnum.VisitType.class, status)) {
+            return VisitEnum.VisitType.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Visit Type");
     }
 
     private AccountType AccountTypeToEnum(String status) {

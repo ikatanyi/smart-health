@@ -104,6 +104,9 @@ public class VisitBillSummaryRepositoryImpl implements VisitBillSummaryRepositor
             predicates.add(builder.equal(root.get("patientBill").get("visit").get("paymentMethod"), query.getPaymentMethod()));
         }
 
+        if (query.getVisitNumber() != null) {
+            predicates.add(builder.equal(root.get("patientBill").get("visit").get("visitNumber"), query.getVisitNumber()));
+        }
         if (StringUtils.isNotBlank(query.getSearch())) {
             predicates.add(
                     builder.or(

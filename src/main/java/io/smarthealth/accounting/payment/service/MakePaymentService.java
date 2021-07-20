@@ -21,6 +21,7 @@ import io.smarthealth.accounting.payment.data.PettyCashPaymentData;
 import io.smarthealth.accounting.payment.data.PettyCashRequestItem;
 import io.smarthealth.accounting.payment.data.SupplierPaymentData;
 import io.smarthealth.accounting.payment.domain.DoctorsPayment;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
 import io.smarthealth.accounting.payment.domain.repository.DoctorsPaymentRepository;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.accounting.payment.domain.repository.PaymentRepository;
@@ -29,10 +30,16 @@ import io.smarthealth.accounting.payment.domain.repository.PettyCashPaymentRepos
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
+import io.smarthealth.notification.data.NoticeType;
+import io.smarthealth.notification.data.NotificationData;
+import io.smarthealth.notification.service.NotificationEventPublisher;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +47,7 @@ import java.util.stream.Collectors;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,6 +95,8 @@ public class MakePaymentService {
     private final PettyCashApprovedItemsRepository pettyCashApprovedItemsRepository;
     private final PettyCashRequestsService pettyCashRequestsService;
 
+    private final NotificationEventPublisher notificationEventPublisher;
+
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Payment makePayment(MakePayment data) {
@@ -97,6 +107,7 @@ public class MakePaymentService {
         payment.setAmount(data.getAmount());
         payment.setDescription(data.getDescription());
         payment.setPaymentDate(data.getDate());
+
         payment.setPaymentMethod(data.getPaymentMethod());
         payment.setReferenceNumber(data.getReferenceNumber());
 //        payment.setSupplier(supplier);
@@ -320,7 +331,7 @@ public class MakePaymentService {
         payment.setAmount(data.getApprovedAmount());
         payment.setDescription(data.getDescription());
         payment.setPaymentDate(data.getDate());
-        payment.setPaymentMethod("Cash");
+        payment.setPaymentMethod(ReceiptAndPaymentMethod.Cash);
         payment.setReferenceNumber(data.getReferenceNumber());
 //        payment.setSupplier(supplier);
         //update the invoices paid
@@ -453,7 +464,27 @@ public class MakePaymentService {
         inv.setTransactionDate(payment.getPaymentDate());
         inv.setTransactionNumber(payment.getTransactionNo());
         inv.setType(PurchaseInvoice.Type.Payment);
+        inv.setDocumentNumber(payment.getVoucherNo());
 
         return  inv;
+    }
+
+    //notification that are due today
+//    @Scheduled(cron = "0 8 12 * * *")
+    public void getSupplierInvoiceDue(){
+
+        List<PurchaseInvoice> invoices = purchaseInvoiceRepository.findPurchaseInvoiceByDueDate(LocalDate.now());
+        invoices.stream()
+                .map(inv -> {
+                    return NotificationData.builder()
+                            .datetime(LocalDateTime.now())
+                            .description(String.format("Supplier Invoice %s Amount %s is Due Date %s is due for payment",inv.getInvoiceNumber(), inv.getInvoiceBalance().toString(), inv.getDueDate().format(DateTimeFormatter.ISO_DATE) ))
+                            .isRead(false)
+                            .noticeType(NoticeType.SupplierInvoiceDue)
+                            .username("admin")
+                            .reference(String.valueOf(inv.getId()))
+                            .build();
+                })
+                .forEach(not -> notificationEventPublisher.publishUserNotificationEvent(not));
     }
 }

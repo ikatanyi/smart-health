@@ -14,9 +14,11 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.item.data.ItemSimpleData;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 import io.smarthealth.accounting.pricelist.data.BulkPriceUpdate;
 
 /**
- *
  * @author Kelsas
  */
 @RestController
@@ -52,7 +53,7 @@ public class PricebookRestController {
         }
 
         PriceBookData result = service.createPricebook(priceBookData);
-        auditTrailService.saveAuditTrail("PriceBook", "Created Price book "+result.getName());
+        auditTrailService.saveAuditTrail("PriceBook", "Created Price book " + result.getName());
         Pager<PriceBookData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Pricebook created successful");
@@ -70,7 +71,7 @@ public class PricebookRestController {
 //        }
 
         PriceBookData result = service.updatePricebook(id, priceBookData);
-        auditTrailService.saveAuditTrail("PriceBook", "Edited Price book "+result.getName());
+        auditTrailService.saveAuditTrail("PriceBook", "Edited Price book " + result.getName());
         Pager<PriceBookData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Pricebook updated successful");
@@ -85,7 +86,7 @@ public class PricebookRestController {
     public PriceBookData getPricebook(@PathVariable(value = "id") Long code) {
         PriceBook pricebook = service.getPricebook(code)
                 .orElseThrow(() -> APIException.notFound("Price Book with id {0} not found.", code));
-        auditTrailService.saveAuditTrail("PriceBook", "Searched Price book Identified by "+code);
+        auditTrailService.saveAuditTrail("PriceBook", "Searched Price book Identified by " + code);
         return PriceBookData.map(pricebook);
     }
 
@@ -120,21 +121,31 @@ public class PricebookRestController {
     @GetMapping("/pricebooks/{id}/items")
 //    @PreAuthorize("hasAuthority('edit_pricebook')")
     public ResponseEntity<?> getPricebookItem(@PathVariable(value = "id") Long id,
-            @RequestParam(value = "q", required = false) final String term,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "pageSize", required = false) Integer size
+                                              @RequestParam(value = "q", required = false) final String term,
+                                              @RequestParam(value = "page", required = false) Integer page,
+                                              @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         auditTrailService.saveAuditTrail("PriceBook", "Viewed Price book items");
         Pageable pageable = PaginationUtil.createPage(page, size);
         Pager<PriceBookItemData> result = service.getPriceBookItems(id, term, pageable);
         return ResponseEntity.ok(result);
     }
+//
+//    @GetMapping("/pricebooks/{bookId}/items/{itemId}")
+////    @PreAuthorize("hasAuthority('view_pricebook')")
+//    public ResponseEntity<?> getPricebookItem(
+//            @PathVariable(value = "bookId") Long bookId,
+//            @PathVariable(value = "itemId") Long itemId
+//    ) {
+//        Pager<PriceBookItemData> result = service.getPriceBookItems(id, term, pageable);
+//        return ResponseEntity.ok(result);
+//    }
 
     @PostMapping("/pricebooks/{id}/items")
 //    @PreAuthorize("hasAuthority('edit_pricebook')")
     public ResponseEntity<?> addPricebookItem(@PathVariable(value = "id") Long id, @Valid @RequestBody ItemSimpleData pricebookItem) {
         service.addPriceBookItem(id, pricebookItem);
-        auditTrailService.saveAuditTrail("PriceBook", "Added a Price book item "+pricebookItem.getItemName());
+        auditTrailService.saveAuditTrail("PriceBook", "Added a Price book item " + pricebookItem.getItemName());
         return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Item Successfully addedd"));
     }
 
@@ -142,7 +153,7 @@ public class PricebookRestController {
     @PreAuthorize("hasAuthority('edit_pricebook')")
     public ResponseEntity<?> deletePricebookItems(@PathVariable(value = "id") Long id, @PathVariable(value = "itemId") Long itemId) {
         service.deletePriceItem(id, itemId);
-        auditTrailService.saveAuditTrail("PriceBook", "Deleted a Price book item identified by id "+itemId);
+        auditTrailService.saveAuditTrail("PriceBook", "Deleted a Price book item identified by id " + itemId);
         Pager<PriceBookData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Pricebook updated successful");
@@ -150,9 +161,10 @@ public class PricebookRestController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
+
     @PutMapping("/pricebooks/items/batch-update")
 //    @PreAuthorize("hasAuthority('edit_pricebook')")
-    public ResponseEntity<?> batchUpdatePricebookItem( @Valid @RequestBody BulkPriceUpdate bulks) {
+    public ResponseEntity<?> batchUpdatePricebookItem(@Valid @RequestBody BulkPriceUpdate bulks) {
         service.batchUpdatePriceItem(bulks);
         auditTrailService.saveAuditTrail("PriceBook", "Upadted Price book price items[Bulk]");
         return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Item Successfully Updated"));

@@ -16,5 +16,6 @@ public enum Code {
     InventoryAdjustmentReason,
     CurfewNote,
     MedicalNote,
-    Residence
+    Residence,
+    RefundNarration
 }

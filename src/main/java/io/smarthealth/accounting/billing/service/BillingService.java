@@ -1,11 +1,14 @@
 package io.smarthealth.accounting.billing.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import io.smarthealth.accounting.accounts.data.FinancialActivity;
 import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.*;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.accounting.billing.data.nue.BillItemListToDataConverter;
 import io.smarthealth.accounting.billing.data.nue.BillPayment;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
@@ -13,6 +16,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.accounting.billing.domain.enumeration.ExcessAmountPayMethod;
 import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
 import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
@@ -27,6 +31,9 @@ import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
+import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
+import io.smarthealth.clinical.pharmacy.service.DispensingService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -41,21 +48,32 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.inventory.domain.StockEntry;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
+import io.smarthealth.stock.inventory.events.InventoryEvent;
+import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.stores.domain.Store;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -90,6 +108,8 @@ public class BillingService {
     private final PaymentDetailsService paymentDetailsService;
     private final PricelistService pricelistService;
     private final ReceiptRepository receiptRepository;
+    private final InventoryService inventoryService;
+    private final DispensedDrugRepository dispensedDrugRepository;
 
     public static <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
@@ -224,16 +244,70 @@ public class BillingService {
             pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
             PaymentDetails payDetails = pd.orElse(null);
             if (payDetails != null) {
-                System.out.println("Lie 235");
                 Optional<SchemeConfigurations> schemeConfigurations = payDetails.getScheme() != null ? schemeService.fetchSchemeConfigByScheme(payDetails.getScheme()) : Optional.empty();
 
                 if (schemeConfigurations.isPresent() && schemeConfigurations.get().isLimitEnabled()) {
-//                    if (pd.isPresent() && pd.get().getLimitEnabled()) {
-//                        PaymentDetails payDetails = pd.get();
-                    System.out.println("Visit type " + bill.getVisit().getVisitType().name());
-                    if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled() && bill.getVisit().getVisitType().equals(VisitEnum.VisitType.Outpatient)) {
-                        throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ", "");
+                    if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled()
+                            && bill.getVisit().getVisitType().equals(VisitEnum.VisitType.Outpatient)) {
+                        if (bill.getAllowedToExceedLimit().equals(Boolean.FALSE)) {
+                            List<BillItemData> billItemData = new ArrayList<>();
+                            LimitExceedingResponse response = new LimitExceedingResponse(LimitResponseStatus.ERROR,
+                                    "Bill amount (" + amountToBill +
+                                            ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ",
+                                    bill.getVisit().getVisitNumber(), bill.getPatient().getPatientNumber(),
+                                    amountToBill - payDetails.getRunningLimit(), amountToBill,
+                                    payDetails.getRunningLimit(),
+                                    BillItemListToDataConverter.billItemDataConverter(bill.getBillItems()));
+                            throw APIException.limitExceedResponse(response);
+                        }
+                        if (bill.getAllowedToExceedLimit().equals(Boolean.TRUE) && bill.getBillItems().size() > 1) {
+                            throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning " +
+                                    "limit  amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items" +
+                                    " from the bill count", "");
+                        }
+                        if (bill.getAllowedToExceedLimit().equals(Boolean.TRUE)) {
+                            //split the amount
+                            PatientBillItem b = bill.getBillItems().get(0);
+                            Double sellingPrice = b.getAmount();
+                            Double runningLimit = payDetails.getRunningLimit();
+                            Double surpassedAmount = sellingPrice - runningLimit;
+                            Double newAmountToBill = surpassedAmount;
+                            //create default credit bill
+                            if (runningLimit >= 0) {
+                                bill.getBillItems().get(0).setAmount(runningLimit);
+                                bill.getBillItems().get(0).setBalance(runningLimit);
+                                bill.getBillItems().get(0).setBillPayMode(PaymentMethod.Insurance);
+                                bill.getBillItems().get(0).setPrice(runningLimit);
+                                bill.getBillItems().get(0).setQuantity(1.0);
+                            }
+                            if (runningLimit < 0) {
+                                bill.getBillItems().get(0).setAmount(sellingPrice);
+                                bill.getBillItems().get(0).setBalance(sellingPrice);
+                                bill.getBillItems().get(0).setBillPayMode(PaymentMethod.Cash);
+                                bill.getBillItems().get(0).setPrice(sellingPrice);
+                                bill.getBillItems().get(0).setQuantity(1.0);
+                            }
+
+                            if (bill.getSurpassedAmountPaymentMethod().equals(ExcessAmountPayMethod.Cash)) {
+                                //create cash bill for the surpassed amount
+                                PatientBillItem nb = PatientBillItem.clone(bill.getBillItems().get(0));
+                                nb.setAmount(runningLimit >= 0 ? surpassedAmount : sellingPrice);
+                                nb.setBalance(runningLimit >= 0 ? surpassedAmount : sellingPrice);
+
+                                nb.setPrice(runningLimit >= 0 ? surpassedAmount : sellingPrice);
+                                nb.setQuantity(1.0);
+
+                                nb.setBillPayMode(PaymentMethod.Cash);
+                                bill.getBillItems().add(nb);
+                            }
+
+                            if (bill.getSurpassedAmountPaymentMethod().equals(ExcessAmountPayMethod.Discount)) {
+                                //write off surpassed amount
+                                throw APIException.internalError("Some parameters are not set");//for managing end user
+                            }
+                        }
                     }
+
                     if (payDetails.getRunningLimit() < amountToBill && payDetails.getExcessAmountEnabled()) {
                         //check if
                         if (payDetails.getLimitReached()) {
@@ -258,6 +332,7 @@ public class BillingService {
                         if (!payDetails.getLimitReached() && itemCount > 0) {
                             throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning limit amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items from the bill count", "");
                         }
+
                     }
 //                    }
                 }
@@ -278,6 +353,9 @@ public class BillingService {
 //                bill.setStatus(BillStatus.Paid);
 //            }
 //        }
+        for (PatientBillItem bi : bill.getBillItems()) {
+            System.out.println(bi.getItem().getItemName() + " Amount: " + bi.getAmount() + " Paymode " + bi.getBillPayMode().name());
+        }
 
         PatientBill savedBill = patientBillRepository.saveAndFlush(bill);
 
@@ -293,6 +371,7 @@ public class BillingService {
             PaymentDetails pdd = pd.get();
             double newRunningLimit = (pdd.getRunningLimit() - amountToBill);
             pdd.setRunningLimit(newRunningLimit);
+            pdd.setTempRunningLimit(newRunningLimit);
 
             if (newRunningLimit <= amountToBill) {
                 pdd.setLimitReached(Boolean.TRUE);
@@ -328,6 +407,11 @@ public class BillingService {
     public PatientBillItem findBillItemById(Long id) {
         return billItemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill Item with Id {0} not found", id));
+    }
+
+    public PatientBillItem findBillItemByPatientBillAndItem(final PatientBill patientBill, final Item item) {
+        return billItemRepository.findByPatientBillAndItem(patientBill, item)
+                .orElseThrow(() -> APIException.notFound("Bill item not found"));
     }
 
     public PatientBillItem findBillItemByPatientBill(String billNumber) {
@@ -828,7 +912,7 @@ public class BillingService {
                     if (x.getBalance() > 0 && (x.getStatus() == BillStatus.Draft)) {
                         bills.add(x.toBillItem());
                     } else if (x.getStatus() == BillStatus.Paid && x.isFinalized() == false) {
-                        if(x.getItem().getCategory() != ItemCategory.Receipt) {
+                        if (x.getItem().getCategory() != ItemCategory.Receipt) {
                             paidBills.add(x.toBillItem());
                         }
                         //only return receipts
@@ -1031,6 +1115,46 @@ public class BillingService {
         return bills;
     }
 
+    @Transactional
+    public List<PatientBillItem> updatePatientBills(String visitNumber, List<BillItemData> billItems) {
+        List<PatientBillItem> currentBills = billItemRepository.getByVisitNumber(visitNumber);
+        currentBills.stream()
+                .filter(x -> x.getEntryType() == BillEntryType.Debit)
+                .map(x -> {
+                    x.setStatus(BillStatus.Canceled);
+                    return x;
+                }).forEach(b -> billItemRepository.save(b));
+
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+
+        List<PatientBillItem> items = billItems.stream()
+                .map(x -> {
+                    PatientBillItem item = billItemRepository.findById(x.getId()).get();
+                    if (item.getItem().getItemType() == ItemType.Inventory && item.getQuantity() != x.getQuantity()) {
+                        //1 - 2 = 1
+                        ServicePoint servicePoint = servicePointService.getServicePoint(item.getServicePointId());
+                        double qty = (x.getQuantity() - item.getQuantity());
+                          if(qty > 0 ){ // an increase in qty
+                               updateStockItem(item, servicePoint.getStore(), qty, trdId);
+                            }else if (qty < 0){
+                                qty *= -1;
+                                updateStockItem(item, qty, trdId);
+                            }
+                      }
+                      item.setPrice(x.getPrice());
+                    item.setQuantity(x.getQuantity());
+                    item.setStatus(x.getStatus());
+                    item.setAmount(x.getAmount());
+                    item.setBalance(x.getAmount());
+
+                    return item;
+                })
+                .collect(Collectors.toList());
+
+        return billItemRepository.saveAll(items);
+
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createFee(String admissionNumber, ItemCategory category, Integer qty) {
         Double sellingRate = 0.0;
@@ -1077,10 +1201,10 @@ public class BillingService {
 
         billItem.setMedicId(null);
         billItem.setBillPayMode(visit.getPaymentMethod());
-        if(category == ItemCategory.Admission){
+        if (category == ItemCategory.Admission) {
             billItem.setEntryType(BillEntryType.Debit);
             billItem.setStatus(BillStatus.Draft);
-        }else {
+        } else {
             billItem.setEntryType(BillEntryType.Credit);
             billItem.setStatus(BillStatus.Paid);
             billItem.setPaid(true);
@@ -1268,5 +1392,93 @@ public class BillingService {
 //    }
     public Page<PatientBillItem> getPatientBillItems(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, BillEntryType billEntryType, Pageable pageable) {
         return billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, paymentMethod, billEntryType), pageable);
+    }
+
+    private void updateStockItem(PatientBillItem billItem, Store store, Double qty, String trdId) {
+        DispensedDrug dispensedDrug = new DispensedDrug();
+        Item item = billItem.getItem();
+
+        dispensedDrug.setPatient(billItem.getPatientBill().getPatient());
+        dispensedDrug.setDrug(item);
+        dispensedDrug.setStore(store);
+        dispensedDrug.setDispensedDate(billItem.getBillingDate());
+        dispensedDrug.setTransactionId(trdId);
+        dispensedDrug.setQtyIssued(qty);
+        dispensedDrug.setPrice(billItem.getPrice());
+        dispensedDrug.setAmount((billItem.getPrice() * billItem.getQuantity()));
+        dispensedDrug.setPaid(billItem.getPaid());
+        dispensedDrug.setIsReturn(Boolean.FALSE);
+        dispensedDrug.setReturnedQuantity(0D);
+        dispensedDrug.setCollected(true);
+        dispensedDrug.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
+        dispensedDrug.setCollectedBy("");
+//        dispensedDrug.setInstructions(drugData.getInstructions());
+//        dispensedDrug.setOtherReference(drugRequest.getPatientNumber() + " " + drugRequest.getPatientName());
+        dispensedDrug.setWalkinFlag(false);
+//        dispensedDrug.setBatchNumber(drugData.getBatchNumber());
+//        dispensedDrug.setDeliveryNumber(drugData.getBatchNumber());
+        dispensedDrug.setVisit(billItem.getPatientBill().getVisit());
+//        dispensedDrug.setBillNumber(billItem.getRequestReference());
+        //find patient bill item
+        dispensedDrug.setBillItem(billItem);
+
+        DispensedDrug savedDrug = dispensedDrugRepository.saveAndFlush(dispensedDrug);
+        doStockEntries(savedDrug.getId());
+    }
+
+
+    private void updateStockItem(PatientBillItem item, Double qty, String trdId) {
+        StockEntry stock = new StockEntry();
+
+        Optional<DispensedDrug> optionalDrugs = dispensedDrugRepository.findDispensedDrugByBillItem(item);
+
+        if (optionalDrugs.isPresent()) {
+            DispensedDrug drugs = optionalDrugs.get();
+
+            DispensedDrug drug1 = ObjectUtils.clone(drugs);
+
+            drug1.setAmount(-1 * (qty) * (drugs.getPrice()));
+            drug1.setQtyIssued(-1 * (qty));
+            drug1.setCollectedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
+            drug1.setIsReturn(Boolean.TRUE);
+            drug1.setReturnDate(LocalDate.now());
+            drug1.setReturnReason("Bill Adjustments");
+            drug1.setId(null);
+            drug1.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
+            drug1.setVisit(item.getPatientBill().getVisit());
+
+            dispensedDrugRepository.save(drug1);
+
+            stock.setAmount(NumberUtils.toScaledBigDecimal((qty) * (drugs.getPrice())));
+            stock.setDeliveryNumber(drug1.getOtherReference());
+            stock.setQuantity(qty);
+            stock.setItem(drug1.getDrug());
+            stock.setMoveType(MovementType.Returns);
+            stock.setPrice(NumberUtils.createBigDecimal(String.valueOf(drug1.getAmount())));
+            stock.setPurpose(MovementPurpose.Returns);
+            stock.setReferenceNumber(drug1.getOtherReference());
+            stock.setStore(drug1.getStore());
+            stock.setTransactionDate(LocalDate.now());
+            stock.setTransactionNumber(trdId);
+            stock.setUnit(drug1.getUnits());
+            inventoryService.doStockEntry(InventoryEvent.Type.Increase, stock, drug1.getStore(), drug1.getDrug(), qty);
+
+            drugs.setReturnedQuantity((drugs.getReturnedQuantity() + qty));
+            drugs.setReturnReason("Bill Adjustments");
+            drugs.setReturnDate(item.getBillingDate() != null ? item.getBillingDate() : LocalDate.now());
+
+            dispensedDrugRepository.save(drugs);
+
+        }
+
+    }
+
+    private void doStockEntries(Long drugId) {
+        Optional<DispensedDrug> drug = dispensedDrugRepository.findById(drugId);
+        if (drug.isPresent()) {
+            inventoryService.save(StockEntry.create(drug.get()));
+        } else {
+            System.err.println("Drug entry is empty");
+        }
     }
 }

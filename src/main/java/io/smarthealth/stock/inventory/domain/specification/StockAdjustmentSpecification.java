@@ -35,6 +35,8 @@ public class StockAdjustmentSpecification {
                      cb.between(root.get("dateRecorded"), range.getStartDateTime(), range.getEndDateTime())
                   );
               }
+
+
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

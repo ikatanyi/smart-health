@@ -2,6 +2,7 @@ package io.smarthealth.accounting.invoice.domain;
 
 import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.InvoiceReceipt;
 import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -20,6 +21,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,12 @@ import java.util.stream.Collectors;
 @Table(name = "patient_invoice")
 //        , uniqueConstraints = {@UniqueConstraint(columnNames = {"number"}, name = "uk_invoice_number")}) //we add constraint later
 public class Invoice extends Auditable {
+
+    public enum TransactionType{
+        Invoice,
+        Payment,
+        CreditNote
+    }
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))
@@ -66,6 +74,10 @@ public class Invoice extends Auditable {
     private BigDecimal tax;
     private BigDecimal balance;
     private String transactionNo;
+//    private LocalDateTime transactionDate;
+//    @Enumerated(EnumType.STRING)
+//    @Column(columnDefinition = "varchar(50) default 'Invoice'")
+//    private TransactionType transactionType;
     private Boolean paid;
     @Enumerated(EnumType.STRING)
     private InvoiceStatus status;
@@ -73,8 +85,10 @@ public class Invoice extends Auditable {
     private Boolean awaitingSmart = Boolean.FALSE;
     @Column(name = "is_capitation_invoice")
     private Boolean capitation = Boolean.FALSE;
-    //@Column(name = "is_rebate")
-    //private Boolean rebate = Boolean.FALSE;
+    @Column(name = "is_rebate")
+    private Boolean rebate = Boolean.FALSE;
+    private String preauthCode;
+
     @Transient
     private BigDecimal invoiceAmount; //temporarly holding for orginal invoice amount
 
@@ -188,8 +202,19 @@ public class Invoice extends Auditable {
         data.setAmountDue(data.getTotalAmount().subtract((data.getPaid().add(data.getCopay()))));
 
         data.setCapitation(this.capitation);
+        data.setRebate(this.rebate);
+        data.setPreauthCode(this.preauthCode);
 
-
+//        if(this.rebate){
+//
+//            InvoiceItemData inv = new InvoiceItemData();
+//            inv.setInvoiceDate(this.date);
+//            inv.setServicePoint("Rebate");
+//            inv.setQuantity();
+//        }
+        if(this.visit!=null){
+            data.setDischargeDate(this.visit.getStopDatetime() !=null  ? this.visit.getStopDatetime().toLocalDate() : this.visit.getStartDatetime().toLocalDate());
+        }
 
         return data;
     }

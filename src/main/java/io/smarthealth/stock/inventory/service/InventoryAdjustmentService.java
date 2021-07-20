@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+
 /**
  *
  * @author Kelsas
@@ -120,7 +122,8 @@ public class InventoryAdjustmentService {
         }
 
         Specification<StockAdjustment> spec = StockAdjustmentSpecification.createSpecification(store, item, range);
-        Page<StockAdjustmentData> adjstments = stockAdjustmentRepository.findAll(spec, pageable).map(itm -> itm.toData());
+        Page<StockAdjustmentData> adjstments = stockAdjustmentRepository.findAll(spec, pageable)
+                .map(itm -> itm.toData());
 
         return adjstments;
     } 

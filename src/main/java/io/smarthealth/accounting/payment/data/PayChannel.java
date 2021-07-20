@@ -16,7 +16,8 @@ public class PayChannel {
 
     public enum Type {
         Cash,
-        Bank
+        Bank,
+        Mobile
     }
     //this should be a payment gateway
     private Long accountId; //this can be cash {Petty Cash,Undeposited Funds} Bank {bank account} 

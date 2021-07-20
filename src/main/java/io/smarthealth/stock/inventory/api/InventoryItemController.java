@@ -1,12 +1,13 @@
 package io.smarthealth.stock.inventory.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
-import io.smarthealth.stock.inventory.data.CreateInventoryItem;
-import io.smarthealth.stock.inventory.data.InventoryItemData;
-import io.smarthealth.stock.inventory.data.ItemDTO;
+import io.smarthealth.stock.inventory.data.*;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.item.domain.Item;
@@ -15,17 +16,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author Kelsas
  */
 @RestController
@@ -109,7 +111,7 @@ public class InventoryItemController {
 
     @GetMapping("/inventoryItem/{itemCode}/item-count")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
-    public Integer getInventoryItemCount(@PathVariable(value = "itemCode") String itemCode) {
+    public Integer getAvailableStockPerItem(@PathVariable(value = "itemCode") String itemCode) {
         auditTrailService.saveAuditTrail("Inventory", "viewed inventory item count for item identified by " + itemCode);
         return service.getItemCount(itemCode);
     }
@@ -129,5 +131,29 @@ public class InventoryItemController {
     ) {
         service.doUpdateBalance(itemId, storeId);
         return ResponseEntity.accepted().build();
+    }
+
+    @GetMapping("/inventoryItem/valuation")
+    public ResponseEntity<List<ItemValuation>> getItemValuations(
+            @RequestParam(value = "asAt", required = false) final @JsonFormat(pattern = Constants.DATE_PATTERN) LocalDate date,
+            @RequestParam(value = "storeId", required = false) final Long storeId) {
+        List<ItemValuation> itesm = service.getItemValuations(storeId, date);
+        return ResponseEntity.ok(itesm);
+    }
+
+    @GetMapping("/inventoryItem/movement")
+    public ResponseEntity<Pager<ItemMovement>> getItemMovement(
+            @RequestParam(value = "itemId", required = false) Long itemId,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size, Sort.by("s.transactionDate").descending());
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        Page<ItemMovement> lists = service.getItemMovements(itemId, range,pageable);
+
+        Pager<ItemMovement> pager = (Pager<ItemMovement>) PaginationUtil.toPager(lists,"Stock Movement Report");
+          return ResponseEntity.ok(pager);
     }
 }

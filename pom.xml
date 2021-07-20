@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd
+http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -19,6 +20,7 @@
         <spring-security-oauth2.version>2.4.0.RELEASE</spring-security-oauth2.version>
         <sonar.skip>true</sonar.skip>
         <ogham.version>2.0.0</ogham.version>
+        <jasperreport.version>6.17.0</jasperreport.version>
     </properties>
 
     <dependencies>
@@ -118,12 +120,12 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.16.0</version>
+            <version>${jasperreport.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports-fonts</artifactId>
-            <version>6.16.0</version>
+            <version>${jasperreport.version}</version>
         </dependency>
 
         <dependency>
@@ -248,11 +250,11 @@
             <version>5.2.10.RELEASE</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.zeroturnaround</groupId>-->
-<!--            <artifactId>zt-zip</artifactId>-->
-<!--            <version>1.14</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.zeroturnaround</groupId>-->
+        <!--            <artifactId>zt-zip</artifactId>-->
+        <!--            <version>1.14</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>net.lingala.zip4j</groupId>

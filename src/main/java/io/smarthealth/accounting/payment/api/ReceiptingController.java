@@ -1,11 +1,13 @@
 package io.smarthealth.accounting.payment.api;
 
+import io.smarthealth.accounting.billing.data.VoidReceipt;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.payment.data.*;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -61,6 +63,7 @@ public class ReceiptingController {
         auditTrailService.saveAuditTrail("Receipts", "Created a payment receipt "+payment.getReceiptNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
+
     @PostMapping("/receipting/copay")
     public  ResponseEntity<ReceiptData> createCopayReceipt(@Valid @RequestBody ReceiptInvoiceData data){
         Receipt receipt = service.receiptCopay(data);
@@ -94,12 +97,17 @@ public class ReceiptingController {
         return ResponseEntity.ok(payment.toData());
     }
 
-    @PutMapping("/receipting/{receiptNo}/void")
+    @PutMapping("/receipting/void")
     @PreAuthorize("hasAuthority('edit_receipt')")
-    public ResponseEntity<?> voidPaymentReceipt(@PathVariable(value = "receiptNo") String receiptNo) {
-        service.voidPayment(receiptNo);
-        auditTrailService.saveAuditTrail("Receipts", "Cancelled a payment receipt "+receiptNo);
-        return ResponseEntity.accepted().build();
+    public ResponseEntity<?> voidPaymentReceipt(@Valid @RequestBody VoidReceipt data) {
+        Receipt payment = service.voidPayment(data);
+        auditTrailService.saveAuditTrail("Receipts", "Cancelled a payment receipt "+data.getReceiptNo());
+        Pager<ReceiptData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Payment Voided successfully.");
+        pagers.setContent(payment.toData());
+        auditTrailService.saveAuditTrail("Receipts", "Created a Deposit receipt "+payment.getReceiptNo());
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
     @PutMapping("/receipting/{receiptNo}/adjustment")
@@ -126,6 +134,7 @@ public class ReceiptingController {
             @RequestParam(value = "receipt_no", required = false) final String receiptNo,
             @RequestParam(value = "transaction_no", required = false) final String transactionNo,
             @RequestParam(value = "shift_no", required = false) final String shiftNo,
+            @RequestParam(value = "visitType", required = false) final VisitEnum.VisitType visitType,
             @RequestParam(value = "cashier_id", required = false) final Long cashier,
             @RequestParam(value = "service_point_id", required = false) final Long servicePointId,
             @RequestParam(value = "date_range", required = false) final String dateRange,
@@ -136,7 +145,7 @@ public class ReceiptingController {
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, servicePointId, range,prepaid, pageable)
+        Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, servicePointId, range,prepaid,visitType, pageable)
                 .map(x -> x.toData());
 
         auditTrailService.saveAuditTrail("Receipts", "Viewed all payment receipts ");
@@ -179,4 +188,17 @@ public class ReceiptingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-}
+
+    @PostMapping("/receipting/refund")
+//    @PreAuthorize("hasAuthority('create_receipt')")
+    public ResponseEntity<Pager<ReceiptData>> createReceiptRefund(@Valid @RequestBody RefundData data) {
+        Receipt payment = service.refundReceipt(data);
+
+        Pager<ReceiptData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Payment Refund successfully.");
+        pagers.setContent(payment.toData());
+        auditTrailService.saveAuditTrail("Receipts", "Created a receipt refund "+payment.getReceiptNo());
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+    }

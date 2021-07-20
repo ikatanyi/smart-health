@@ -104,16 +104,24 @@ public class StockEntry extends Auditable {
         data.setCostCenter(this.getCostCenter());
         data.setCreatedBy(this.getCreatedBy());
         data.setStatus(this.getStatus());
-        data.setTax(this.getTax());
-        data.setDiscount(this.getDiscount());
+        data.setDiscount(this.getDiscount() !=null ? this.getDiscount() : BigDecimal.ZERO);
+        data.setTax(this.getTax() != null? this.getTax() : BigDecimal.ZERO);
 
         data.setDateCreated(this.getTransactionDate());
         data.setLastUpdated(this.getReceivedAt());
 
         data.setCostPrice(this.getItem().getRate());
-        data.setFormattedQuantity(this.getQuantity()* -1);
-        data.setFormattedTotal(this.getItem().getRate().multiply(BigDecimal.valueOf(this.getQuantity()* -1)));
+        BigDecimal val = BigDecimal.valueOf(this.getQuantity());
+        double qty = (val.signum() == -1 ? val.negate() : val).doubleValue();
+        data.setFormattedQuantity(qty);
         data.setFixedQuantity(this.getQuantity());
+
+        BigDecimal amt = this.getPrice().multiply(BigDecimal.valueOf(qty));
+        BigDecimal disc =this.getDiscount()!=null ? this.getDiscount() : BigDecimal.ZERO;
+        BigDecimal tx =this.getTax()!=null ? this.getTax() : BigDecimal.ZERO;
+        data.setFormattedTotal(amt);
+        data.setTotalExclusive(amt.subtract(disc));
+        data.setTotalAmount((amt.subtract(disc)).add(tx));
 
         return data;
     }
@@ -141,9 +149,13 @@ public class StockEntry extends Auditable {
         stock.setIssuedTo(drug.getOtherReference());
         stock.setStore(store);
         stock.setTransactionDate(drug.getDispensedDate());
-        stock.setTransactionNumber(drug.getTransactionId());
+        if(drug.getBillItem()!=null){
+            stock.setTransactionNumber(drug.getBillItem().getTransactionId());
+        }
         stock.setUnit(drug.getUnits());
         stock.setBatchNo(drug.getBatchNumber());
+        stock.setDiscount(drug.getDiscount()!=null ? BigDecimal.valueOf(drug.getDiscount()) : BigDecimal.ZERO);
+        stock.setTax(drug.getTaxes()!=null ? BigDecimal.valueOf(drug.getTaxes()) : BigDecimal.ZERO);
         return stock;
     }
     public LocalDateTime getLastUpdatedDateTime(){

@@ -3,6 +3,8 @@ package io.smarthealth.clinical.visit.api;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
+import io.smarthealth.accounting.billing.data.VisitBillSummary;
+import io.smarthealth.accounting.billing.domain.BillingQuery;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
 import io.smarthealth.accounting.billing.service.BillingService;
@@ -220,6 +222,7 @@ public class ClinicalVisitController {
                 pd.setCapitationAmount(conf.getCapitationAmount());
             }
             pd.setRunningLimit(visitData.getPayment().getLimitAmount());
+            pd.setTempRunningLimit(visitData.getPayment().getLimitAmount());
             pd.setPatient(patient);
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay
@@ -274,7 +277,7 @@ public class ClinicalVisitController {
             //get the scheme
             if (schemeId != null) {
                 Scheme scheme = schemeService.fetchSchemeById(schemeId);
-                if(scheme.getPayer().getPriceBook()!=null) {
+                if (scheme.getPayer().getPriceBook() != null) {
                     pb = Optional.of(scheme.getPayer().getPriceBook()).orElse(null);
                 }
             }
@@ -491,6 +494,7 @@ public class ClinicalVisitController {
     public ResponseEntity<?> fetchpaymentModeByVisit(@PathVariable("visitNo") String visitNo) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         PaymentDetails pde = paymentDetailsService.fetchPaymentDetailsByVisit(visit);
+
         Pager<PaymentDetailsData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment Mode");
@@ -586,6 +590,16 @@ public class ClinicalVisitController {
             Scheme scheme = schemeService.fetchSchemeById(data.getSchemeId());
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
             PaymentDetails pd = null;
+//            String search, String patientNumber, VisitEnum.VisitType visitType, PaymentMethod paymentMethod,String visitNumber, DateRange dateRange, Pageable pageable
+            Page<VisitBillSummary>  bill = patientBillRepository.getVisitBill(new BillingQuery(null,null,null,null,visitNo,null,Pageable.unpaged()));
+              VisitBillSummary vbill = bill.getContent().size()> 0 ? bill.getContent().get(0) : null;
+            double newLimit = data.getLimitAmount();
+            double newRunning = 0;
+              if(vbill!=null){
+                  double currentSpend = vbill.getDebitAmount().doubleValue();
+                  newRunning = (newLimit-currentSpend);
+              }
+
             if (currentPaymentDetail.isPresent()) {
                 pd = currentPaymentDetail.get();
             } else {
@@ -599,6 +613,9 @@ public class ClinicalVisitController {
             pd.setVisit(visit);
             pd.setPatient(visit.getPatient());
             pd.setRelation(data.getRelation());
+            pd.setRunningLimit(newRunning);
+            pd.setLimitAmount(newLimit);
+
             if (config.isPresent()) {
                 pd.setCoPayCalcMethod(config.get().getCoPayType());
                 pd.setCoPayValue(config.get().getCoPayValue());
@@ -619,7 +636,9 @@ public class ClinicalVisitController {
                 .collect(Collectors.toList());
         ;
 
-        patientBillRepository.saveAll(updatedBills);
+        List<PatientBill> finalBills= patientBillRepository.saveAll(updatedBills);
+        //use the endpoint of getting balances for the bills
+
 
         PaymentDetailsData ppd = paymentDetails != null ? PaymentDetailsData.map(paymentDetails) : null;
 
@@ -944,7 +963,7 @@ public class ClinicalVisitController {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    private void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected, String reason, Long clinicId) {
+    void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected, String reason, Long clinicId) {
 
         DoctorClinicItems newClinic = clinicService.fetchClinicById(clinicId);
 

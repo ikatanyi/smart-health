@@ -184,7 +184,7 @@
 				<textElement textAlignment="Center">
 					<font fontName="Arial" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Price]]></text>
+				<text><![CDATA[Cost Price]]></text>
 			</staticText>
 		</band>
 	</pageHeader>
@@ -217,7 +217,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{formattedQuantity}]]></textFieldExpression>
 			</textField>
-			<textField evaluationTime="Column" pattern="#,###.00">
+			<textField pattern="#,##0.00">
 				<reportElement x="455" y="0" width="95" height="14" uuid="04a1859f-2d69-4097-a504-0993cd880294">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
@@ -229,21 +229,24 @@
 				<textFieldExpression><![CDATA[$F{formattedTotal}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="0" width="41" height="13" uuid="3f8c0218-dfbf-4c78-8c3e-01f8a34bb252">
+				<reportElement x="0" y="0" width="40" height="13" uuid="3f8c0218-dfbf-4c78-8c3e-01f8a34bb252">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$V{PAGE_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,###.00">
-				<reportElement x="385" y="-1" width="70" height="14" uuid="48fe45b7-28d2-440d-ba71-cb7677fce806">
+			<textField pattern="#,##0.00">
+				<reportElement x="385" y="0" width="70" height="14" uuid="48fe45b7-28d2-440d-ba71-cb7677fce806">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{costPrice}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

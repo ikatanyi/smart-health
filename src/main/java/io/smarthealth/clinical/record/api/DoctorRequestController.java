@@ -3,11 +3,15 @@ package io.smarthealth.clinical.record.api;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.admission.domain.CareTeam;
+import io.smarthealth.clinical.admission.domain.CareTeamRole;
+import io.smarthealth.clinical.admission.domain.repository.CareTeamRepository;
 import io.smarthealth.clinical.record.data.*;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -18,6 +22,8 @@ import io.smarthealth.infrastructure.utility.ListToPage;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.notification.service.NotificationEventPublisher;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.domain.EmployeeRepository;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
@@ -76,6 +82,10 @@ public class DoctorRequestController {
 
     private final ServicePointService servicePointService;
 
+    private final EmployeeRepository employeeRepository;
+
+    private final CareTeamRepository careTeamRepository;
+
     @Transactional
     @PostMapping("/visit/{visitNo}/doctor-request")
     @PreAuthorize("hasAuthority('create_doctorrequest')")
@@ -85,8 +95,9 @@ public class DoctorRequestController {
             @RequestBody @Valid final List<DoctorRequestData> docRequestData
     ) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-
-        Optional<User> user = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
+        //TODO I had to hack this one too
+        String admNo = visit.getVisitType() == VisitEnum.VisitType.Inpatient ? visitNumber : null;
+        User user = getRequestingUser(admNo);
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
         List<DoctorRequestData.RequestType> requestType = new ArrayList<>();
@@ -101,14 +112,13 @@ public class DoctorRequestController {
                         throw APIException.conflict("{0} has already been requested ", item.getItemName());
                     }
                 }
-
             }
             doctorRequest.setItem(item);
             doctorRequest.setItemCostRate(item.getCostRate() != null ? item.getCostRate().doubleValue() : 0);
             doctorRequest.setItemRate(item.getRate().doubleValue());
             doctorRequest.setPatient(visit.getPatient());
             doctorRequest.setVisit(visit);
-            doctorRequest.setRequestedBy(user.get());
+            doctorRequest.setRequestedBy(user);
             doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(FullFillerStatusType.Unfulfilled);
             doctorRequest.setFulfillerComment(FullFillerStatusType.Unfulfilled.name());
@@ -118,7 +128,6 @@ public class DoctorRequestController {
             if (!requestType.contains(data.getRequestType())) {
                 requestType.add(data.getRequestType());
             }
-
         }
 
         List<DoctorRequest> docReqs = requestService.createRequest(docRequests);
@@ -216,17 +225,12 @@ public class DoctorRequestController {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         //fetch all visits by patient
         Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, range, null, null, false, null, billPaymentValidationPoint, pageable);
-        System.out.println("patientVisits " + patientVisits.getContent().size());
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {
-            System.out.println("Visit number " + v.getVisitNumber());
-            System.out.println("Patient number " + patientNo);
             Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable, null, null, null);
-            System.out.println("pageList " + pageList.getContent().size());
             int count = 0;
             for (DoctorRequest docReq : pageList.getContent()) {
-                System.out.println("count " + count);
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
                 waitingRequest.setId(docReq.getId());
                 waitingRequest.setPatientName(patient.getFullName());
@@ -240,7 +244,6 @@ public class DoctorRequestController {
 
                 //find line items by request_id
                 List<DoctorRequest> serviceItems = requestService.fetchServiceRequests(docReq.getPatient(), fulfillerStatus, requestType, v);
-                System.out.println("serviceItems " + serviceItems.size());
                 List<DoctorRequestItem> requestItems = new ArrayList<>();
                 for (DoctorRequest r : serviceItems) {
                     requestItems.add(requestService.toData(r));
@@ -352,8 +355,7 @@ public class DoctorRequestController {
             waitingRequest.setItem(new ArrayList<>());
             waitingRequests.add(waitingRequest);
         }
-        System.out.println("Page" + page);
-        System.out.println("size" + size);
+
         if (page != null) {
             page = page - 1;
         }
@@ -470,4 +472,21 @@ public class DoctorRequestController {
         return ResponseEntity.ok(list);
     }
 
+    //Helper method to default doctors requests
+    //a hack to get admitting doctor to be default for IP Requests
+    private User getRequestingUser(String visitId) {
+        Optional<User> optUser = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
+        User user = optUser.get();
+        if (visitId == null) {
+            return user;
+        }
+        //this is scenario for IP
+        Optional<CareTeam> careTeam = careTeamRepository.findCareTeamByAdmission_AdmissionNoAndCareRole(visitId, CareTeamRole.Admitting);
+        if (careTeam.isPresent()) {
+            if (careTeam.isPresent()) {
+                return careTeam.get().getMedic().getLoginAccount() != null ? careTeam.get().getMedic().getLoginAccount() : user;
+            }
+        }
+        return user;
+    }
 }

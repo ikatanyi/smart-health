@@ -1,10 +1,7 @@
 package io.smarthealth.accounting.billing.api;
 
-import io.smarthealth.accounting.billing.data.BillData;
-import io.smarthealth.accounting.billing.data.BillItemData;
-import io.smarthealth.accounting.billing.data.CopayData;
+import io.smarthealth.accounting.billing.data.*;
 import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -14,8 +11,10 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
+
 import java.util.List;
 import javax.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +24,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- *
  * @author Kelsas
  */
 @Api
@@ -34,38 +32,37 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class BillingController {
 
-    private final BillingService service; 
+    private final BillingService service;
     private final AuditTrailService auditTrailService;
 
-    
- 
+
     @PostMapping("/billing")
-    @PreAuthorize("hasAuthority('create_patientBill')") 
+    @PreAuthorize("hasAuthority('create_patientBill')")
     public ResponseEntity<?> createPatientBill(@Valid @RequestBody BillData billData) {
-       
+
         PatientBill patientbill = service.createPatientBill(billData);
 
         Pager<BillData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Bill Successfully Created.");
         pagers.setContent(patientbill.toData());
-        auditTrailService.saveAuditTrail("Billing", "Created a bill for "+patientbill.getPatient().getFullName());
+        auditTrailService.saveAuditTrail("Billing", "Created a bill for " + patientbill.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-     
+
     @GetMapping("/billing/{id}")
-    @PreAuthorize("hasAuthority('view_patientBill')") 
+    @PreAuthorize("hasAuthority('view_patientBill')")
     public BillData getPatientBill(@PathVariable(value = "id") Long code) {
         PatientBill bill = service.findOneWithNoFoundDetection(code);
-        auditTrailService.saveAuditTrail("Billing", "Viewed a bill for "+bill.getPatient().getFullName());
+        auditTrailService.saveAuditTrail("Billing", "Viewed a bill for " + bill.getPatient().getFullName());
         return bill.toData();
     }
 
     @PostMapping("/billing/{id}/items")
-    @PreAuthorize("hasAuthority('create_patientBill')") 
+    @PreAuthorize("hasAuthority('create_patientBill')")
     public BillData addPatientBillItem(@PathVariable(value = "id") Long id, List<BillItemData> billLines) {
         PatientBill bill = service.findOneWithNoFoundDetection(id);
-        auditTrailService.saveAuditTrail("Billing", "Added a bill item to bill "+bill.getBillNumber()+" for "+bill.getPatient().getFullName());
+        auditTrailService.saveAuditTrail("Billing", "Added a bill item to bill " + bill.getBillNumber() + " for " + bill.getPatient().getFullName());
         return bill.toData();
     }
 //    @PostMapping("/billing/{visitId}/cancel")
@@ -78,7 +75,7 @@ public class BillingController {
 //String visitNumber, String patientNumber, Boolean hasBalance, DateRange range
 
     @GetMapping("/billing/summary")
-    @PreAuthorize("hasAuthority('view_patientBill')") 
+    @PreAuthorize("hasAuthority('view_patientBill')")
     public ResponseEntity<?> getPatientBillSummary(
             @RequestParam(value = "visitNumber", required = false) String visitNumber,
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
@@ -105,23 +102,24 @@ public class BillingController {
 //        pagers.setPageDetails(details);
         return ResponseEntity.ok("pagers");
     }
-    
-   @PostMapping("/billing/{visitNumber}/copay")
-   @PreAuthorize("hasAuthority('create_patientBill')") 
-    public ResponseEntity<?> createCopayBill(@PathVariable(value = "visitNumber") String visitNumber,@Valid @RequestBody  CopayData data) {
-        if(!visitNumber.equals(data.getVisitNumber())){
+
+    @PostMapping("/billing/{visitNumber}/copay")
+    @PreAuthorize("hasAuthority('create_patientBill')")
+    public ResponseEntity<?> createCopayBill(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody CopayData data) {
+        if (!visitNumber.equals(data.getVisitNumber())) {
             throw APIException.badRequest("Visit Number on path variable and body do not match");
         }
         data.setVisitStart(Boolean.FALSE);
-            PatientBill patientbill = service.createCopay(data);
-            if(patientbill ==null){
-                throw APIException.badRequest("Copay creation was not successful");
-            }
-         auditTrailService.saveAuditTrail("Billing", "Created a copay bill for "+patientbill.getPatient().getFullName());
+        PatientBill patientbill = service.createCopay(data);
+        if (patientbill == null) {
+            throw APIException.badRequest("Copay creation was not successful");
+        }
+        auditTrailService.saveAuditTrail("Billing", "Created a copay bill for " + patientbill.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(patientbill.toData());
     }
+
     @GetMapping("/billing/items")
-    @PreAuthorize("hasAuthority('view_patientBill')") 
+    @PreAuthorize("hasAuthority('view_patientBill')")
     public ResponseEntity<?> getPatientBillItems(
             @RequestParam(value = "patientNumber", required = false) String patientNo,
             @RequestParam(value = "visitNumber", required = false) String visitNo,
@@ -155,7 +153,7 @@ public class BillingController {
     }
 
     @GetMapping("/billing/items/{visitNumber}/receipted")
-    @PreAuthorize("hasAuthority('view_patientBill')") 
+    @PreAuthorize("hasAuthority('view_patientBill')")
     public ResponseEntity<?> getReceiptedBillItems(
             @PathVariable(value = "visitNumber", required = false) String visitNo,
             @RequestParam(value = "page", required = false) Integer page,
@@ -165,7 +163,7 @@ public class BillingController {
 
         Page<BillItemData> list = service.getReceiptedBillItems(visitNo, pageable)
                 .map(x -> x.toData());
-        auditTrailService.saveAuditTrail("Billing", "Viewed Receipted Items for bill with visitNo. "+visitNo);
+        auditTrailService.saveAuditTrail("Billing", "Viewed Receipted Items for bill with visitNo. " + visitNo);
         Pager<List<BillItemData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -181,7 +179,7 @@ public class BillingController {
     }
 
     @GetMapping("/billing/walkin")
-    @PreAuthorize("hasAuthority('view_patientBill')") 
+    @PreAuthorize("hasAuthority('view_patientBill')")
     public ResponseEntity<?> getWalkinBillSummary(
             @RequestParam(value = "walkinNumber", required = false) String walkinNumber,
             @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
@@ -208,7 +206,7 @@ public class BillingController {
     }
 
     @GetMapping("/billing/walkin/items")
-    @PreAuthorize("hasAuthority('view_patientBill')") 
+    @PreAuthorize("hasAuthority('view_patientBill')")
     public ResponseEntity<?> getWalkinBillItems(
             @RequestParam(value = "walkinNo", required = false) String walkinNo,
             @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
@@ -216,7 +214,7 @@ public class BillingController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        auditTrailService.saveAuditTrail("Billing", "Viewed bill items for walkin with visitNo. "+walkinNo);
+        auditTrailService.saveAuditTrail("Billing", "Viewed bill items for walkin with visitNo. " + walkinNo);
         Page<BillItemData> list = service.getWalkBillItems(walkinNo, hasBalance, pageable)
                 .map(x -> x.toData());
 
@@ -233,6 +231,20 @@ public class BillingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
+
+//    @PostMapping("/billing/{visitNumber}/limit-handler")
+//    public ResponseEntity<?> handleExceededLimit(@Valid @RequestBody LimitExceedingResponse limitExceedingResponse) {
+//
+//        PatientBill patientbill = service.createPatientBill(billData);
+//
+//        Pager<BillData> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Bill Successfully Created.");
+//        pagers.setContent(patientbill.toData());
+//        auditTrailService.saveAuditTrail("Billing", "Created a bill for " + patientbill.getPatient().getFullName());
+//        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+//    }
+
 
 //    @GetMapping("/bills")
 //    public ResponseEntity<?> listBillSummary(
@@ -265,5 +277,5 @@ public class BillingController {
 //    } 
     //TODO bill cancellations
     //Changes status of the bills 
-  
+
 }

@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -108,13 +109,13 @@ public class PurchaseInvoiceController {
             @RequestParam(value = "approved", required = false) Boolean approved,
             @RequestParam(value = "invoice_no", required = false) String invoiceNumber,
             @RequestParam(value = "status", required = false) final PurchaseInvoiceStatus status,
-            @RequestParam(value = "invoiceType", required = false) final PurchaseInvoice.Type invoiceType,
+            @RequestParam(value = "invoiceType", required = false) final List<PurchaseInvoice.Type> invoiceType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createUnPaged(page, size);
+        Pageable pageable = PaginationUtil.createPage(page, size, Sort.by("id").descending());
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<PurchaseInvoiceData> list = service.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved,query,invoiceType, pageable) // service.getPurchaseInvoices(status, pageable)
                 .map(u -> u.toData());

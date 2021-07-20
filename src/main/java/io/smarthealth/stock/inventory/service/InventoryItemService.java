@@ -1,18 +1,14 @@
 package io.smarthealth.stock.inventory.service;
 
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
-import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
-import io.smarthealth.accounting.accounts.domain.JournalState;
-import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.data.FinancialActivity;
+import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.InventoryStockData;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import io.smarthealth.stock.inventory.data.CreateInventoryItem;
-import io.smarthealth.stock.inventory.data.ExpiryStock;
-import io.smarthealth.stock.inventory.data.InventoryItemData;
-import io.smarthealth.stock.inventory.data.ItemDTO;
+import io.smarthealth.stock.inventory.data.*;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
 import io.smarthealth.stock.inventory.domain.StockEntry;
@@ -44,7 +40,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author Kelsas
  */
 @Slf4j
@@ -58,6 +53,7 @@ public class InventoryItemService {
     private final StockEntryRepository stockEntryRepository;
     private final SequenceNumberService sequenceNumberService;
     private final JournalService journalService;
+    private final FinancialActivityAccountRepository activityAccountRepository;
 
     private void decrease(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
@@ -84,7 +80,7 @@ public class InventoryItemService {
                 .findByItemAndStore(item, store)
                 .orElse(InventoryItem.create(store, item));
 
-        inventoryItem.setAvailableStock(balance);
+        inventoryItem.setAvailableStock(balance!=null ? balance : 0D);
         inventoryItemRepository.save(inventoryItem);
     }
 
@@ -185,7 +181,7 @@ public class InventoryItemService {
         return inventoryItemRepository.findByStore(store, page).map(d -> d.toData());
     }
 
-//    @Transactional
+    //    @Transactional
 //    public void processInventoryBalance(InventoryEvent event) {
 //
 //        switch (event.getType()) {
@@ -272,8 +268,8 @@ public class InventoryItemService {
         Map<Store, Double> map = savedStockEntries
                 .stream()
                 .collect(Collectors.groupingBy(StockEntry::getStore,
-                        Collectors.summingDouble(x -> (x.getQuantity()*x.getPrice().doubleValue()))
-                )
+                        Collectors.summingDouble(x -> (x.getQuantity() * x.getPrice().doubleValue()))
+                        )
                 );
 
         map.forEach((k, v) -> {
@@ -290,14 +286,18 @@ public class InventoryItemService {
             throw APIException.notFound("Inventory Account is Not Defined for the Store " + store.getStoreName());
         }
         //get opening balance equity account for openining stocks
-        
+        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.OpeningBalanceEquity);
+        if (!creditAccount.isPresent()) {
+            throw APIException.badRequest("Opening Balance Account is not mapped");
+        }
 
         String narration = "Opening Balance Inventory for  - " + store.getStoreName();
         JournalEntry toSave = new JournalEntry(
                 date,
                 narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO)
+                        new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO),
+                        new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, amount)
                 },
                 true
         );
@@ -306,6 +306,7 @@ public class InventoryItemService {
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }
+
 
     @Async
     public void doUpdateBalance(Long itemId, Long storeId) {
@@ -332,10 +333,36 @@ public class InventoryItemService {
         } else {
             for (InventoryItem invItem : inventoryItemRepository.findAll()) {
                 Double balance = stockEntryRepository.sumQuantities(invItem.getItem(), store != null ? store : invItem.getStore());
-                invItem.setAvailableStock(balance);
+                invItem.setAvailableStock(balance !=null ? balance : 0D);
                 inventoryItemRepository.save(invItem);
             }
         }
 
     }
+
+    public List<ItemValuation> getItemValuations(Long storeId, LocalDate date) {
+        LocalDate asAt = date != null ? date : LocalDate.now();
+        if (storeId != null) {
+            return stockEntryRepository.getItemValuation(storeId, asAt);
+        }
+        return stockEntryRepository.getItemValuation(asAt);
+    }
+
+    public Page<ItemMovement> getItemMovements(Long itemId, DateRange period, Pageable page) {
+        //(period == null ? DateUtility.getEndOfCurrentMonth() :
+        if (period != null) {
+            LocalDate startDate = period.getStartDate();
+            LocalDate endDate = period.getEndDate();
+            if (itemId != null) {
+                return stockEntryRepository.getItemMovement(itemId, startDate, endDate, page);
+            }
+            return stockEntryRepository.getItemMovement(startDate, endDate, page);
+        } else {
+            if (itemId != null) {
+                return stockEntryRepository.getItemMovement(itemId, page);
+            }
+            return stockEntryRepository.getItemMovement(page);
+        }
+    }
+
 }

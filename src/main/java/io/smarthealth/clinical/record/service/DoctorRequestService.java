@@ -5,6 +5,10 @@
  */
 package io.smarthealth.clinical.record.service;
 
+import io.smarthealth.accounting.pricelist.domain.PriceBook;
+import io.smarthealth.accounting.pricelist.domain.PriceBookRepository;
+import io.smarthealth.accounting.pricelist.domain.PriceList;
+import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -15,8 +19,11 @@ import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
+import io.smarthealth.clinical.visit.domain.PaymentDetailsRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -27,11 +34,18 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
@@ -43,11 +57,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author Kennedy.Imbenzi
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DoctorRequestService implements DateConverter {
 
     // @Autowired
@@ -67,14 +81,22 @@ public class DoctorRequestService implements DateConverter {
 
     private final PatientService patientService;
 
+    private final PaymentDetailsRepository paymentDetailsRepository;
+
+    private final PricelistService pricelistService;
+
+
     @Transactional
     public List<DoctorRequest> createRequest(List<DoctorRequest> docRequests) {
+        log.info("START create doc request ");
         List<DoctorRequest> docReqs = doctorRequestRepository.saveAll(docRequests);
         //Send patient to queue
         for (DoctorRequest docRequest : docReqs) {
             PatientQueue patientQueue = new PatientQueue();
 //            Department department = departmentService.findByServicePointTypeAndloggedFacility(docRequest.getRequestType());      
             ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(docRequest.getRequestType().name()));
+            //update limit on the fly
+            updateLimitOnRequest(docRequest);
             //check if patient is already queued
             if (patientQueueService.patientIsQueued(servicePoint, docRequest.getPatient())) {
                 continue;
@@ -86,10 +108,48 @@ public class DoctorRequestService implements DateConverter {
             patientQueue.setUrgency(PatientQueue.QueueUrgency.Medium);
             patientQueue.setVisit(docRequest.getVisit());
             PatientQueue savedQueue = patientQueueService.createPatientQueue(patientQueue);
+
         }
-
+        log.info("STOP create doc request ");
         return docReqs;
+    }
 
+    private void updateLimitOnRequest(DoctorRequest docRequest) {
+        System.out.println("docRequest.getVisit().getPaymentMethod() " + docRequest.getVisit().getPaymentMethod());
+        if (docRequest.getVisit().getPaymentMethod().equals(PaymentMethod.Insurance)) {
+            //reduce the temp limit
+            PaymentDetails paymentDetails = docRequest.getVisit().getPaymentDetails();
+            System.out.println("Pde " + paymentDetails.getTempRunningLimit());
+            Double requestAmount = 0.0;
+            PriceBook priceBook = docRequest.getVisit().getPaymentDetails().getPayer().getPriceBook();
+            ServicePoint servicePoint = null;
+
+
+            if (docRequest.getRequestType().equals(RequestType.Laboratory)) {
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+            }
+            if (docRequest.getRequestType().equals(RequestType.Pharmacy)) {
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
+            }
+            if (docRequest.getRequestType().equals(RequestType.Procedure)) {
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
+            }
+            if (docRequest.getRequestType().equals(RequestType.Radiology)) {
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
+            }
+            System.out.println("servicePoint.getId() "+servicePoint.getId());
+            System.out.println("priceBook.getId() "+priceBook.getId());
+            System.out.println("docRequest.getItem().getId() "+docRequest.getItem().getId());
+            Page<PriceList> pd = pricelistService.getPricelistByLocation(servicePoint.getId(),
+                    priceBook.getId(),
+                    docRequest.getItem().getId(),
+                    Pageable.unpaged());
+
+            requestAmount = pd.getContent().get(0).getSellingRate().doubleValue();
+            System.out.println("Requested amount for " + docRequest.getRequestType() + " = " + requestAmount);
+            paymentDetails.setTempRunningLimit(paymentDetails.getTempRunningLimit() - requestAmount);
+            paymentDetailsRepository.saveAndFlush(paymentDetails);
+        }
     }
 
     public Page<DoctorRequest> findAllRequestsByVisitAndRequestType(final Visit visit, final RequestType requestType, Pageable pageable) {
@@ -119,7 +179,7 @@ public class DoctorRequestService implements DateConverter {
     }
 
     public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable, Boolean activeVisit, final String term, DateRange range) {
-        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, activeVisit, term,null, range);
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, activeVisit, term, null, range);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
@@ -131,19 +191,20 @@ public class DoctorRequestService implements DateConverter {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
     }
-    public Page<VisitOrderDTO> getDoctorOrderSummary(RequestType requestType, DateRange range, Pageable pageable){
-        if(requestType!=null && range!=null){
-            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(),requestType,pageable);
-        }else if(requestType!=null && range == null){
-            return doctorRequestRepository.findDoctorCashRequests(requestType,pageable);
-        }else if(range!=null && requestType == null){
-            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(),pageable);
-        }else {
+
+    public Page<VisitOrderDTO> getDoctorOrderSummary(RequestType requestType, DateRange range, Pageable pageable) {
+        if (requestType != null && range != null) {
+            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(), requestType, pageable);
+        } else if (requestType != null && range == null) {
+            return doctorRequestRepository.findDoctorCashRequests(requestType, pageable);
+        } else if (range != null && requestType == null) {
+            return doctorRequestRepository.findDoctorCashRequests(range.getStartDateTime(), range.getEndDateTime(), pageable);
+        } else {
             return doctorRequestRepository.findDoctorCashRequests(pageable);
         }
     }
 
-    public List<VisitOrderItemDTO> getDoctorOrderSummaryItems(String visitNumber){
+    public List<VisitOrderItemDTO> getDoctorOrderSummaryItems(String visitNumber) {
         return doctorRequestRepository.findDoctorCashRequestsItems(visitNumber);
     }
 
@@ -190,13 +251,13 @@ public class DoctorRequestService implements DateConverter {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
     public boolean voidRequest(Long id) {
         try {
 //            fulfillDocRequest(id);
             DoctorRequest req = doctorRequestRepository.findById(id).orElse(null);
             if (req != null) {
-                if(req.getFulfillerStatus()!= FullFillerStatusType.Fulfilled)
+                if (req.getFulfillerStatus() != FullFillerStatusType.Fulfilled)
                     req.setVoided(Boolean.TRUE);
                 req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
                 req.setNotes("Voided for a reason");
@@ -236,7 +297,11 @@ public class DoctorRequestService implements DateConverter {
 
         requestItem.setRequestItemId(d.getId());
         if (d.getRequestType().equals(DoctorRequestData.RequestType.Pharmacy)) {
-            requestItem.setPrescriptionData(PrescriptionData.map(prescriptionRepository.findPresriptionByRequestId(d.getId())));
+            Prescription prescription = prescriptionRepository.findPresriptionByRequestId(d.getId());
+            if (prescription != null) {
+                PrescriptionData data = PrescriptionData.map(prescription);
+                requestItem.setPrescriptionData(data);
+            }
         }
         requestItem.setOrderNo(d.getOrderNumber());
         requestItem.setOrderDate(d.getOrderDate());

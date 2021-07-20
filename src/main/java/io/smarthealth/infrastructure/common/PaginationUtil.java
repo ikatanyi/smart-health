@@ -31,7 +31,7 @@ public final class PaginationUtil {
     private static final String API_VERSION = "v1.0";
     private static final String HEADER_X_TOTAL_COUNT = "X-Total-Count";
     private static final String HEADER_LINK_FORMAT = "<{0}>; rel=\"{1}\"";
-    public static final Integer DEFAULT_PAGE_SIZE = 20;
+    public static final Integer DEFAULT_PAGE_SIZE = 1000;
 
     private PaginationUtil() {
     }
@@ -144,7 +144,16 @@ public final class PaginationUtil {
 
     public static Pageable createUnPaged(Integer page, Integer size) {
         if (page != null && size != null) {
+            page = page - 1;
             return PageRequest.of(page, size);
+        }
+        return Pageable.unpaged();
+    }
+
+    public static Pageable createUnPaged(Integer page, Integer size, Sort sort) {
+        if (page != null && size != null) {
+            page = page - 1;
+            return PageRequest.of(page, size, sort);
         }
         return Pageable.unpaged();
     }

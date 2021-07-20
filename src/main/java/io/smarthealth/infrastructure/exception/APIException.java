@@ -1,12 +1,19 @@
 package io.smarthealth.infrastructure.exception;
 
 import java.text.MessageFormat;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import io.smarthealth.accounting.billing.data.LimitExceedingResponse;
+import io.smarthealth.accounting.billing.data.LimitResponseStatus;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class APIException extends RuntimeException {
 
-    private final ApiError apiError;
+    private ApiError apiError;
+
 
     public APIException(final ApiError apiError) {
         super(apiError.getMessage());
@@ -23,6 +30,22 @@ public final class APIException extends RuntimeException {
         return new APIException(
                 new ApiError(HttpStatus.NOT_FOUND, MessageFormat.format(message, args))
         );
+    }
+
+    public static APIException limitExceedResponse(LimitExceedingResponse response) {
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = "";
+        try {
+            json = ow.writeValueAsString(response);
+        } catch (Exception e) {
+            throw APIException.internalError(e.getMessage());
+        }
+
+        return new APIException(
+                new ApiError(HttpStatus.OK, json)
+        );
+
     }
 
     public static APIException conflict(final String message, final Object... args) {
@@ -48,5 +71,5 @@ public final class APIException extends RuntimeException {
                 + "apiError=" + apiError
                 + '}';
     }
-    
+
 }

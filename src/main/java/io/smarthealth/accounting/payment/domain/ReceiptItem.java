@@ -84,10 +84,13 @@ public class ReceiptItem extends Identifiable {
             data.setQuantity(this.getItem().getQuantity());
             data.setTaxes(toBigDecimal(this.getItem().getTaxes()));
             data.setTransactionDate(this.getItem().getBillingDate());
-            if(this.getItem().getServicePoint()!=null)
+            data.setItemCategory(this.getItem().toBillItem().getItemCategory());
+            if(this.getItem().getServicePoint()!=null) {
                 data.setServicePoint(this.getItem().getServicePoint());
-            else
+                data.setServicePointId(this.getItem().getTransactionId());
+            }else {
                 data.setServicePoint("other");
+            }
         }
         return data;
     }

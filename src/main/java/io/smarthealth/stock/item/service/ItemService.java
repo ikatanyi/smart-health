@@ -17,6 +17,7 @@ import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.inventory.events.InventorySpringEventPublisher;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.data.ReorderLevelData;
 import io.smarthealth.stock.item.data.Uoms;
 import io.smarthealth.stock.item.domain.*;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
@@ -277,6 +278,7 @@ public class ItemService {
     }
 
     public Page<Item> fetchItems(ItemCategory category, ItemType type, boolean includeClosed, String term, Pageable pageable) {
+        System.err.println(category);
         Specification<Item> spec = ItemSpecification.createSpecification(category, type, includeClosed, term);
         Page<Item> items = itemRepository.findAll(spec, pageable);
         return items;
@@ -380,4 +382,16 @@ public class ItemService {
         return itemRepository.findByItemTypeAndActiveTrue(type);
     }
 
+    public ReorderRule createReorderLevel(ReorderLevelData reorderLevelData){
+
+           Store store = storeService.getStoreWithNoFoundDetection(reorderLevelData.getStoreId());
+           Item item = findItemEntityOrThrow(reorderLevelData.getItemId());
+           ReorderRule rule = reorderRuleRepository.findByStoreAndStockItem(store, item).orElse(new ReorderRule());
+           rule.setStore(store);
+           rule.setStockItem(item);
+           rule.setReorderLevel(reorderLevelData.getReorderLevel());
+           rule.setReorderQty(reorderLevelData.getOrderQuantity());
+           rule.setActive(reorderLevelData.isActive());
+         return  reorderRuleRepository.save(rule);
+   }
 }

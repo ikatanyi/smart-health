@@ -1,5 +1,8 @@
 package io.smarthealth.organization.person.patient.api;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -17,15 +20,8 @@ import io.smarthealth.organization.person.domain.Portrait;
 import io.smarthealth.organization.person.patient.data.AllergyTypeData;
 import io.smarthealth.organization.person.patient.data.PatientAllergiesData;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.organization.person.patient.domain.Allergy;
-import io.smarthealth.organization.person.patient.domain.AllergyType;
-import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.organization.person.patient.domain.PatientIdentificationType;
-import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
-import io.smarthealth.organization.person.patient.service.AllergiesService;
-import io.smarthealth.organization.person.patient.service.PatientIdentificationTypeService;
-import io.smarthealth.organization.person.patient.service.PatientIdentifierService;
-import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.organization.person.patient.domain.*;
+import io.smarthealth.organization.person.patient.service.*;
 import io.smarthealth.organization.person.service.PersonService;
 import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
@@ -34,13 +30,12 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+//import jdk.internal.org.jline.utils.Log;
 import net.sf.jasperreports.engine.JRException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +82,47 @@ public class PatientController {
 
     @Autowired
     AuditTrailService auditTrailService;
+
+    @Autowired
+    private SummaryPatientService summaryPatientService;
+
+    @GetMapping("/summarypatient")
+    public ResponseEntity<?> getPatientsSummary() {
+//        SummaryPatient foundPatients = (SummaryPatient) summaryPatientService.fetchAllPa();
+        int tots = summaryPatientService.findTotal();
+        System.out.println("TOTAL: "+tots);
+        System.out.println("MALE_UNDER_5: "+summaryPatientService.findMaleUnder5());
+        System.out.println("MALE_ABOVE_5: "+summaryPatientService.findMaleAbove5());
+        System.out.println("FEMALE_UNDER_5: "+summaryPatientService.findFemaleUnder5());
+        System.out.println("FEMALE_ABOVE_5: "+summaryPatientService.findFemaleAbove5());
+
+        SummaryPatient foundPatients = new SummaryPatient();
+        Map<String, Integer> sumPatients = new HashMap<>();
+
+        // Add the summs
+        sumPatients.put("TOTAL", summaryPatientService.findTotal());
+        sumPatients.put("MALE_UNDER_5", summaryPatientService.findMaleUnder5());
+        sumPatients.put("MALE_ABOVE_5", summaryPatientService.findMaleAbove5());
+        sumPatients.put("FEMALE_UNDER_5", summaryPatientService.findFemaleUnder5());
+        sumPatients.put("FEMALE_ABOVE_5", summaryPatientService.findFemaleAbove5());
+
+
+        return ResponseEntity.ok(sumPatients);
+
+//        if (foundPatients == null) {
+//        if (tots == null) {
+//            System.out.println("TOTS: "+tots);
+//
+//            return ResponseEntity.notFound().build();
+//        } else {
+//            System.out.println("TOTS: "+tots);
+//
+//            return ResponseEntity.ok(tots);
+//        }
+    }
+
+
+
 
     @PostMapping("/patients")
     @PreAuthorize("hasAuthority('create_patients')")
@@ -135,6 +171,7 @@ public class PatientController {
             @RequestParam(value = "term", required = false) final String term,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "searchCriterion", required = false) final Long searchCriterion,
+
             UriComponentsBuilder uriBuilder) {
         System.out.println("Size " + size);
         System.out.println("Page " + page);
@@ -166,6 +203,52 @@ public class PatientController {
         details.setTotalElements(pageResult.getTotalElements());
         details.setTotalPage(pageResult.getTotalPages());
         details.setReportName("Patient Register");
+        details.setMale_under_5(summaryPatientService.findMaleUnder5());
+        details.setMale_above_5(summaryPatientService.findMaleAbove5());
+        details.setFemale_above_5(summaryPatientService.findFemaleAbove5());
+        details.setFemale_under_5(summaryPatientService.findFemaleUnder5());
+        //for Pato
+//        details.setMale_under_5(pageResult.getSize()); //try a method for calculating male<5
+
+        //
+//         [
+//        {
+//            "id":70,
+//                "selection":"25"
+//        },
+//        {
+//            "id":71,
+//                "selection":"50"
+//        },
+//        {
+//            "id":72,
+//                "selection":"50"
+//        }
+// ]
+//        JsonArray content = new JsonArray(); // This is your parsed json object maybe shold happen in service
+//        HashMap<String, Integer> count = new HashMap<>();
+//        for (JsonElement element : content) {
+//            JsonObject jsonObject = element.getAsJsonObject();
+//            if(jsonObject.has("gender")) {
+//                String selValue = jsonObject.get("gender").getAsString();
+//                if(count.containsKey(selValue)) {
+//                    count.put(selValue, count.get(selValue) + 1);
+//                } else {
+//                    count.put(selValue, 1);
+//                }
+//            }
+//        }
+//
+//        count.get("M"); // returns all Male
+//        System.out.println("tots "+count.get('M'));
+//        count.get("F"); // returns all Female
+
+//        expect().body("final_list.findall.size()",equalTo(2)).when().get("/list.json);
+//        details.setMale_under_5(count.get("M")); //try a method for calculating male<5
+
+        //details.setMale_under_5(patientService.fetchAllPatients().cou); //try a method for calculating male<5
+
+        //
         pagers.setPageDetails(details);
         auditTrailService.saveAuditTrail("Patient", "Viewed all registered  patients ");
         return ResponseEntity.status(HttpStatus.OK)

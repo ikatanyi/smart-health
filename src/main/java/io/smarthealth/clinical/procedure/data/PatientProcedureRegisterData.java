@@ -7,21 +7,25 @@ package io.smarthealth.clinical.procedure.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.accounting.billing.domain.enumeration.ExcessAmountPayMethod;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 
 /**
- *
  * @author Kennedy.Imbenzi
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL) 	//  ignore all null fields
+@JsonInclude(JsonInclude.Include.NON_NULL)    //  ignore all null fields
 public class PatientProcedureRegisterData {
 
     @ApiModelProperty(hidden = true, required = false)
@@ -35,7 +39,7 @@ public class PatientProcedureRegisterData {
     //@ApiModelProperty(hidden = true, required = false)
     private String patientNumber;
 
-//    @ApiModelProperty(hidden = true, required = false)
+    //    @ApiModelProperty(hidden = true, required = false)
     private String patientName;
     @NotNull(message = "Walk-in flag is required")
     private Boolean isWalkin = Boolean.FALSE;
@@ -44,7 +48,7 @@ public class PatientProcedureRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private String physicianName;
     @ApiModelProperty(required = false, hidden = true)
-    private LocalDate receivedDate=LocalDate.now();
+    private LocalDate receivedDate = LocalDate.now();
     @ApiModelProperty(required = false, hidden = true)
     private LocalDate createdOn;
     @ApiModelProperty(required = false, hidden = true)
@@ -77,6 +81,12 @@ public class PatientProcedureRegisterData {
 
     @ApiModelProperty(required = false, hidden = true)
     private BillData billData;
+
+    /* Start Limit manager variable */
+    private Boolean allowedToExceedLimit = Boolean.FALSE;
+    @Enumerated(EnumType.STRING)
+    private ExcessAmountPayMethod surpassedAmountPaymentMethod;
+    /* End Limit manager variables */
 
     public static PatientProcedureRegister map(PatientProcedureRegisterData patientregister) {
         PatientProcedureRegister e = new PatientProcedureRegister();

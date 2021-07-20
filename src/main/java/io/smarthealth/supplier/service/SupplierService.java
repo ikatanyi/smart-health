@@ -17,6 +17,8 @@ import io.smarthealth.administration.app.service.CurrencyService;
 import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.supplier.data.SupplierBalance;
+import io.smarthealth.supplier.data.SupplierBalanceAging;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.data.SupplierStatement;
 import io.smarthealth.supplier.domain.Supplier;
@@ -59,6 +61,7 @@ public class SupplierService {
     public SupplierData createSupplier(SupplierData supplierData) {
         Supplier supplier = new Supplier();
         supplier.setActive(Boolean.TRUE);
+
         if (supplierData.getSupplierType() != null) {
             supplier.setSupplierType(supplierData.getSupplierType());
         }
@@ -111,7 +114,64 @@ public class SupplierService {
         Supplier savedSupplier = supplierRepository.save(supplier);
         return savedSupplier.toData();
     }
+    public SupplierData updateSupplier(Long id, SupplierData supplierData) {
 
+        Supplier supplier = supplierRepository.findById(id).orElseThrow(() -> APIException.notFound("Supplier with id {0} not found.",id));
+        supplier.setActive(Boolean.TRUE);
+
+        if (supplierData.getSupplierType() != null) {
+            supplier.setSupplierType(supplierData.getSupplierType());
+        }
+
+        supplier.setSupplierName(supplierData.getSupplierName());
+        supplier.setLegalName(supplierData.getLegalName());
+        supplier.setTaxNumber(supplierData.getTaxNumber());
+        supplier.setWebsite(supplierData.getWebsite());
+
+        if (supplierData.getCurrencyId() != null) {
+            Optional<Currency> c = currencyService.getCurrency(supplierData.getCurrencyId());
+            if (c.isPresent()) {
+                supplier.setCurrency(c.get());
+            }
+        }
+        if (supplierData.getPricebookId() != null) {
+            Optional<PriceBook> book = pricebookService.getPricebook(supplierData.getPricebookId());
+            if (book.isPresent()) {
+                supplier.setPricelist(book.get());
+            }
+        }
+
+        if (supplierData.getPaymentTermsId() != null) {
+            Optional<PaymentTerms> terms = paymentService.getPaymentTerm(supplierData.getPaymentTermsId());
+            if (terms.isPresent()) {
+                supplier.setPaymentTerms(terms.get());
+            }
+        }
+
+        if (supplierData.getBank() != null) {
+            supplier.setBankAccount(BankEmbeddedData.map(supplierData.getBank()));
+        }
+
+        if (supplierData.getAddresses() != null && supplierData.getAddresses().getPhone() != null) {
+
+            Address addresses = adminService.createAddress(supplierData.getAddresses());
+            addresses.setType(Address.Type.Office);
+            supplier.setAddress(addresses);
+        }
+
+        if (supplierData.getContact() != null) {
+            Contact contact = adminService.createContact(supplierData.getContact());
+            supplier.setContact(contact);
+        }
+
+        if (supplierData.getCreditAccountNo() != null) {
+            Account acc = accountRepository.findByIdentifier(supplierData.getCreditAccountNo()).get();
+            supplier.setCreditAccount(acc);
+        }
+
+        Supplier savedSupplier = supplierRepository.save(supplier);
+        return savedSupplier.toData();
+    }
     public Supplier getSupplierOrThrow(Long id) {
         Supplier supplier = getSupplierById(id)
                 .orElseThrow(() -> APIException.notFound("Supplier with id {0} not found.", id));
@@ -160,5 +220,12 @@ public class SupplierService {
     public List<SupplierStatement> getStatement(Long supplierId, DateRange range){
         List<SupplierStatement> lists= supplierRepository.getSupplierStatement(supplierId);
         return lists;
+    }
+    public Page<SupplierBalance> getSupplierBalances(Pageable page){
+        return supplierRepository.findSupplierBalance(page);
+    }
+
+    public Page<SupplierBalanceAging> getSupplierAgingBalances(Pageable page){
+        return supplierRepository.findSupplierAgingBalance(page);
     }
 }

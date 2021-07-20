@@ -8,15 +8,15 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- *
  * @author Kelsas
  */
 @Data
 public class PurchaseOrderData {
-   private Long id;
+    private Long id;
     private String orderNumber; //PUR-ORD-2019-00001
     private Long supplierId;
     private String supplierName;
@@ -38,9 +38,12 @@ public class PurchaseOrderData {
     private PurchaseOrderStatus status;
     private String createdBy;
     private String remarks;
+    private boolean approved;
+    private LocalDateTime approvalDate;
+    private String approvedBy;
     private List<PurchaseOrderItemData> purchaseOrderItems;
     @JsonIgnore
     private boolean showItems;
 
-    
+
 }

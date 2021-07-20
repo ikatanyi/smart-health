@@ -14,7 +14,9 @@ import io.smarthealth.accounting.billing.service.PatientBillingService;
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
+import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -70,15 +72,18 @@ public class PatientBillingController {
              @RequestParam(value = "visitType", required = false) VisitEnum.VisitType visitType,
              @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMethod,
              @RequestParam(value = "dateRange", required = false) String dateRange,
+             @RequestParam(value = "visitNumber", required = false) String visitNumber,
              @RequestParam(value = "page", required = false) Integer page,
              @RequestParam(value = "pageSize", required = false) Integer size){
 
           Pageable pageable = PaginationUtil.createPage(page, size);
           DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-          BillingQuery query = new BillingQuery(search, patientNumber, visitType, paymentMethod, range, pageable);
+          BillingQuery query = new BillingQuery(search, patientNumber, visitType,
+                  paymentMethod, visitNumber, range, pageable);
 
           Page<VisitBillSummary> list = service.getVisitBills(query);
-          Pager<List<VisitBillSummary>> pager = (Pager<List<VisitBillSummary>>) PaginationUtil.toPager(list, "Patient Visit Bill");
+          Pager<List<VisitBillSummary>> pager = (Pager<List<VisitBillSummary>>) PaginationUtil.toPager(list,
+                  "Patient Visit Bill");
           return ResponseEntity.ok(pager);
      }
 
@@ -166,6 +171,16 @@ public class PatientBillingController {
           pagers.setContent(returned);
 
           return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+     }
+
+     @PostMapping("/patient-billing/preauth")
+     public ResponseEntity<PaymentDetailsData> createPreauth(@Valid @RequestBody PreAuthData data) {
+          PaymentDetails paymentDetails = service.createPreauthDetails(data);
+          if(paymentDetails!=null) {
+               return ResponseEntity.status(HttpStatus.CREATED).body(PaymentDetailsData.map(paymentDetails));
+          }else{
+               throw APIException.badRequest("Preauthorization not Successfully created");
+          }
      }
 
 }

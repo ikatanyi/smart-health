@@ -31,5 +31,7 @@ public enum GlobalConfigNum {
     DiscountMaxPercentage,
     PatientDocuments,
     CheckPatientBillLimit,
-    CaptureLabConsumables;
+    CaptureLabConsumables,
+    ShowStockBalancePurchaseOrder,
+    ShowInvoiceDate;
 }

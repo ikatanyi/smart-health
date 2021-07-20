@@ -10,6 +10,7 @@ import io.smarthealth.clinical.moh.data.Register;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -25,7 +26,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- *
  * @author Simon.waweru
  */
 public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecificationExecutor<Visit>, ResultsRepository {
@@ -76,10 +76,18 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
     @Query(value = "SELECT v FROM Visit v WHERE v.patient=:patient  ORDER BY v.id DESC")
     Page<Visit> lastVisitWithoutCurrentActiveVisit(@Param("patient") Patient patient, Pageable pageable);
 
+    Optional<Visit> findTopByPatient(final Patient patient);
+
     @Query(value = "SELECT v FROM Visit v WHERE DATE(v.startDatetime)=:date GROUP BY v.patient.patientNumber, DATE(v.startDatetime)")
     List<Visit> visitAttendance(@Param("date") Date date);
 
-    @Query(value = "SELECT v.patient.patientNumber AS patientNumber, v.patient.fullName AS fullName, v.patient.age AS age, v.patient.gender AS gender, p.diagnosis.description AS diagnosis,v.patient.residence AS residence, v.startDatetime  AS date, v.startDatetime AS seen, v.createdBy AS createdBy, v.patient.primaryContact as primaryContact, v.patient.dateOfBirth as dateOfBirth, v.visitType as visitType, v.visitNumber, p.diagnosis.code as diagnosisCode, p.certainty, p.createdBy as diagnosisSubmittedBy from Visit v LEFT JOIN PatientDiagnosis p ON v.id = p.visit.id WHERE v.startDatetime BETWEEN :fromDate AND :toDate GROUP BY v.patient.patientNumber,v.visitNumber")
+    @Query(value = "SELECT v.patient.patientNumber AS patientNumber, v.patient.fullName AS fullName, v.patient.age AS" +
+            " age, v.patient.gender AS gender, p.diagnosis.description AS diagnosis,v.patient.residence AS residence," +
+            " v.startDatetime  AS date, v.startDatetime AS seen, v.createdBy AS createdBy, v.patient.primaryContact " +
+            "as primaryContact, v.patient.dateOfBirth as dateOfBirth, v.visitType as visitType, v.visitNumber as " +
+            "visitNumber, p.diagnosis.code as diagnosisCode, p.certainty, p.createdBy as diagnosisSubmittedBy " +
+            "from Visit v LEFT JOIN PatientDiagnosis p ON v.id = p.visit.id WHERE v.startDatetime " +
+            "BETWEEN :fromDate AND :toDate GROUP BY v.patient.patientNumber,v.visitNumber")
     List<Register> patientRegister(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
 
     @Query(value = "SELECT r.order_date as date, r.patient_id, CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName,  'Laboratory' AS ServicePoint, r.visit_id AS VisitId, r.created_on AS Start, l.created_on AS Acknowledged, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),0.0) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),'AWAITING')  AS TAT"
@@ -117,6 +125,6 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
             + " GROUP BY ServicePoint", nativeQuery = true)
     List<TatInterface> patientTatStatement(Long visitId);
 
-    List<Visit> findByServicePointAndServedAtServicePointAndStatus(final ServicePoint servicePoint,final Boolean servedAtServicePoint, final  VisitEnum.Status status);
+    List<Visit> findByServicePointAndServedAtServicePointAndStatus(final ServicePoint servicePoint, final Boolean servedAtServicePoint, final VisitEnum.Status status);
 
 }

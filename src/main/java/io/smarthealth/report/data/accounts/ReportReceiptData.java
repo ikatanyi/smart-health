@@ -4,6 +4,8 @@ import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.payment.data.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,6 +15,9 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 /**
  *
@@ -33,7 +38,9 @@ public class ReportReceiptData {
     private BigDecimal paid;
     private BigDecimal tenderedAmount;
     private BigDecimal refundedAmount;
-    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMethod;
     private String receiptNo;
     private String referenceNumber; //voucher no,
     private String transactionType;
@@ -45,6 +52,7 @@ public class ReportReceiptData {
     private ShiftStatus status;
     private String currency;
     private String createdBy;
+    private VisitEnum.VisitType visitType;
     
     private BigDecimal lab = BigDecimal.ZERO;
     private BigDecimal pharmacy = BigDecimal.ZERO;

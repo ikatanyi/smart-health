@@ -6,10 +6,16 @@
 package io.smarthealth.report.service;
 
 import io.smarthealth.accounting.accounts.service.LedgerService;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
+import io.smarthealth.accounting.billing.domain.PatientBillRepository;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.data.ShiftPayment;
 import io.smarthealth.accounting.cashier.service.CashierService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceItemData;
+import io.smarthealth.accounting.invoice.data.statement.InvoiceSummary;
+import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.data.PettyCashPaymentData;
@@ -23,6 +29,7 @@ import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
+import io.smarthealth.administration.config.domain.GlobalConfigNum;
 import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -90,6 +97,7 @@ public class PaymentReportService {
     private final CashierService cashierService;
     private final ConfigService configService;
     private final AdmissionService admissionService;
+    private final PatientBillItemRepository patientBillItemRepository;
 
     public void getPettyCashRequests(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
         String requestNo = reportParam.getFirst("requestNo");
@@ -105,7 +113,7 @@ public class PaymentReportService {
             employee = emp.get();
         }
 
-        List<PettyCashRequestsData> pettyCashData = pettyCashRequestService.findPettyCashRequests(requestNo, employee, status, Pageable.unpaged())
+        List<PettyCashRequestsData> pettyCashData = pettyCashRequestService.findPettyCashRequests(requestNo, employee, status, range, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map(x -> PettyCashRequestsData.map(x))
@@ -149,18 +157,52 @@ public class PaymentReportService {
         GlobalConfiguration config = configService.getByNameOrThrow("CapitationItemAmountDisplay");
         Boolean showCapitationItem = config.getValue().equals("1");
         reportData.getFilters().put("showCapitationItem", showCapitationItem);
+        //rebate inbo
+        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
+        if (invoiceData.getRebate() != null && invoiceData.getRebate()) {
+            Optional<PatientBillItem> optionalPatientBillItem = patientBillItemRepository.getPatientBillItemByPaymentReference(invoiceData.getNumber());
+            if (optionalPatientBillItem.isPresent()) {
+                PatientBillItem item = optionalPatientBillItem.get();
+                invoiceData.getInvoiceItems().add(InvoiceItem.toData(item));
+            }
+        }
+        Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
+        if (admission.isPresent()) {
+            GlobalConfiguration gconfig = configService.getByNameOrThrow(GlobalConfigNum.ShowInvoiceDate.name());
+            Boolean showInvoiceDate = gconfig.getValue().equals("1");
+
+            reportData.getFilters().put("inPatient", true);
+            reportData.getFilters().put("dischargeDate", admission.get().getDischargeDate());
+            reportData.getFilters().put("admissionDate", admission.get().getAdmissionDate());
+            reportData.getFilters().put("showInvoiceDate", showInvoiceDate);
+        }
+        reportData.setData(Arrays.asList(invoiceData));
+        reportData.setTemplate("/accounts/invoice");
+        reportData.setReportName("invoice");
+        reportData.setFormat(format);
+        reportService.generateReport(reportData, response);
+    }
+
+    public void getInvoiceSummary(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+        String invoiceNo = reportParam.getFirst("invoiceNo");
+
+        ReportData reportData = new ReportData();
+        GlobalConfiguration config = configService.getByNameOrThrow("CapitationItemAmountDisplay");
+        Boolean showCapitationItem = config.getValue().equals("1");
+        reportData.getFilters().put("showCapitationItem", showCapitationItem);
+        //rebate inbo
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
 
-        System.err.println("Hapa>> " + invoiceData);
         Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
         if (admission.isPresent()) {
             reportData.getFilters().put("inPatient", true);
             reportData.getFilters().put("dischargeDate", admission.get().getDischargeDate());
             reportData.getFilters().put("admissionDate", admission.get().getAdmissionDate());
         }
-        reportData.setData(Arrays.asList(invoiceData));
-        reportData.setTemplate("/accounts/invoice");
-        reportData.setReportName("invoice");
+        reportData.setData(Arrays.asList(InvoiceSummary.of(invoiceData)));
+        reportData.setTemplate("/accounts/InvoiceSummary");
+        reportData.setReportName("Invoice Summary");
         reportData.setFormat(format);
         reportService.generateReport(reportData, response);
     }
@@ -292,7 +334,7 @@ public class PaymentReportService {
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, null, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -322,21 +364,21 @@ public class PaymentReportService {
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
             }
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
-                switch (trx.getMethod().toUpperCase()) {
-                    case "BANK":
+                switch (trx.getMethod()) {
+                    case Bank:
                         data.setBank(data.getBank().add(trx.getAmount()));
                         break;
-                    case "CARD":
+                    case Card:
                         data.setCard(data.getCard().add(trx.getAmount()));
                         break;
-                    case "MOBILE MONEY":
+                    case Mobile_Money:
                         data.setMobilemoney(data.getMobilemoney().add(trx.getAmount()));
                         data.setReferenceNumber(trx.getReference());
                         break;
-                    case "CASH":
+                    case Cash:
                         data.setCash(data.getCash().add(trx.getAmount()));
                         break;
-                    case "DISCOUNT":
+                    case Discount:
                         data.setDiscount(data.getDiscount().add(trx.getAmount()));
                         break;
                     default:
@@ -413,7 +455,7 @@ public class PaymentReportService {
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, null, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -439,7 +481,7 @@ public class PaymentReportService {
             data.setStartDate(receipt.getShiftData().getStartDate());
             data.setStopDate(receipt.getShiftData().getEndDate());
             BigDecimal otherReceipts = BigDecimal.ZERO;
-            if ( receipt.getPrepayment()) {
+            if (receipt.getPrepayment()) {
                 otherReceipts = data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount();
                 System.out.println("Other receipts line 444 " + otherReceipts);
             }
@@ -447,21 +489,21 @@ public class PaymentReportService {
             data.setOther(otherReceipts);
 
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
-                switch (trx.getMethod().toUpperCase()) {
-                    case "BANK":
+                switch (trx.getMethod()) {
+                    case Bank:
                         data.setBank(data.getBank().add(trx.getAmount()));
                         break;
-                    case "CARD":
+                    case Card:
                         data.setCard(data.getCard().add(trx.getAmount()));
                         break;
-                    case "MOBILE MONEY":
+                    case Mobile_Money:
                         data.setMobilemoney(data.getMobilemoney().add(trx.getAmount()));
                         data.setReferenceNumber(trx.getReference());
                         break;
-                    case "CASH":
+                    case Cash:
                         data.setCash(data.getCash().add(trx.getAmount()));
                         break;
-                    case "DISCOUNT":
+                    case Discount:
                         data.setDiscount(data.getDiscount().add(trx.getAmount()));
                         break;
                     default:
@@ -507,9 +549,9 @@ public class PaymentReportService {
 
             System.out.println("Other receipts line 519 " + otherReceipts);
             BigDecimal runningAmount = data.getAmount();
-            System.out.println("Running amount "+runningAmount);
+            System.out.println("Running amount " + runningAmount);
             BigDecimal newAmount = runningAmount.add(otherReceipts);
-            System.out.println("New amount "+newAmount);
+            System.out.println("New amount " + newAmount);
             data.setAmount(newAmount);
 
             receiptDataArray.add(data);

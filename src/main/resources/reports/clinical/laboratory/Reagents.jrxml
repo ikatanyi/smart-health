@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Reagents" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4b4a9a26-137f-4587-8b8a-b9bb0e97094f">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT r.id ,p.item_name AS reagent_name, p.id as reagent_service_id, t.test_name, e.equipment_name, r.estimated_quantity,
+i.available_stock,sp.name,s.store_name, p.unit as uom from lab_test_reagent AS r
+INNER JOIN lab_equipment AS e ON r.equipment_id = e.id
+INNER JOIN lab_test_types AS t ON t.id = r.test_id
+INNER JOIN product_services AS p ON p.id = r.reagent_service_id
+LEFT  JOIN stock_inventory_item AS i ON i.item_id = p.id 
+LEFT  JOIN st_stores AS s ON s.id = i.store_id 
+LEFT JOIN service_points AS sp ON sp.id = s.service_point_id
+ WHERE sp.service_point_type = 'Laboratory'
+ORDER BY p.item_code]]>
+	</queryString>
+	<field name="id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="id"/>
+		<property name="com.jaspersoft.studio.field.label" value="id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lab_test_reagent"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="reagent_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="item_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="reagent_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="product_services"/>
+	</field>
+	<field name="reagent_service_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="id"/>
+		<property name="com.jaspersoft.studio.field.label" value="reagent_service_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="product_services"/>
+	</field>
+	<field name="test_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="test_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="test_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lab_test_types"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="equipment_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="equipment_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="equipment_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lab_equipment"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="estimated_quantity" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="estimated_quantity"/>
+		<property name="com.jaspersoft.studio.field.label" value="estimated_quantity"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lab_test_reagent"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="available_stock" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="available_stock"/>
+		<property name="com.jaspersoft.studio.field.label" value="available_stock"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="stock_inventory_item"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="service_points"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="store_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="store_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="store_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="st_stores"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="uom" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="unit"/>
+		<property name="com.jaspersoft.studio.field.label" value="uom"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="product_services"/>
+	</field>
+	<variable name="Variable_2" class="java.lang.String"/>
+	<variable name="TestCount" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{available_stock}/$F{estimated_quantity}]]></variableExpression>
+	</variable>
+	<group name="reagent_name">
+		<groupExpression><![CDATA[$F{reagent_name}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField>
+					<reportElement x="0" y="0" width="780" height="20" uuid="4c238617-26d8-4bcf-81c0-7dc916336fba"/>
+					<textElement verticalAlignment="Middle">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{reagent_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="81" splitType="Stretch"/>
+	</title>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="280" height="30" uuid="ce05035e-8329-444c-b7f1-5edf438346dc">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="db1c128e-19d1-4a4d-b7a3-c73bebe01a83"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Test ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="0" width="133" height="30" uuid="e6ff6995-1d01-47cb-b825-6007a59af01c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b16b549a-87b9-4f24-8df6-1bdc83b4298d"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Equipment]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="413" y="0" width="67" height="30" uuid="aa089b80-200a-417b-91ec-c8064ead0f2e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="71206a06-edbe-499c-9a72-1dd781ed0f5f"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty/Test]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="480" y="0" width="120" height="30" uuid="132a16b4-de6c-443d-8780-19d0bb98b6a5">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1881cea9-7cb7-4827-8966-0575d653059a"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Available Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="600" y="0" width="80" height="30" uuid="23f1576b-c029-476f-9589-805946a74e77">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="65b73661-635b-4e94-a75d-efb572018b75"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[UoM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="680" y="0" width="100" height="30" uuid="e3961d1a-1ff1-40ca-b943-344d98e4704b"/>
+				<box>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tests Available]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="280" height="20" uuid="8040907d-bda1-4c2f-8cbf-32d0d0f2e00c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="db1c128e-19d1-4a4d-b7a3-c73bebe01a83"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{test_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="133" height="20" uuid="28b33d63-c54d-4f08-bd3e-902fc55e4ce5">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b16b549a-87b9-4f24-8df6-1bdc83b4298d"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{equipment_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#;(#,##0.00#-)">
+				<reportElement x="413" y="0" width="67" height="20" uuid="168ac2b6-fb5d-4671-b68f-51e5e1876214">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="71206a06-edbe-499c-9a72-1dd781ed0f5f"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{estimated_quantity}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.###;(#,##0.###-)">
+				<reportElement x="480" y="0" width="120" height="20" uuid="35ed0931-8667-464a-87d3-0d0d16e488b6">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1881cea9-7cb7-4827-8966-0575d653059a"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{available_stock}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="600" y="0" width="80" height="20" uuid="953ff99b-0070-4392-ad9f-6aecf60fe701">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="65b73661-635b-4e94-a75d-efb572018b75"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{uom}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.###;(#,##0.###-)">
+				<reportElement x="680" y="0" width="100" height="20" uuid="a1404a32-e232-4446-8756-a32898b438df"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{TestCount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>

@@ -2,6 +2,7 @@ package io.smarthealth.clinical.pharmacy.service;
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
@@ -16,9 +17,12 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
+
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
@@ -70,7 +74,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DispensingService {
 
-    private final DispensedDrugRepository repository;
+    private final DispensedDrugRepository dispensedDrugRepository;
     private final ItemRepository itemRepository;
     private final PatientService patientService;
     private final StoreRepository storeRepository;
@@ -82,8 +86,10 @@ public class DispensingService {
     private final DoctorsRequestRepository doctorRequestRepository;
     private final WalkingService walkingService;
     private final ServicePointRepository servicePointRepository;
+    private final PatientBillItemRepository billItemRepository;
 
-    public List<DispensedDrug> dispenseItem(DrugRequest drugRequest, Store store) {
+
+    public List<DispensedDrug> dispenseItem(DrugRequest drugRequest, Store store, PatientBill patientBill) {
         List<DispensedDrug> dispensedDrugList = new ArrayList<>();
         Visit visit = visitService.findVisit(drugRequest.getVisitNumber()).orElse(null);
 //        Store store = storeService.getStoreWithNoFoundDetection(patientDrugs.getStoreId());
@@ -98,34 +104,39 @@ public class DispensingService {
             drugRequest.getDrugItems()
                     .stream()
                     .map(drugData -> {
-                        DispensedDrug drugs = new DispensedDrug();
+                        DispensedDrug dispensedDrug = new DispensedDrug();
                         Item item = billingService.getItemByCode(drugData.getItemCode());
 
-                        drugs.setPatient(patient);
-                        drugs.setDrug(item);
-                        drugs.setStore(store);
-                        drugs.setDispensedDate(drugRequest.getDispenseDate());
-                        drugs.setTransactionId(drugRequest.getTransactionId());
-                        drugs.setQtyIssued(drugData.getQuantity());
-                        drugs.setPrice(drugData.getPrice());
-                        drugs.setAmount((drugData.getPrice() * drugData.getQuantity()));
-                        drugs.setUnits(drugData.getUnit());
-                        drugs.setDoctorName(drugData.getDoctorName());
-                        drugs.setPaid(false);
-                        drugs.setIsReturn(Boolean.FALSE);
-                        drugs.setReturnedQuantity(0D);
-                        drugs.setCollected(true);
-                        drugs.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
-                        drugs.setCollectedBy("");
-                        drugs.setInstructions(drugData.getInstructions());
-                        drugs.setOtherReference(drugRequest.getPatientNumber() + " " + drugRequest.getPatientName());
-                        drugs.setWalkinFlag(drugRequest.getIsWalkin());
-                        drugs.setBatchNumber(drugData.getBatchNumber());
-                        drugs.setDeliveryNumber(drugData.getBatchNumber());
-                        drugs.setVisit(visit);
-                        drugs.setBillNumber(drugRequest.getBillNumber());
+                        dispensedDrug.setWalkIn(drugRequest.getWalkIn());
+                        dispensedDrug.setPatient(patient);
+                        dispensedDrug.setDrug(item);
+                        dispensedDrug.setStore(store);
+                        dispensedDrug.setDispensedDate(drugRequest.getDispenseDate());
+                        dispensedDrug.setTransactionId(drugRequest.getTransactionId());
+                        dispensedDrug.setQtyIssued(drugData.getQuantity());
+                        dispensedDrug.setPrice(drugData.getPrice());
+                        dispensedDrug.setAmount((drugData.getPrice() * drugData.getQuantity()));
+                        dispensedDrug.setUnits(drugData.getUnit());
+                        dispensedDrug.setDoctorName(drugData.getDoctorName());
+                        dispensedDrug.setPaid(false);
+                        dispensedDrug.setIsReturn(Boolean.FALSE);
+                        dispensedDrug.setReturnedQuantity(0D);
+                        dispensedDrug.setCollected(true);
+                        dispensedDrug.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
+                        dispensedDrug.setCollectedBy("");
+                        dispensedDrug.setInstructions(drugData.getInstructions());
+                        dispensedDrug.setOtherReference(drugRequest.getPatientNumber() + " " + drugRequest.getPatientName());
+                        dispensedDrug.setWalkinFlag(drugRequest.getIsWalkin());
+                        dispensedDrug.setBatchNumber(drugData.getBatchNumber());
+                        dispensedDrug.setDeliveryNumber(drugData.getBatchNumber());
+                        dispensedDrug.setVisit(visit);
+                        dispensedDrug.setBillNumber(drugRequest.getBillNumber());
+                        //find patient bill item
+//                        PatientBillItem patientBillItem = billingService.findBillItemByPatientBillAndItem(patientBill, item);
+//
+//                        dispensedDrug.setBillItem(patientBillItem);
 
-                        DispensedDrug savedDrug = repository.saveAndFlush(drugs);
+                        DispensedDrug savedDrug = dispensedDrugRepository.saveAndFlush(dispensedDrug);
                         doStockEntries(savedDrug.getId());
                         fulfillDocRequest(drugData.getRequestId());
                         return savedDrug;
@@ -137,16 +148,16 @@ public class DispensingService {
     }
 
     public void dispenseConsumables(List<PatientBillItem> consumables, MovementType movementType, MovementPurpose movementPurpose) {
-         if(consumables.isEmpty()) return;
+        if (consumables.isEmpty()) return;
         consumables.stream()
                 .forEach(consumable -> {
                     if (consumable.getServicePointId() == null) {
                         throw APIException.badRequest("Inventory Store is Required for the Service Point");
                     }
-                    ServicePoint servicePoint =servicePointRepository.findById(consumable.getServicePointId())
+                    ServicePoint servicePoint = servicePointRepository.findById(consumable.getServicePointId())
                             .orElseThrow(() -> APIException.notFound("Service Point with Id {} not found", consumable.getServicePointId()));
 
-                    Store store =  Optional.of(servicePoint.getStore())
+                    Store store = Optional.of(servicePoint.getStore())
                             .orElseThrow(() -> APIException.badRequest("Item Inventory Location for the service point {} not configured. Item requires Store Location.", servicePoint.getName()));
 
                     StockEntry stock = new StockEntry();
@@ -181,16 +192,18 @@ public class DispensingService {
             WalkIn w = createWalking(drugRequest.getPatientName());
             drugRequest.setPatientNumber(w.getWalkingIdentitificationNo());
             drugRequest.setPaymentMode("Cash");
+            drugRequest.setWalkIn(w);
         }
 
         PatientBill savedBill = billingService.save(toBill(drugRequest, store));
 
         drugRequest.setBillNumber(savedBill.getBillNumber());
 
-        dispenseItem(drugRequest, store);
+        dispenseItem(drugRequest, store, savedBill);
 
-        //if all goes well and the patient was sent on this service point direct (exclusive of doctor request) - mark on the patient visit the patient has been served, and remove from the waiting list
-        if(!drugRequest.getIsWalkin()){
+        //if all goes well and the patient was sent on this service-point direct (exclusive of doctor request) - mark
+        // on the patient visit the patient has been served, and remove from the waiting list
+        if (!drugRequest.getIsWalkin()) {
             Visit visit = visitService.findVisitEntityOrThrow(drugRequest.getVisitNumber());
             if (visit.getServiceType().equals(VisitEnum.ServiceType.Other)) {
                 visit.setServedAtServicePoint(Boolean.TRUE);
@@ -202,7 +215,7 @@ public class DispensingService {
     }
 
     private void doStockEntries(Long drugId) {
-        Optional<DispensedDrug> drug = repository.findById(drugId);
+        Optional<DispensedDrug> drug = dispensedDrugRepository.findById(drugId);
         if (drug.isPresent()) {
             inventoryService.save(StockEntry.create(drug.get()));
         } else {
@@ -211,16 +224,17 @@ public class DispensingService {
     }
 
     public DispensedDrug findDispensedDrugOrThrow(Long id) {
-        return repository.findById(id)
+        return dispensedDrugRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Dispensed Drug with id {0} not found", id));
     }
 
-    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, Boolean isReturn, DateRange range, Pageable page) {
+    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo,
+                                                  String billNo, Boolean isReturn, DateRange range, Pageable page) {
 
-        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, isReturn, range);
+        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo,
+                prescriptionNo, billNo, isReturn, range);
 
-        return repository.findAll(spec, page);
-
+        return dispensedDrugRepository.findAll(spec, page);
     }
 
     public boolean UpdateFullfillerStatus(Long id) {
@@ -240,13 +254,14 @@ public class DispensingService {
         }
     }
 
+    @Transactional
     public List<DispensedDrug> returnItems(String visitNumber, List<ReturnedDrugData> returnedDrugs) {
         System.err.println("Retugint the ites, ..... ");
         returnedDrugs.forEach(x -> System.out.println("daddy ... " + x.getDrugId()));
 
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-        List<DispensedDrug> returnedArray = new ArrayList();
+        List<DispensedDrug> dispensedDrugsList = new ArrayList();
         if (!returnedDrugs.isEmpty()) {
             returnedDrugs
                     .stream()
@@ -266,7 +281,7 @@ public class DispensingService {
                         drug1.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
                         drug1.setVisit(visit);
 
-                        returnedArray.add(drug1);
+                        dispensedDrugsList.add(drug1);
 
                         stock.setAmount(NumberUtils.toScaledBigDecimal((drugData.getQuantity()) * (drugs.getPrice())));
                         stock.setDeliveryNumber(drug1.getOtherReference());
@@ -286,12 +301,30 @@ public class DispensingService {
                         drugs.setReturnReason(drugData.getReason());
                         drugs.setReturnDate(drugData.getReturnDate() != null ? drugData.getReturnDate() : LocalDate.now());
 
-                        repository.save(drugs);
+                        dispensedDrugRepository.save(drugs);
+
+                        //update billing details
+                        PatientBillItem patientBillItem = billingService.findBillItemById(drugData.getPatientBillItemId());
+
+                        if (!patientBillItem.isFinalized()) {
+                            Double newQuantity = (patientBillItem.getQuantity() - drugData.getQuantity());
+
+                            patientBillItem.setQuantity(newQuantity);
+                            patientBillItem.setAmount((newQuantity * patientBillItem.getPrice()));
+                            patientBillItem.setBalance((patientBillItem.getBalance() - (patientBillItem.getPrice() * drugData.getQuantity())));
+                            billItemRepository.save(patientBillItem);
+
+
+                            PatientBill patientBill = patientBillItem.getPatientBill();
+                            patientBill.setAmount((patientBill.getAmount() - (patientBillItem.getPrice() * drugData.getQuantity())));
+                            patientBill.setBalance((patientBill.getBalance() - (patientBillItem.getPrice() * drugData.getQuantity())));
+                            billingService.update(patientBill);
+                        }
                     });
 
         }
 
-        return repository.saveAll(returnedArray);
+        return dispensedDrugRepository.saveAll(dispensedDrugsList);
     }
 
     private PatientBill toBill(DrugRequest data, Store store) {
@@ -323,6 +356,8 @@ public class DispensingService {
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
+        patientbill.setAllowedToExceedLimit(data.getAllowedToExceedLimit());
+        patientbill.setSurpassedAmountPaymentMethod(data.getSurpassedAmountPaymentMethod());
 
         List<PatientBillItem> lineItems = data.getDrugItems()
                 .stream()
@@ -367,7 +402,7 @@ public class DispensingService {
     }
 
     public List<DispensedDrugsInterface> dispensedDrugs(DateRange range) {
-        return repository.dispensedDrugs(range.getStartDate(), range.getEndDate());
+        return dispensedDrugRepository.dispensedDrugs(range.getStartDate(), range.getEndDate());
     }
 
     private void fulfillDocRequest(Long id) {
@@ -389,7 +424,17 @@ public class DispensingService {
     }
 
     public List<DispensedDrug> findDispensedDrugs(Long drugId, String visitNo, LocalDate date, String transNo) {
-        return repository.findDispensedDrug(drugId, visitNo, date, transNo);
+        return dispensedDrugRepository.findDispensedDrug(drugId, visitNo, date, transNo);
     }
+
+    public void updateStockEntry(Item item, Store store, Double qty) {
+        if (item.getCategory() == ItemCategory.Drug) {
+            //update the dispensed drug
+
+        } else {
+            //affect the store only
+        }
+    }
+
 
 }

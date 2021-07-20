@@ -10,6 +10,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.EnglishNumberToWords;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.report.data.ReportData;
+import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
@@ -40,6 +41,7 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -254,6 +256,15 @@ public class PurchaseService {
             Logger.getLogger(PurchaseService.class.getName()).log(Level.SEVERE, null, ex);
             throw APIException.internalError("Error Occurred while Generating report \n {0} ", ex.getMessage());
         }
+    }
+    public PurchaseOrder approveOrder(String orderNo){
+        PurchaseOrder order = findByOrderNumberOrThrow(orderNo);
+        order.setApproved(true);
+        order.setApprovalDate(LocalDateTime.now());
+        order.setStatus(PurchaseOrderStatus.Approved);
+        order.setApprovedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
+        orderRepository.save(order);
+        return order;
     }
 
 }

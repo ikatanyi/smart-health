@@ -5,6 +5,9 @@
  */
 package io.smarthealth.organization.person.patient.service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.domain.GlobalConfigurationRepository;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
@@ -33,6 +36,7 @@ import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.domain.specification.PatientSpecification;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.sql.Connection;
@@ -47,6 +51,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -69,7 +74,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- *
  * @author Simon.waweru
  */
 @Service
@@ -113,6 +117,24 @@ public class PatientService {
     public Page<Patient> fetchAllPatients(final String term, final String dateRange, final Pageable pageable) {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Specification<Patient> spec = PatientSpecification.createSpecification(range, term);
+        //
+        JsonArray content = new JsonArray(); // This is your parsed json object maybe shold happen in service
+        HashMap<String, Integer> count = new HashMap<>();
+        for (JsonElement element : content) {
+            JsonObject jsonObject = element.getAsJsonObject();
+            if(jsonObject.has("gender")) {
+                String selValue = jsonObject.get("gender").getAsString();
+                if(count.containsKey(selValue)) {
+                    count.put(selValue, count.get(selValue) + 1);
+                } else {
+                    count.put(selValue, 1);
+                }
+            }
+        }
+
+        count.get("M"); // returns all Male
+        System.out.println("yuyu"+count.get("M"));
+
         return patientRepository.findAll(spec, pageable);
     }
 
@@ -130,7 +152,7 @@ public class PatientService {
         return patientRepository.findById(id).orElseThrow(() -> APIException.notFound("Person identified by id {0} no found", id));
     }
 
-//    public String generatePatientNumber() {
+    //    public String generatePatientNumber() {
 //        int nextPatient = patientRepository.maxId() + 1;
 //        return String.valueOf("PAT" + nextPatient);
 //    }
@@ -440,6 +462,7 @@ public class PatientService {
             throw APIException.conflict("Duplicate Patient Number {0}", patientNumber);
         }
     }
+
     public Optional<Patient> findPatientByPatientNumber(String patientNumber) {
         return patientRepository.findByPatientNumber(patientNumber);
     }

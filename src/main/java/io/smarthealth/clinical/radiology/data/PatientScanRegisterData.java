@@ -7,6 +7,7 @@ package io.smarthealth.clinical.radiology.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.accounting.billing.domain.enumeration.ExcessAmountPayMethod;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
@@ -73,6 +74,12 @@ public class PatientScanRegisterData {
 
     @ApiModelProperty(required = false, hidden = true)
     private BillData billData;
+
+    /* Start Limit manager variable */
+    private Boolean allowedToExceedLimit = Boolean.FALSE;
+    @Enumerated(EnumType.STRING)
+    private ExcessAmountPayMethod surpassedAmountPaymentMethod;
+    /* End Limit manager variables */
 
     public PatientScanRegister fromData() {
         PatientScanRegister e = new PatientScanRegister();

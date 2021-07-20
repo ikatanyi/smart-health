@@ -70,6 +70,9 @@ public class ReportController {
             case Invoice:
                 paymentReportService.getInvoice(queryParams, format, response);
                 break;
+            case InvoiceSummary:
+                paymentReportService.getInvoiceSummary(queryParams, format, response);
+                break;
             case Patient_File:
                 patientReportService.getPatientFile(queryParams, format, response);
                 break;
@@ -328,11 +331,33 @@ public class ReportController {
                 stockReportService.stockTransfer(queryParams, format, response);
                 break;
             case StockReturn:
-                stockReportService.supplierReturns(queryParams,format,response);
+                stockReportService.supplierReturns(queryParams, format, response);
                 break;
+            case SupplierInvoice:
+                stockReportService.supplierInvoice(queryParams, format, response);
+                break;
+            case ItemValuation:
+                stockReportService.getItemValuation(queryParams, format, response);
+                break;
+            case ItemMovement:
+                stockReportService.getItemMovement(queryParams, format, response);
+                break;
+            case LabReagentReport:
+                stockReportService.getLabReagentReport(queryParams, format, response);
+                break;
+            case SupplierAgingBalance:
+                stockReportService.getSupplierAgingBalance(queryParams,format,response);
+                break;
+            case StockAdjustment:
+                stockReportService.getStockAdjustedItems(queryParams, format, response);
+                break;
+                //drugs returneed
+            case DrugsReturn:
 
+                break;
             default:
                 break;
+                //TODO throw error no report selected
         }
         auditTrailService.saveAuditTrail("Reports", "Viewed report  " + report);
         return ResponseEntity.ok("success");

@@ -2,19 +2,18 @@ package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.payment.data.ReceiptData;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptAndPaymentMethod;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.domain.Auditable;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +21,6 @@ import org.hibernate.annotations.Where;
 import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 
 /**
- *
  * @author Kelsas
  */
 @Data
@@ -32,14 +30,21 @@ import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 @Table(name = "acc_receipts")
 public class Receipt extends Auditable {
 
+    public static enum Type {
+        Refund,
+        Payment
+    }
+
     private String payer;
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;
-//    private BigDecimal credit;
+    //    private BigDecimal credit;
     private BigDecimal tenderedAmount;
     private BigDecimal refundedAmount;
     private BigDecimal paid;
-    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private ReceiptAndPaymentMethod paymentMethod;
     private String referenceNumber; //voucher no,
     private String receiptNo;
     private LocalDateTime transactionDate;
@@ -54,6 +59,11 @@ public class Receipt extends Auditable {
     private Boolean voided;
     private String voidedBy;
     private LocalDateTime voidedDatetime;
+    private String comments;
+    @Enumerated(EnumType.STRING)
+    private VisitEnum.VisitType visitType;
+    @Enumerated(EnumType.STRING)
+    private Type type = Type.Payment;
 
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptTransaction> transactions = new ArrayList<>();
@@ -101,7 +111,7 @@ public class Receipt extends Auditable {
         data.setReceivedFrom(this.getReceivedFrom());
         data.setTransactionDate(this.getTransactionDate());
         data.setCreatedBy(this.getCreatedBy());
-        if(this.getShift()!=null){
+        if (this.getShift() != null) {
             data.setShiftData(this.getShift().toData());
         }
         if (this.shift != null) {
@@ -121,6 +131,7 @@ public class Receipt extends Auditable {
         data.setVoided(this.voided);
         data.setVoidedBy(this.voidedBy);
         data.setVoidedDatetime(this.voidedDatetime);
+        data.setComments(this.comments);
 
         if (prepayment) {
             data.setReceiptType(ReceiptType.Deposit);
@@ -132,6 +143,9 @@ public class Receipt extends Auditable {
                 data.setReceiptType(ReceiptType.POS);
             }
         }
+
+        data.setVisitType(this.visitType);
+        data.setCreatedOn(LocalDateTime.ofInstant(this.getCreatedOn(), ZoneId.systemDefault()));
 
         return data;
     }

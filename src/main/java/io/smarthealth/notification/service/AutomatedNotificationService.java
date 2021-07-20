@@ -70,5 +70,5 @@ public class AutomatedNotificationService {
         AutomatedNotification notice = get(id);
         repository.delete(notice);
     }
-    
+
 }

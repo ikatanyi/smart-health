@@ -28,4 +28,11 @@ public class InventoryItemData {
     private Double reorderLevel;
     private boolean isDrug;
     private Double availableStock;
+    private BigDecimal stockValue;
+
+    public BigDecimal getStockValue() {
+        BigDecimal qty = BigDecimal.valueOf(availableStock);
+        stockValue = qty.multiply(costPrice);
+        return stockValue;
+    }
 }

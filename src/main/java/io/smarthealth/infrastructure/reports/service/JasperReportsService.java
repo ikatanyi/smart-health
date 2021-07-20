@@ -201,7 +201,13 @@ public class JasperReportsService {
         JasperReport jasperReport = null;
         HashMap param = reportConfig(patientNumber, employeeId, supplierId);
         InputStream reportInputStream = null;
-        resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
+        try {
+            reportInputStream =  resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
+
+        }catch (Exception exception){
+            reportInputStream = null;
+            log.error(exception.getMessage());
+        }
         LocalDateTime startTime = LocalDateTime.now();
         // Check if a compiled report exists
         if (reportInputStream != null) {

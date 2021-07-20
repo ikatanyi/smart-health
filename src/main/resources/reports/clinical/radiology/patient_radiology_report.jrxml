@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patient_radiology_report" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="90ecad10-fc2b-4040-b42e-4b22eb343167">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
@@ -65,10 +66,10 @@
 			<frame>
 				<reportElement positionType="Float" x="0" y="17" width="554" height="108" uuid="fa3cdb35-0c72-4215-a7c5-9c0d2b0cdad9"/>
 				<box>
-					<topPen lineWidth="0.25"/>
-					<leftPen lineWidth="0.25"/>
-					<bottomPen lineWidth="0.25"/>
-					<rightPen lineWidth="0.25"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textField isBlankWhenNull="true">
 					<reportElement positionType="Float" mode="Opaque" x="1" y="1" width="553" height="20" backcolor="#CCCCCC" uuid="a7f6d8c6-5a6e-418c-a62c-59370074e4e3"/>
@@ -81,12 +82,6 @@
 					<textFieldExpression><![CDATA["INVESTIGATION REQUESTED :     "+$F{scanName}]]></textFieldExpression>
 				</textField>
 			</frame>
-			<line>
-				<reportElement x="1" y="17" width="553" height="1" uuid="51220d0c-28bd-4499-b2db-49b38453630b"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#9999FF"/>
-				</graphicElement>
-			</line>
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="1" y="0" width="553" height="18" uuid="48ee5463-c19a-4f34-8b19-898a3142d7ab"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -94,12 +89,6 @@
 				</textElement>
 				<text><![CDATA[Patient Radiology Report]]></text>
 			</staticText>
-			<line>
-				<reportElement x="2" y="0" width="553" height="1" uuid="8d1004cc-e11a-40f1-8eba-53611f04a6c7"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#9999FF"/>
-				</graphicElement>
-			</line>
 			<staticText>
 				<reportElement positionType="Float" x="2" y="101" width="92" height="16" uuid="6eb07a7b-3a3e-447f-b0c6-55ab3064b293"/>
 				<textElement verticalAlignment="Middle">
@@ -182,9 +171,11 @@
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="41" splitType="Stretch">
+		<band height="27" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="Float" x="1" y="1" width="120" height="14" uuid="a384b799-e2c2-4053-9faf-983ffc018757"/>
+				<reportElement positionType="Float" x="1" y="3" width="120" height="14" uuid="a384b799-e2c2-4053-9faf-983ffc018757">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<box>
 					<topPen lineWidth="0.25"/>
 				</box>
@@ -193,8 +184,8 @@
 				</textElement>
 				<text><![CDATA[Requesting Physician :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="121" y="1" width="433" height="14" uuid="f7705112-f830-407a-8d7f-5cf128de25fc"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="121" y="3" width="159" height="14" uuid="f7705112-f830-407a-8d7f-5cf128de25fc"/>
 				<box>
 					<topPen lineWidth="0.25"/>
 				</box>
@@ -204,7 +195,9 @@
 				<textFieldExpression><![CDATA[$F{requestedBy}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="2" y="26" width="242" height="15" isRemoveLineWhenBlank="true" uuid="556f86a4-8354-4166-bd14-d82709baf363"/>
+				<reportElement positionType="Float" x="439" y="3" width="115" height="15" isRemoveLineWhenBlank="true" uuid="556f86a4-8354-4166-bd14-d82709baf363">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<box>
 					<topPen lineWidth="0.25"/>
 				</box>
@@ -213,6 +206,15 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{reportedBy}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="370" y="3" width="69" height="15" uuid="2570dac2-8451-440a-b6ec-c79770543f0c">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Prepared By:]]></text>
+			</staticText>
 		</band>
 	</pageFooter>
 </jasperReport>

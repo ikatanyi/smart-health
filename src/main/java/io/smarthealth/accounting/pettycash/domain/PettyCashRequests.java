@@ -8,6 +8,8 @@ package io.smarthealth.accounting.pettycash.domain;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
+
+import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -44,7 +46,7 @@ public class PettyCashRequests extends Auditable {
     @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_requests_request_by"))
     private Employee requestedBy;
-
+//    private LocalDate requestDate = LocalDate.now();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "requestNo")
     private List<PettyCashRequestItems> pettyCashRequestItems;
 }

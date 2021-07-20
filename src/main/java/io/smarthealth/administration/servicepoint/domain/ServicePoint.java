@@ -10,6 +10,7 @@ import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.*;
@@ -79,9 +80,11 @@ public class ServicePoint extends Identifiable {
 //                .map(StoreData::map)
 //                .collect(Collectors.toList())
 //        );
-        if(this.store!=null){
-            data.setStoreId(this.store.getId());
+        if(this.store!=null){            data.setStoreId(this.store.getId());
+
             data.setStoreName(this.store.getStoreName());
+            StoreData sd = StoreData.map(this.getStore());
+            data.setStores(Arrays.asList(sd));
         }
 
         return data;

@@ -1,33 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
-	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
-	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
-	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
-	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
-	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
-	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
@@ -62,7 +38,7 @@
 		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["D:\\code\\smarthealth.io\\sh-backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
@@ -297,7 +273,7 @@
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="0" y="0" width="19" height="19" uuid="28a286f5-96d7-4da6-a69c-c2fff1228a27"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -308,7 +284,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="69" y="0" width="52" height="19" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -318,7 +294,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="228" y="0" width="78" height="19" uuid="1dd9610f-5fb8-433d-b9fe-65dbdeff6f6c"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -328,7 +304,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="401" y="0" width="91" height="19" uuid="adfcdddb-95c0-4d5d-834d-ed5a82d03a17"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -338,7 +314,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{requestedBy}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="492" y="0" width="62" height="19" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -361,7 +337,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{referenceNo}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="19" y="0" width="50" height="19" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>

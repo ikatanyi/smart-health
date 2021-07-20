@@ -5,19 +5,17 @@ import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
+
 import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Data;
 
 /**
- *
  * @author Kelsas
  */
 @Entity
@@ -42,7 +40,12 @@ public class DispensedDrug extends Auditable implements Cloneable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_presc_id"))
     private Prescription prescription;
-    private String transactionId;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "bill_item_id", referencedColumnName = "id", foreignKey = @ForeignKey(name =
+            "fk_pharm_dispensed_drugs_bill_item_id"))
+    private PatientBillItem billItem;
+//    private String transactionId;
     private Double qtyIssued;
     private Double price;
     private Double amount;
@@ -70,6 +73,12 @@ public class DispensedDrug extends Auditable implements Cloneable {
     private String deliveryNumber;
     private String billNumber;
 
+    private String transactionId;
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharmacy_dispensed_drugs_walkin_id"))
+    private WalkIn walkIn;
+
     public DispensedDrugData toData() {
         DispensedDrugData data = new DispensedDrugData();
 
@@ -90,7 +99,7 @@ public class DispensedDrug extends Auditable implements Cloneable {
         data.setCollected(this.collected);
         data.setDispensedBy(this.dispensedBy);
         data.setCollectedBy(this.collectedBy);
-        data.setTransactionId(this.transactionId);
+
         data.setCost(amount);
         data.setIsReturn(this.isReturn);
         if (this.getDrug() != null) {
@@ -112,6 +121,12 @@ public class DispensedDrug extends Auditable implements Cloneable {
         data.setQtyBalance(this.qtyIssued - returnedQty);
         data.setReturnReason(this.returnReason);
         data.setBillNumber(this.billNumber);
+
+        if (this.getBillItem()!=null) {
+            data.setPatientBillItemId(this.getBillItem().getId());
+            data.setTransactionId(this.getBillItem().getTransactionId());
+        }
+
 
         return data;
     }

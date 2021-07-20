@@ -7,7 +7,10 @@ package io.smarthealth.accounting.pettycash.domain.specification;
 
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,7 +25,7 @@ public class PettyCashRequestSpecification {
         super();
     }
 
-    public static Specification<PettyCashRequests> createSpecification(final String requestNo, final Employee employee, final PettyCashStatus status) {
+    public static Specification<PettyCashRequests> createSpecification(final String requestNo, final Employee employee, final PettyCashStatus status, DateRange range) {
 
         return (root, query, cb) -> {
 
@@ -36,6 +39,11 @@ public class PettyCashRequestSpecification {
             }
             if (employee != null) {
                 predicates.add(cb.equal(root.get("requestedBy"), employee));
+            }
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("createdOn").as(LocalDate.class), range.getStartDate(), range.getEndDate())
+                );
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

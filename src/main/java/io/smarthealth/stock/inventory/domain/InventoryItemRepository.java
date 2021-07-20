@@ -1,5 +1,6 @@
 package io.smarthealth.stock.inventory.domain;
 
+import io.smarthealth.stock.inventory.data.ItemValuation;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
 import org.springframework.data.domain.Page;
@@ -22,10 +23,10 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
 
     Page<InventoryItem> findByItem(Item item, Pageable page);
     
-    @Query(value = "select SUM(availableStock) as cnt from InventoryItem v where v.item=:item group by v.item")
+    @Query(value = "select SUM(v.availableStock) as cnt from InventoryItem v where v.item=:item group by v.item")
     Integer findItemCount(@Param("item")Item item); 
     
-    @Query(value = "select SUM(availableStock) as cnt from InventoryItem v where v.item=:item AND v.store=:store group by v.item")
+    @Query(value = "select SUM(v.availableStock) as cnt from InventoryItem v where v.item=:item AND v.store=:store group by v.item")
     Integer findItemCountByItemAndStore(@Param("item")Item item, Store store); 
 
     Page<InventoryItem> findByStore(Store store, Pageable page);

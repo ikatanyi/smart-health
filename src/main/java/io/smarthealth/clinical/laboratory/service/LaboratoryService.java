@@ -107,7 +107,7 @@ public class LaboratoryService {
         LabRegister savedRegister = repository.save(request);
 
 //        billingService.save(toBill(data));
-        billingService.save(toBill(savedRegister));
+        billingService.save(toBill(savedRegister, data));
         //save
         data.getTests()
                 .stream()
@@ -522,7 +522,7 @@ public class LaboratoryService {
         return walkingService.createWalking(w);
     }
 
-    private PatientBill toBill(/*LabRegisterData*/LabRegister data) {
+    private PatientBill toBill(/*LabRegisterData*/LabRegister data, LabRegisterData dto) {
 
         //get the service point from store
         Visit visit = data.getVisit();// visitRepository.findByVisitNumber(data.getVisitNumber()).orElse(null);
@@ -553,6 +553,8 @@ public class LaboratoryService {
         patientbill.setPaymentMode(method);
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
+        patientbill.setAllowedToExceedLimit(dto.getAllowedToExceedLimit());
+        patientbill.setSurpassedAmountPaymentMethod(dto.getSurpassedAmountPaymentMethod());
         ArrayList<LabTest> parentLabTest = new ArrayList<>();
         List<PatientBillItem> lineItems = data.getTests()
                 .stream()

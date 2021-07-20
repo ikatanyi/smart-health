@@ -9,7 +9,8 @@ import lombok.Getter;
 @Getter
 public enum NotificationType {
     ReorderLevel("Items Below Reorder level"),
-    ItemExpiry("Items Near Expiry");
+    ItemExpiry("Items Near Expiry"),
+    SupplierInvoiceDuePayment("Supplier Invoice Due Payment");
     //   OutOfStock("Items Out of Stock"),
     //  UnfinalizedBills("Unfinalized Bills"),
     //   PatientsQueue("Patients in queue for long");

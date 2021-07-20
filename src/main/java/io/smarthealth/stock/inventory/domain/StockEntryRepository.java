@@ -3,9 +3,7 @@ package io.smarthealth.stock.inventory.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.stock.inventory.data.ExpiryStock;
-import io.smarthealth.stock.inventory.data.StockMovement;
-import io.smarthealth.stock.inventory.data.StockTransferData;
+import io.smarthealth.stock.inventory.data.*;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
@@ -93,5 +91,23 @@ public interface StockEntryRepository extends JpaRepository<StockEntry, Long>, J
 
     @Query("SELECT new io.smarthealth.stock.inventory.data.StockTransferData(s.referenceNumber, sum(s.cachedQuantity),s.store.id, s.store.storeName, s.destinationStore.id,s.destinationStore.storeName,s.notes,s.status, s.transactionDate, s.receivedAt) FROM StockEntry s LEFT JOIN s.destinationStore d WHERE s.purpose='Transfer' AND s.referenceNumber = :transferNo group by s.referenceNumber ")
     StockTransferData findStockTransfers(String transferNo);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemValuation(p.itemCode, p.itemName, p.category, p.active, SUM(s.quantity),p.costRate) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id WHERE p.itemType ='Inventory' AND s.transactionDate <= :asAt GROUP BY p.id")
+    List<ItemValuation> getItemValuation(LocalDate asAt);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemValuation(p.itemCode, p.itemName, p.category, p.active, SUM(s.quantity),p.costRate) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id WHERE p.itemType ='Inventory' AND s.store.id = :storeId AND s.transactionDate <= :asAt GROUP BY p.id")
+    List<ItemValuation> getItemValuation(Long storeId, LocalDate asAt);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.transactionNumber, s.moveType, s.purpose, s.issuedTo,s.quantity, r.storeName, r2.storeName ) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id LEFT JOIN Store r on r.id = s.store.id left join Store r2 on r2.id = s.destinationStore.id WHERE p.itemType ='Inventory' ")
+    Page<ItemMovement> getItemMovement(Pageable page);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.transactionNumber, s.moveType, s.purpose, s.issuedTo,s.quantity, r.storeName, r2.storeName) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id LEFT JOIN Store r on r.id = s.store.id left join Store r2 on r2.id = s.destinationStore.id WHERE p.itemType ='Inventory' AND p.id = :itemId ")
+    Page<ItemMovement> getItemMovement(Long itemId, Pageable page);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.transactionNumber, s.moveType, s.purpose, s.issuedTo,s.quantity, r.storeName, r2.storeName ) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id LEFT JOIN Store r on r.id = s.store.id left join Store r2 on r2.id = s.destinationStore.id WHERE p.itemType ='Inventory' AND s.transactionDate between :start and :end  ")
+    Page<ItemMovement> getItemMovement(LocalDate start, LocalDate end, Pageable page);
+
+    @Query("SELECT new io.smarthealth.stock.inventory.data.ItemMovement(p.itemCode, p.itemName, s.transactionDate,s.transactionNumber, s.moveType, s.purpose, s.issuedTo,s.quantity, r.storeName, r2.storeName) FROM Item p LEFT JOIN StockEntry s ON s.item.id = p.id LEFT JOIN Store r on r.id = s.store.id left join Store r2 on r2.id = s.destinationStore.id WHERE p.itemType ='Inventory' AND p.id = :itemId AND s.transactionDate between :start and :end ")
+    Page<ItemMovement> getItemMovement(Long itemId, LocalDate start, LocalDate end, Pageable page);
 
 }

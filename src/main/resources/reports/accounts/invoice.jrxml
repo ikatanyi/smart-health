@@ -21,6 +21,9 @@
 	<parameter name="admissionDate" class="java.lang.Object"/>
 	<parameter name="dischargeDate" class="java.lang.Object"/>
 	<parameter name="inPatient" class="java.lang.Boolean"/>
+	<parameter name="showInvoiceDate" class="java.lang.Boolean" isForPrompting="false">
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -55,6 +58,7 @@
 	<field name="totalAmount" class="java.math.BigDecimal"/>
 	<field name="paid" class="java.math.BigDecimal"/>
 	<field name="amountDue" class="java.math.BigDecimal"/>
+	<field name="preauthCode" class="java.lang.String"/>
 	<variable name="Price_1" class="java.lang.Double" resetType="Column" calculation="Sum">
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
@@ -80,7 +84,7 @@
 		</band>
 	</background>
 	<title>
-		<band height="193">
+		<band height="198">
 			<line>
 				<reportElement positionType="Float" x="2" y="21" width="552" height="1" uuid="b384c05c-cf32-45c7-b4b4-32132cee5059"/>
 				<graphicElement>
@@ -285,10 +289,34 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="200" y="179" width="70" height="14" uuid="b8cfe92f-b4a8-4b91-ae7c-3bfe3680fda6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{capitation}.equals( true )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Preauth Code]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="270" y="179" width="60" height="14" uuid="72ca5b8f-a783-423c-bc72-ba247d4949a2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{capitation}.equals( true )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{preauthCode}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<detail>
 		<band height="11" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{showInvoiceDate}.equals( true )]]></printWhenExpression>
 			<subreport isUsingCache="true">
 				<reportElement x="0" y="0" width="555" height="11" uuid="4fb7f8d0-65c0-4be1-86ff-bd6d8d263878"/>
 				<subreportParameter name="date">
@@ -308,10 +336,33 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_LineItems_subreport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
+		<band height="11" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[$P{showInvoiceDate}.equals( false )]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="554" height="11" uuid="e33790dd-b244-4000-9f56-b0180cdfd5fe">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<subreportParameter name="capitationWithout">
+					<subreportParameterExpression><![CDATA[$F{capitation}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dateWithout">
+					<subreportParameterExpression><![CDATA[$F{visitDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="amountWithout">
+					<subreportParameterExpression><![CDATA[$F{amount}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="showCapitationItemWithout">
+					<subreportParameterExpression><![CDATA[$P{showCapitationItem}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoiceItems})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_without_LineItems_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
 		<band height="11">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<subreport>
-				<reportElement x="0" y="0" width="552" height="10" uuid="c0753517-f4fb-47b4-b06e-00c442f1b939">
+				<reportElement x="0" y="0" width="556" height="10" uuid="c0753517-f4fb-47b4-b06e-00c442f1b939">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>

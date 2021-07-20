@@ -163,8 +163,21 @@ public class PurchaseInvoiceService {
         invoice.setStatus(PurchaseInvoiceStatus.Unpaid);
         invoice.setTransactionNumber(trdId);
         invoice.setDocumentNumber(docNo);
+        invoice.setPurchaseOrderNumber(creditNote.getInvoiceDocumentNo());
 
         PurchaseInvoice savedInvoice = purchaseInvoiceRepository.save(invoice);
+        //reduce the invoice with the amount
+        if(creditNote.getInvoiceDocumentNo()!=null) {
+            Optional<PurchaseInvoice> inv = purchaseInvoiceRepository.findByDocumentNumber(creditNote.getInvoiceDocumentNo());
+            //creditNote.getTotalAmount()}
+            if(inv.isPresent()){
+                //TODO reduce the balance and not the invoice amount
+                PurchaseInvoice pinv = inv.get();
+                BigDecimal bal = pinv.getInvoiceBalance().subtract(creditNote.getTotalAmount());
+                pinv.setInvoiceBalance(bal);
+                purchaseInvoiceRepository.save(pinv);
+            }
+        }
 
         if (!creditNote.getItems().isEmpty()) {
             doStockReturns(creditNote);
@@ -196,7 +209,7 @@ public class PurchaseInvoiceService {
                 .orElseThrow(() -> APIException.notFound("Purchase Invoice with creditNoteNumber {0} not found", creditNoteNumber));
     }
 
-    public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved, String query, PurchaseInvoice.Type invoiceType, Pageable page) {
+    public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved, String query, List<PurchaseInvoice.Type> invoiceType, Pageable page) {
         Specification<PurchaseInvoice> specs = PurchaseInvoiceSpecification.createSpecification(supplierId, invoiceNumber, paid, range, status, approved, query,invoiceType);
         return purchaseInvoiceRepository.findAll(specs, page);
 
@@ -254,10 +267,10 @@ public class PurchaseInvoiceService {
                     Store store = getStore(st.getStoreId());
                     Item item = itemService.findItemEntityOrThrow(st.getItemId());
 
-                    BigDecimal qty = BigDecimal.valueOf(st.getQuantity());
+                    BigDecimal qty = st.getQuantity()!=null ? BigDecimal.valueOf(st.getQuantity()) : BigDecimal.ONE;
 
                     StockEntry stock = new StockEntry();
-                    stock.setAmount(st.getAmount());
+                    stock.setAmount(st.getRate().multiply(qty));
                     stock.setDeliveryNumber(creditNote.getDocumentNumber());
                     stock.setQuantity(qty.doubleValue());
                     stock.setItem(item);

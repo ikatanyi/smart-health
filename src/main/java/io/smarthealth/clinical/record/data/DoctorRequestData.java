@@ -86,6 +86,8 @@ public class DoctorRequestData {
     private boolean paid;
     private boolean billed;
 
+    private Long userId;
+
     public static DoctorRequest map(DoctorRequestData doctorRequestData) {
         DoctorRequest doctorRequest = new DoctorRequest();
         doctorRequest.setNotes(doctorRequestData.getNotes());

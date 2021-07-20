@@ -10,9 +10,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.*;
-import io.smarthealth.stock.inventory.domain.Requisition;
-import io.smarthealth.stock.inventory.domain.StockEntry;
-import io.smarthealth.stock.inventory.domain.StockEntryRepository;
+import io.smarthealth.stock.inventory.domain.*;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.domain.enumeration.PurchaseType;
@@ -61,7 +59,10 @@ public class InventoryService {
 
     private final SequenceNumberService sequenceNumberService;
     private final JournalService journalService;
-    private final RequisitionService requisitionService;
+//    private final RequisitionService requisitionService;
+    private final RequisitionItemRepository requisitionItemRepository;
+    private final RequisitionRepository requisitionRepository;
+
 
     private final InventorySpringEventPublisher inventoryEventSender;
 
@@ -74,8 +75,10 @@ public class InventoryService {
         Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
         Store destinStore = stockData.getDestinationStoreId()!=null ? storeService.getStore(stockData.getDestinationStoreId()).orElse(null) : null;
 //        BigDecimal costAmount = BigDecimal.ZERO;
+        Optional<Requisition> requisition =requisitionRepository.findByRequestionNumber(stockData.getReferenceNumber());
 
         if (!stockData.getItems().isEmpty()) {
+            boolean isPartialReceived = false;
             stockData.getItems()
                     .stream()
                     .forEach(st -> {
@@ -100,8 +103,8 @@ public class InventoryService {
                         stock.setTransactionDate(stockData.getTransactionDate());
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(st.getUnit());
-                        stock.setDiscount(st.getDiscount());
-                        stock.setTax(st.getTax());
+                        stock.setDiscount(st.getDiscount() !=null ? st.getDiscount() : BigDecimal.ZERO);
+                        stock.setTax(st.getTax() !=null ? st.getTax() : BigDecimal.ZERO);
 
                         if (stockData.getMovementPurpose() == MovementPurpose.Transfer) {
                             stock.setCachedQuantity(st.getQuantity());
@@ -131,20 +134,23 @@ public class InventoryService {
                             receivingStock.setTransactionDate(stockData.getTransactionDate());
                             receivingStock.setTransactionNumber(trdId);
                             receivingStock.setUnit(st.getUnit());
-                            doStockEntry(InventoryEvent.Type.Increase, receivingStock, destinationStore, item, qty.doubleValue());
+                            receivingStock.setDiscount(st.getDiscount() !=null ? st.getDiscount() : BigDecimal.ZERO);
+                            receivingStock.setTax(st.getTax() !=null ? st.getTax() : BigDecimal.ZERO);
 
+                            doStockEntry(InventoryEvent.Type.Increase, receivingStock, destinationStore, item, qty.doubleValue());
+                            if(requisition.isPresent()){
+                                 requisitionItemRepository.updateRequisitionReceivedQuantity(st.getQuantity(),requisition.get().getId(),st.getId());
+                            }
                         }
 
                     });
             //update requisition status
             //find requisition by request number
-            Optional<Requisition> requisition = requisitionService.findByRequsitionNumber(stockData.getReferenceNumber());
-            if (requisition.isPresent()) {
-                Requisition r = requisition.get();
-
-                 //TODO fix the non updating of requistion items
-                r.setStatus(RequisitionStatus.Processed);
-                requisitionService.saveRequisition(r);
+            Optional<Requisition> req =requisitionRepository.findByRequestionNumber(stockData.getReferenceNumber());
+            if (req.isPresent()) {
+                Requisition r = req.get();
+                r.updateStatus();
+                requisitionRepository.save(r);
             }
         }
 
@@ -160,6 +166,14 @@ public class InventoryService {
     }
 
     public void doStockEntry(InventoryEvent.Type type, StockEntry stock, Store store, Item item, Double qty) {
+        stockEntryRepository.save(stock);
+//        inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
+        inventoryEventSender.publishInventoryEvent(type, store, item, qty);
+    }
+    public void doStockEntry(InventoryEvent.Type type, Store store, Item item, Double qty) {
+        StockEntry stock = new StockEntry();
+
+
         stockEntryRepository.save(stock);
 //        inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
         inventoryEventSender.publishInventoryEvent(type, store, item, qty);
@@ -223,6 +237,8 @@ public class InventoryService {
                         stock.setBatchNo(stock.getBatchNo());
                         stock.setDeliveryNumber(docNo);
                         stock.setBatchNo(st.getBatchNumber());
+                        stock.setTax(st.getTax());
+                        stock.setDiscount(st.getDiscount());
 
                         StockEntry savedEntry = stockEntryRepository.save(stock);
 
@@ -235,31 +251,25 @@ public class InventoryService {
 //                    );
                     }
                     );
-
         }
 
         if (stockData.getPurchaseType() == PurchaseType.Payable) {
-
             purchaseInvoiceService.createPurchaseInvoice(store, stockData);
         }
         if (stockData.getOrderNumber() != null) {
             PurchaseOrder order = purchaseOrderRepository.findByOrderNumber(stockData.getOrderNumber()).orElse(null);
             if (order != null) {
-                Double balance = 0D;
-
-                balance = stockData.getItems().stream().map((x) -> (x.getQtyOrdered() - x.getReceivedQuantity() - x.getQuantity())).reduce(balance, (x, y) -> x + y);
-                PurchaseOrderStatus status = PurchaseOrderStatus.Received;
-                if (balance > 0) {
-                    status = PurchaseOrderStatus.PartialReceived;
+                //Double balance = 0D;
+                //balance = stockData.getItems().stream().map((x) -> (x.getQtyOrdered() - x.getReceivedQuantity() - x.getQuantity())).reduce(0D, (x, y) -> x + y);
+                if (order.hasOrderBalance()) {
+                    order.setStatus(PurchaseOrderStatus.PartialReceived);
                 } else {
+                    order.setStatus(PurchaseOrderStatus.Received);
                     order.setReceived(Boolean.TRUE);
                 }
-                order.setStatus(status);
                 order.setBilled(Boolean.TRUE);
-
                 purchaseOrderRepository.save(order);
             }
-
         }
 
         return trdId;
@@ -406,6 +416,7 @@ public class InventoryService {
     public void reverseStockTransfer(String transferNo){
         stockEntryRepository.reverseStockTransfer(transferNo);
     }
+
 
 //    Page<StockMovement> getStockMovement(Long storeId, Long itemId, DateRange range, Pageable pageable) {
 //        Specification<StockEntry> spec = StockEntrySpecification.getStockMovement(storeId, itemId, range);
