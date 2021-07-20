@@ -1,26 +1,17 @@
 package io.smarthealth.security.config;
 
-import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.CustomAccessDeniedHandler;
 import io.smarthealth.security.service.CustomAuthenticationEntryPoint;
-import io.smarthealth.security.service.CustomBasicAuthFilter;
 import io.smarthealth.security.service.CustomFilter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  *

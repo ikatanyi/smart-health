@@ -90,24 +90,17 @@ import org.springframework.util.ResourceUtils;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class JasperReportsService {
+public class ReportConfig {
 
     @Autowired
     private final StorageService storageService;
-
-    @Autowired
-    private final FacilityService facilityService;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
     @Autowired
     private ApplicationProperties appProperties;
-
-    private final PatientService patientService;
-    private final EmployeeService employeeService;
-    private final SupplierService supplierService;
-
+    
     @Autowired
     @Qualifier("jdbcTemplate")
     private JdbcTemplate jdbcTemplate;
@@ -194,12 +187,10 @@ public class JasperReportsService {
         }
         List dataList = reportData.getData();
         String template = reportData.getTemplate();
-        String patientNumber = reportData.getPatientNumber();
-        String employeeId = reportData.getEmployeeId();
         String reportName = reportData.getReportName();
         Long supplierId = reportData.getSupplierId();
         JasperReport jasperReport = null;
-        HashMap param = reportConfig(patientNumber, employeeId, supplierId);
+        HashMap param = reportConfig();
         InputStream reportInputStream = null;
         resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
         LocalDateTime startTime = LocalDateTime.now();
@@ -333,87 +324,26 @@ public class JasperReportsService {
      *
      */
     @Transactional(readOnly = true)
-    HashMap reportConfig(String patientNumber, String staffNumber, Long supplierId) throws JRException {
-        List<PatientBanner> patientDataArray = new ArrayList();
-        List<EmployeeBanner> employeeDataArray = new ArrayList();
+    HashMap reportConfig() throws JRException {
         List<Header> header = new ArrayList();
         HashMap jasperParameter = new HashMap();
-        SupplierData supplierData = null;
 
         Facility facility = facilityService.loggedFacility();
 
         Header headerData = Header.map(facility);
         Footer footerData = Footer.map(facility);
-        if (facility.getCompanyLogo() == null) {
-            headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
-            jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
-        } else {
-            headerData.setIMAGE(new ByteArrayInputStream(facility.getCompanyLogo().getData()));
-            jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream(facility.getCompanyLogo().getData()));
-        }
-
         header.add(headerData);
+        jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
         jasperParameter.put("Header_Data", header);
         jasperParameter.put("Footer_Data", Arrays.asList(footerData));
         jasperParameter.put("SUBREPORT_DIR", appProperties.getReportLoc() + "/subreports/");
         jasperParameter.put("PIC_DIR", appProperties.getReportLoc() + "/");
 
-        jasperParameter.put("facilityName", facility.getFacilityName());
-        jasperParameter.put("facilityType", facility.getFacilityType());
-        jasperParameter.put("facilityCode", facility.getRegistrationNumber());
-        if (facility.getCompanyLogo() != null) {
-            jasperParameter.put("logo", facility.getCompanyLogo().getData());
-
-        }
-        jasperParameter.put("orgLegalName", facility.getOrganization().getLegalName());
-        jasperParameter.put("orgName", facility.getOrganization().getOrganizationName());
-        jasperParameter.put("TaxNumber", facility.getOrganization().getTaxNumber());
-        jasperParameter.put("orgWebsite", facility.getOrganization().getWebsite());
-        String country = "", county = "", addressLine1 = "", addressLine2 = "", postalcode = "", town = "";
-        if (facility.getOrganization().getAddress() != null) {
-            for (Address address : facility.getOrganization().getAddress()) {
-                jasperParameter.put("orgAddressCountry", country.concat(" ").concat(address.getCountry()));
-                jasperParameter.put("orgAddressCounty", county.concat(" ").concat(address.getCounty()));
-                jasperParameter.put("orgAddressLine1", addressLine1.concat(" ").concat(address.getLine1()));
-                jasperParameter.put("orgAddressLine2", addressLine2.concat(" ").concat(address.getLine2()));
-                jasperParameter.put("orgPostalCode", postalcode.concat(" ").concat(address.getPostalCode()));
-                jasperParameter.put("orgTown", town.concat(" ").concat(address.getTown()));
-                jasperParameter.put("orgType", address.getType());
-            }
-        }
-        String email = "", fullname = "", mobile = "", salutation = "", telephone = "";
-        if (facility.getOrganization().getContact() != null) {
-            for (Contact contact : facility.getOrganization().getContact()) {
-                jasperParameter.put("contactEmail", email.concat(" ").concat(contact.getEmail()));
-                jasperParameter.put("contactFullName", fullname.concat(" ").concat(contact.getFullName()));
-                jasperParameter.put("contactMobile", mobile.concat(" ").concat(contact.getMobile()));
-                jasperParameter.put("salutation", salutation.concat(" ").concat(contact.getSalutation()));
-                jasperParameter.put("telephone", telephone.concat(" ").concat(contact.getTelephone()));
-            }
-        }
-
-        if (patientNumber != null) {
-            PatientBanner patient = null;
-            Optional<PatientData> patientData = patientService.fetchPatientByPatientNumber(patientNumber);
-            if (patientData.isPresent()) {
-                patientDataArray.add(PatientBanner.map(patientData.get()));
-            }
-        }
-
-        if (staffNumber != null) {
-            EmployeeBanner employeeData = null;
-            Optional<Employee> employee = employeeService.findEmployeeByStaffNumber(staffNumber);
-            if (employee.isPresent()) {
-                employeeDataArray.add(EmployeeBanner.map(employeeService.convertEmployeeEntityToEmployeeData(employee.get())));
-            }
-        }
-
-        if (supplierId != null) {
-            Optional<Supplier> supplier = supplierService.getSupplierById(supplierId);
-            if (supplier.isPresent()) {
-                supplierData = supplier.get().toData();
-            }
-        }
+        jasperParameter.put("facilityName", "name");
+        jasperParameter.put("facilityType", "type");
+        jasperParameter.put("facilityCode", "code");
+        jasperParameter.put("logo", "logo");
+        
 
         JRSimpleTemplate template = new JRSimpleTemplate();
         JRStyle s = new JRBaseStyle("bannerStyle");
@@ -430,9 +360,6 @@ public class JasperReportsService {
         templateList.add(template);
 
         jasperParameter.put(JRParameter.REPORT_TEMPLATES, templateList);
-        jasperParameter.put("Patient_Data", patientDataArray);
-        jasperParameter.put("Employee_Data", employeeDataArray);
-        jasperParameter.put("Supplier_Data", Arrays.asList(supplierData));
 
         return jasperParameter;
     }
