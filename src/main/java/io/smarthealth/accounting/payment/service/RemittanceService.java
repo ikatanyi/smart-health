@@ -72,7 +72,6 @@ public class RemittanceService {
 
     public Receipt createRemittance(CreateRemittance data) {
 
-
         Receipt receipt = new Receipt();
         receipt.setPrepayment(Boolean.FALSE);
         receipt.setAmount(data.getAmount());

@@ -84,7 +84,6 @@ public class JobRegisterServiceImpl implements JobRegisterService, ApplicationLi
 
     @PostConstruct
     public void loadAllJobs() {
-
         final List<ScheduledJobDetail> scheduledJobDetails = this.schedulerService.retrieveAllJobs();
         for (final ScheduledJobDetail jobDetails : scheduledJobDetails) {
             scheduleJob(jobDetails);

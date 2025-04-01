@@ -168,7 +168,7 @@ public class ReportConfig {
         JRDataSource ds = new JRBeanCollectionDataSource(reportData.getData());
         Resource report = resourceLoader.getResource(appProperties.getReportLoc() + reportData.getTemplate() + ".jasper");//new ClassPathResource("static/jasper/rpt_report.jasper");
 
-        HashMap param = reportConfig(null, null, null);
+        HashMap param = new HashMap<>(); //reportConfig(null, null, null);
         param.putAll(reportData.getFilters());
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(report.getInputStream(), param, ds);
@@ -324,7 +324,7 @@ public class ReportConfig {
      *
      */
     @Transactional(readOnly = true)
-    HashMap reportConfig() throws JRException {
+    public HashMap reportConfig() throws JRException {
         List<Header> header = new ArrayList();
         HashMap jasperParameter = new HashMap();
 
